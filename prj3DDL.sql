@@ -39,8 +39,13 @@ CREATE TABLE accounts (
 
 CREATE TABLE users_with_accounts(
 	account_id INT NOT NULL,
-	customer_id INT NOT NULL,
-	PRIMARY KEY (account_id, customer_id)
+	user_id INT NOT NULL,
+	PRIMARY KEY (account_id, user_id)
+--	CONSTRAINT fk_user_id
+--  		FOREIGN KEY (user_id) REFERENCES "users" (id),
+--  	CONSTRAINT fk_account_id
+--  		FOREIGN KEY (account_id) REFERENCES "accounts" (id)
+--	
 );
 
 CREATE TABLE transaction_descriptions (
@@ -50,19 +55,55 @@ CREATE TABLE transaction_descriptions (
 
 CREATE TABLE transactions(
 	id SERIAL PRIMARY KEY,
+	requester_id INT NOT NULL,
 	sending_id INT NOT NULL,
 	receiving_id INT NOT NULL,
 	req_time TIMESTAMP NOT NULL DEFAULT Now(),
 	res_time TIMESTAMP,
 	approved BOOLEAN,
+	amount BIGINT NOT NULL,
 	desc_id INT NOT NULL,
 	CONSTRAINT fk_trx_sending_id
   		FOREIGN KEY (sending_id) REFERENCES "accounts" (id),
   	CONSTRAINT fk_trx_receiving_id
   		FOREIGN KEY (receiving_id) REFERENCES "accounts" (id),
   	CONSTRAINT fk_description_id
-  		FOREIGN KEY (desc_id) REFERENCES "accounts" (id)
-	
+  		FOREIGN KEY (desc_id) REFERENCES "accounts" (id),
+  	CONSTRAINT fk_requester_id
+  		FOREIGN KEY (requester_id) REFERENCES "users" (id)
 );
 
 
+  ----------------------------------------INSERTS-------------------------------------------------
+INSERT INTO roles (role_name) VALUES ('USER'),('EMPLOYEE');
+
+INSERT INTO users (first_name, last_name, email, pass, phone, role_id) VALUES 
+	('John', 'Doe', 'jd80@a.ca', 'Password123!', '555-555-5000', 1),
+	('Jane', 'Doe', 'jd81@a.ca', 'Password123!', '555-555-5001', 1), 
+	('Johny', 'Doe', 'jd05@a.ca', 'Password123!', '555-555-5002', 1),
+	('Valentin', 'Vlad', 'vv@a.ca', 'Password123!', '555-555-5555', 1);
+	
+INSERT INTO account_types (type_name) VALUES ('CHEQUING'), ('SAVINGS');
+
+INSERT INTO accounts (type_id, balance) VALUES 
+	(1, 5000),(1, 5000000), (1, 70000),(1, 5000),(1, 70000),(1, 200000),
+	(2, 50000),(2, 500000), (2, 50000),(2, 50000),(2, 700000),(2, 2000000);
+	
+INSERT INTO users_with_accounts (account_id, user_id) VALUES 
+	(1,1),(7,1),(2,1), (8,1),(3,1),(9,1),
+	(4,2),(5,2),(6,2), (10,2),(11,2),(12,2);
+
+INSERT INTO transaction_descriptions (description) VALUES ('Salary'), ('Payment');
+
+--Insert transfers ---
+INSERT INTO transactions (requester_id, sending_id, receiving_id, approved ,amount, desc_id) VALUES
+	(1,2,4,True,500,2);
+	
+
+--Select Jon's accounts -- 
+
+SELECT balance/100 as amount_in_dollars, act.type_name, a.id, uwa.user_id
+	FROM accounts a
+	JOIN account_types act ON a.type_id = act.id
+	JOIN users_with_accounts uwa ON a.id = uwa.user_id
+	WHERE uwa.user_id = 1; 
