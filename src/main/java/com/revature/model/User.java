@@ -14,7 +14,8 @@ public class User {
     private String phoneNumber;
     private String userRole;
 
-    private List<Account> accounts;
+
+   // private List<Account> accounts;
 
 
 
@@ -86,6 +87,7 @@ public class User {
         accounts.add(account);
     }
 
+
     public User() {
         this.firstName = "";
         this.lastName = "";
@@ -93,7 +95,8 @@ public class User {
         this.password = "";
         this.phoneNumber = "";
         this.userRole = "";
-        this.accounts = new ArrayList<>();
+  //      this.accounts = new ArrayList<>();
+
     }
 
     public User(int userId, String firstName, String lastName, String email, String password, String phoneNumber, String userRole) {
@@ -104,7 +107,8 @@ public class User {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.userRole = userRole;
-        this.accounts = new ArrayList<>();
+       // this.accounts = new ArrayList<>();
+
     }
 
     @Override
@@ -117,7 +121,8 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole, accounts);
+        //return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole, accounts);
+        return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole);
     }
 
     @Override
@@ -130,8 +135,10 @@ public class User {
                 ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", userRole='" + userRole + '\'' +
-                ", accounts=" + accounts +
+              //  ", accounts=" + accounts +
                 '}';
     }
     
+                '}';
+
 }

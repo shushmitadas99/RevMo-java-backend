@@ -1,3 +1,7 @@
 .idea/
+<<<<<<< HEAD
 target/
 java-backend.iml
+=======
+.target/
+>>>>>>> 61c5aab (skeleton for transactions)
