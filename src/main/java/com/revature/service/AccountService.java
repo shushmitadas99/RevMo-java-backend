@@ -51,4 +51,8 @@ public class AccountService {
     public List<Account> getAccountsByEmail(String email) throws SQLException {
         return accountDao.getAccountsByEmail(email);
     }
+
+    public Account getAccountByEmailAndAccountId(String email, int id) {
+        return accountDao.getAccountByEmailAndAccountId(email, id);
+    }
 }
