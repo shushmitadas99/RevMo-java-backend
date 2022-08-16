@@ -34,6 +34,15 @@ public class AccountController implements Controller{
             }
         });
 
+        app.get("/accounts", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
 
+            ctx.json(accountService.getAccountsByEmail("jd80@a.ca"));
+            ctx.status(200);
+        });
     }
+
+
 }
