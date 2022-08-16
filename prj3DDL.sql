@@ -1,10 +1,12 @@
 DROP TABLE IF EXISTS users_with_accounts;
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS transaction_descriptions;
+DROP TABLE IF EXISTS status_types;
 DROP TABLE IF EXISTS accounts;
 DROP TABLE IF EXISTS account_types;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
+
 
 
 CREATE TABLE roles(
@@ -41,16 +43,16 @@ CREATE TABLE users_with_accounts(
 	account_id INT NOT NULL,
 	user_id INT NOT NULL,
 	PRIMARY KEY (account_id, user_id)
---	CONSTRAINT fk_user_id
---  		FOREIGN KEY (user_id) REFERENCES "users" (id),
---  	CONSTRAINT fk_account_id
---  		FOREIGN KEY (account_id) REFERENCES "accounts" (id)
---	
 );
 
 CREATE TABLE transaction_descriptions (
 	id SERIAL PRIMARY KEY,
 	description VARCHAR(30)
+);
+
+CREATE TABLE status_types(
+	id SERIAL PRIMARY KEY,
+	type_name VARCHAR(30)
 );
 
 CREATE TABLE transactions(
@@ -62,15 +64,18 @@ CREATE TABLE transactions(
 	res_time TIMESTAMP,
 	approved BOOLEAN,
 	amount BIGINT NOT NULL,
+	status_id INT NOT NULL,
 	desc_id INT NOT NULL,
 	CONSTRAINT fk_trx_sending_id
   		FOREIGN KEY (sending_id) REFERENCES "accounts" (id),
   	CONSTRAINT fk_trx_receiving_id
   		FOREIGN KEY (receiving_id) REFERENCES "accounts" (id),
   	CONSTRAINT fk_description_id
-  		FOREIGN KEY (desc_id) REFERENCES "accounts" (id),
+  		FOREIGN KEY (desc_id) REFERENCES "transaction_descriptions" (id),
   	CONSTRAINT fk_requester_id
-  		FOREIGN KEY (requester_id) REFERENCES "users" (id)
+  		FOREIGN KEY (requester_id) REFERENCES "users" (id),
+  	CONSTRAINT fk_status_id
+  		FOREIGN KEY (status_id) REFERENCES "status_types" (id)
 );
 
 
@@ -95,9 +100,11 @@ INSERT INTO users_with_accounts (account_id, user_id) VALUES
 
 INSERT INTO transaction_descriptions (description) VALUES ('Salary'), ('Payment');
 
+INSERT INTO status_types (type_name) VALUES ('PENDING'), ('APPROVED'), ('DECLINED');
+
 --Insert transfers ---
-INSERT INTO transactions (requester_id, sending_id, receiving_id, approved ,amount, desc_id) VALUES
-	(1,2,4,True,500,2);
+INSERT INTO transactions (requester_id, sending_id, receiving_id, req_time, status_id, amount, desc_id) VALUES
+	(1,2,4,Now(),2,500,2);
 	
 
 --Select Jon's accounts -- 
