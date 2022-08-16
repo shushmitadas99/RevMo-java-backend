@@ -31,15 +31,15 @@ public class UserController implements Controller {
             User myUser = (User) session.getAttribute("logged_in_user");
 
 
-            //TODO undo when can long in!
-            myUser = new User(1, "Bob", "Smith", "hello@world.net", "foobar", "666-123-4562", "user");
+            //TODO undo when can login!
+            myUser = new User(1, "Bob", "Smith", "jd80@a.ca", "foobar", "666-123-4562", "user");
 
             if (myUser == null) {
                 ctx.result("You are not logged in!");
                 ctx.status(404);
             } else {
 
-                List<Account> userAccounts = accountService.getAccountsByUserId(myUser.getUserId());
+                List<Account> userAccounts = accountService.getAccountsByEmail(myUser.getEmail());
                 myUser.setAccounts(userAccounts);
                 ctx.json(myUser);
                 ctx.status(200);
