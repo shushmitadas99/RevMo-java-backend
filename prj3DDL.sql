@@ -17,7 +17,7 @@ CREATE TABLE users(
 	first_name VARCHAR(30) NOT NULL,
 	last_name VARCHAR(30),
 	email VARCHAR(30) NOT NULL,
-	pass VARCHAR(60) NOT NULL,
+	pass BYTEA NOT NULL,
 	phone VARCHAR(12) NOT NULL,
 	role_id INT NOT NULL,
 	CONSTRAINT fk_user_roles_id
@@ -101,9 +101,8 @@ INSERT INTO transactions (requester_id, sending_id, receiving_id, approved ,amou
 	
 
 --Select Jon's accounts -- 
-
-SELECT balance/100 as amount_in_dollars, act.type_name, a.id, uwa.user_id
-	FROM accounts a
-	JOIN account_types act ON a.type_id = act.id
-	JOIN users_with_accounts uwa ON a.id = uwa.user_id
+SELECT  act.type_name, a.balance/100 as amount_in_dollars, a.id as acc_id, uwa.user_id 
+	FROM account_types act
+	JOIN accounts a ON a.type_id = act.id
+	JOIN users_with_accounts uwa ON a.id = uwa.account_id
 	WHERE uwa.user_id = 1; 
