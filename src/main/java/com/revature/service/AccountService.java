@@ -55,4 +55,6 @@ public class AccountService {
     public Account getAccountByEmailAndAccountId(String email, int id) {
         return accountDao.getAccountByEmailAndAccountId(email, id);
     }
+
 }
+
