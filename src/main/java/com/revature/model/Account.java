@@ -8,10 +8,22 @@ public class Account {
     private int typeId;
     private long balance;
 
+    private String typeName;
+
+    public Account(int accountId, int typeId, String typeName, long balance) {
+        this.accountId = accountId;
+        this.typeId = typeId;
+        this.typeName = typeName;
+        this.balance = balance;
+    }
     public Account(int accountId, int typeId, long balance) {
         this.accountId = accountId;
         this.typeId = typeId;
         this.balance = balance;
+    }
+
+    public Account() {
+
     }
 
     public int getAccountId() {
