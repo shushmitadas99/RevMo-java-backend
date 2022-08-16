@@ -50,17 +50,25 @@ public class Account {
         this.balance = balance;
     }
 
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return accountId == account.accountId && typeId == account.typeId && balance == account.balance;
+        return accountId == account.accountId && typeId == account.typeId && balance == account.balance && Objects.equals(typeName, account.typeName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(accountId, typeId, balance);
+        return Objects.hash(accountId, typeId, balance, typeName);
     }
 
     @Override
@@ -69,14 +77,7 @@ public class Account {
                 "accountId=" + accountId +
                 ", typeId=" + typeId +
                 ", balance=" + balance +
-                '}';
-    }
-
-    public String toJson() {
-        return "{" +
-                "accountId: " + accountId +
-                ", typeId: " + typeId +
-                ", balance: " + balance +
+                ", typeName='" + typeName + '\'' +
                 '}';
     }
 }

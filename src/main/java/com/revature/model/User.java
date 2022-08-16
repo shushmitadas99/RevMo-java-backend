@@ -133,16 +133,5 @@ public class User {
                 ", accounts=" + accounts +
                 '}';
     }
-
-    public String toJson() {
-        return "{" +
-                "\"userId\": " + userId +
-                ", \"firstName\": \"" + firstName + '\'' +
-                ", \"lastName\": \"" + lastName + '\'' +
-                ", \"email\": \"" + email + '\'' +
-                ", \"password\": '" + password + '\'' +
-                ", \"phoneNumber\": '" + phoneNumber + '\'' +
-                ", \"userRole\": '" + userRole + '\'' +
-                '}';
-    }
+    
 }
