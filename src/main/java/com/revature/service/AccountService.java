@@ -5,6 +5,8 @@ import com.revature.exception.InvalidParameterException;
 import com.revature.model.Account;
 
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 public class AccountService {
@@ -44,5 +46,9 @@ public class AccountService {
         }
 
         return accountDao.openAccount(account);
+    }
+
+    public List<Account> getAccountsByEmail(String email) throws SQLException {
+        return accountDao.getAccountsByEmail(email);
     }
 }
