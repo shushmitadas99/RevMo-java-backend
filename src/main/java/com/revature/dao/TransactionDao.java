@@ -1,11 +1,6 @@
 package com.revature.dao;
-<<<<<<< HEAD
-
-public class TransactionDao {
-=======
 import com.revature.model.*;
 import com.revature.utility.ConnectionUtility;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,5 +32,4 @@ public class TransactionDao {
 
         }
     }
->>>>>>> 61c5aab (skeleton for transactions)
 }

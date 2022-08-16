@@ -1,4 +1,4 @@
-package com.revature.contoller;
+package com.revature.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.model.User;
@@ -20,7 +20,7 @@ public class TransactionController implements Controller {
 
     @Override
     public void mapEndpoints(Javalin app) {
-        app.post("/account", ctx -> {
+        app.post("/trx", ctx -> {
             HttpServletRequest req = ctx.req;
 
             HttpSession session = req.getSession();
