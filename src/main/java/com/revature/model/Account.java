@@ -59,4 +59,12 @@ public class Account {
                 ", balance=" + balance +
                 '}';
     }
+
+    public String toJson() {
+        return "{" +
+                "accountId: " + accountId +
+                ", typeId: " + typeId +
+                ", balance: " + balance +
+                '}';
+    }
 }
