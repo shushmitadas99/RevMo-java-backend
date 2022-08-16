@@ -18,13 +18,14 @@ CREATE TABLE users(
 	id SERIAL PRIMARY KEY,
 	first_name VARCHAR(30) NOT NULL,
 	last_name VARCHAR(30),
-	email VARCHAR(30) NOT NULL,
+	email VARCHAR(30) NOT NULL UNIQUE,
 	pass BYTEA NOT NULL,
 	phone VARCHAR(12) NOT NULL,
 	role_id INT NOT NULL,
 	CONSTRAINT fk_user_roles_id
   		FOREIGN KEY (role_id) REFERENCES "roles" (id)
 );
+
 
 CREATE TABLE account_types (
 	id SERIAL PRIMARY KEY,
@@ -42,7 +43,11 @@ CREATE TABLE accounts (
 CREATE TABLE users_with_accounts(
 	account_id INT NOT NULL,
 	user_id INT NOT NULL,
-	PRIMARY KEY (account_id, user_id)
+	PRIMARY KEY (account_id, user_id),
+	CONSTRAINT fk_account1_id
+  		FOREIGN KEY (account_id) REFERENCES "accounts" (id),
+  	CONSTRAINT fk_user_id
+  		FOREIGN KEY (user_id) REFERENCES "users" (id)
 );
 
 CREATE TABLE transaction_descriptions (
@@ -112,4 +117,5 @@ SELECT  act.type_name, a.balance/100 as amount_in_dollars, a.id as acc_id, uwa.u
 	FROM account_types act
 	JOIN accounts a ON a.type_id = act.id
 	JOIN users_with_accounts uwa ON a.id = uwa.account_id
-	WHERE uwa.user_id = 1; 
+	JOIN users u ON u.id = uwa.user_id
+	WHERE u.email = 'jd80@a.ca'; 
