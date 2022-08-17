@@ -1,6 +1,7 @@
-package com.revature.controller;
+package com.revature.contoller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.revature.controller.Controller;
 import com.revature.model.User;
 import com.revature.service.TransactionService;
 import io.javalin.Javalin;
@@ -20,11 +21,11 @@ public class TransactionController implements Controller {
 
     @Override
     public void mapEndpoints(Javalin app) {
-        app.post("/transaction", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
+        app.post("/account", ctx -> {
+            HttpServletRequest req = ctx.req;
+
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
 
             ObjectMapper om = new ObjectMapper();
             Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
@@ -41,17 +42,7 @@ public class TransactionController implements Controller {
             }
 
         });
-        app.get("/transactions",ctx->{
-//         HttpServletRequest req = ctx.req;
-//         HttpSession session = req.getSession();
-
-            ctx.json(transactionService.getAllTransactions());
-            ctx.status(200);
-        });
-
-
     }
-
 }
 
 
