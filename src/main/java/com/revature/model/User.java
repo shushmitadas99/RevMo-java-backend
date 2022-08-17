@@ -15,7 +15,7 @@ public class User {
     private String userRole;
 
 
-   // private List<Account> accounts;
+    private List<Account> accounts;
 
 
 
@@ -83,9 +83,9 @@ public class User {
         this.accounts = accounts;
     }
 
-    public void addAccount(Account account) {
-        accounts.add(account);
-    }
+//    public void addAccount(Account account) {
+//        accounts.add(account);
+//    }
 
 
     public User() {
@@ -139,6 +139,6 @@ public class User {
                 '}';
     }
     
-                '}';
+
 
 }
