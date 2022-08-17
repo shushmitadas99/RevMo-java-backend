@@ -1,5 +1,7 @@
 package com.revature.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class User {
@@ -11,6 +13,11 @@ public class User {
     private String pass;
     private String phone;
     private String userRole;
+
+
+    private List<Account> accounts;
+
+
 
     public int getUserId() {
         return userId;
@@ -68,6 +75,19 @@ public class User {
         this.userRole = userRole;
     }
 
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+//    public void addAccount(Account account) {
+//        accounts.add(account);
+//    }
+
+
     public User() {
         this.firstName = "";
         this.lastName = "";
@@ -75,6 +95,8 @@ public class User {
         this.pass = "";
         this.phone = "";
         this.userRole = "";
+  //      this.accounts = new ArrayList<>();
+
     }
 
     public User(int userId, String firstName, String lastName, String email, String pass, String phone, String userRole) {
@@ -85,6 +107,8 @@ public class User {
         this.pass = pass;
         this.phone = phone;
         this.userRole = userRole;
+       // this.accounts = new ArrayList<>();
+
     }
 
     @Override
@@ -97,19 +121,28 @@ public class User {
 
     @Override
     public int hashCode() {
+
         return Objects.hash(userId, firstName, lastName, email, pass, phone, userRole);
+
+        //return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole, accounts);
+        return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole);
+
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "user_id=" + userId +
+                "userId=" + userId +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", pass='" + pass + '\'' +
                 ", phone='" + phone + '\'' +
                 ", userRole='" + userRole + '\'' +
+              //  ", accounts=" + accounts +
                 '}';
     }
+    
+
+
 }
