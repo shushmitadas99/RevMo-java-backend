@@ -3,6 +3,7 @@ package com.revature.service;
 import com.revature.dao.AccountDao;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Account;
+import com.revature.model.User;
 
 
 import java.sql.SQLException;
@@ -52,8 +53,15 @@ public class AccountService {
         return accountDao.getAccountsByEmail(email);
     }
 
-    public Account getAccountByEmailAndAccountId(String email, int id) {
-        return accountDao.getAccountByEmailAndAccountId(email, id);
+    public Account getAccountsByEmailAndUserId(String email, int idFromURI, User myUser) {
+        //check if myUser has the id == idFromURI, call the appropriate user dao layer
+        //function on a user dao object to retrieve the user obj from db
+        //
+        //catch if user not found and throw 404 custom exception
+        //condition the return statement by myUser.get(UserID) == idFromURI
+        // or short-circuit it by throw custom Unauthenticated/ think it's 401
+
+        return accountDao.getAccountsByEmailAndUserId(email, idFromURI);
     }
 
 }
