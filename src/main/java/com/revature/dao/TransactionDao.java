@@ -34,6 +34,7 @@ public class TransactionDao {
     public List<Transaction> getAllTransactions() throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions");
+
             ResultSet rs = ps.executeQuery();
             List<Transaction> transactionsList = new ArrayList<>();
             while (rs.next()) {
@@ -55,6 +56,138 @@ public class TransactionDao {
             return transactionsList;
         }
     }
+<<<<<<< Updated upstream
+=======
+    public List<Transaction> getAllTransactionsbyRequesterId(int requestId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions WHERE requester_id = ?");
+            ps.setInt(1, requestId);
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                boolean approve = rs.getBoolean("approved");
+                long amount = rs.getLong("amount");
+                int status_id = rs.getInt("status_id");
+                int descriptionId = rs.getInt("desc_id");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime, approve, status_id,
+                        descriptionId, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+    public List<Transaction> getAllTransactionsbySenderId(int senderId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions WHERE sending_id = ?");
+            ps.setInt(1, senderId);
+
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                boolean approve = rs.getBoolean("approved");
+                long amount = rs.getLong("amount");
+                int status_id = rs.getInt("status_id");
+                int descriptionId = rs.getInt("desc_id");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime, approve, status_id,
+                        descriptionId, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+    public List<Transaction> getAllTransactionsbyRecievingId(int receiveId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions WHERE receiving_id = ?");
+            ps.setInt(1, receiveId);
+
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                boolean approve = rs.getBoolean("approved");
+                long amount = rs.getLong("amount");
+                int status_id = rs.getInt("status_id");
+                int descriptionId = rs.getInt("desc_id");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime, approve, status_id,
+                        descriptionId, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+    public List<Transaction> getAllTransactionsbyStatus(int statusId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions WHERE status_id = ?");
+            ps.setInt(1, statusId);
+
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                boolean approve = rs.getBoolean("approved");
+                long amount = rs.getLong("amount");
+                int status_id = rs.getInt("status_id");
+                int descriptionId = rs.getInt("desc_id");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime, approve, status_id,
+                        descriptionId, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+    public List<Transaction> getAllTransactionsByDiscriptionId(int description) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions WHERE desc_id = ?");
+            ps.setInt(1, description);
+
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                boolean approve = rs.getBoolean("approved");
+                long amount = rs.getLong("amount");
+                int status_id = rs.getInt("status_id");
+                int descriptionId = rs.getInt("desc_id");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime, approve, status_id,
+                        descriptionId, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+<<<<<<< Updated upstream
     public List<Transaction> getAllTransactionsbyRequesterId(int requestId) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions WHERE requester_id = ?");
@@ -178,6 +311,13 @@ public class TransactionDao {
     public List<Transaction> getAllTransactionsbyApproved(int approveId) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions");
+=======
+    public List<Transaction> getAllTransactionsbyApproved(int approveId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions");
+            ps.setInt(1, approveId);
+
+>>>>>>> Stashed changes
             ResultSet rs = ps.executeQuery();
             List<Transaction> transactionsList = new ArrayList<>();
             while (rs.next()) {
@@ -202,4 +342,8 @@ public class TransactionDao {
     //              (update(approve/deny) give resolve time, descriptionId, change amount in accounts
 //delete-cancel a transaction as long as it hasnt been approved
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 }
