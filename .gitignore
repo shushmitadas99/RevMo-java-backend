@@ -1,3 +1,5 @@
 .idea/
 .target/
+target/
 java-backend.iml
+.env
