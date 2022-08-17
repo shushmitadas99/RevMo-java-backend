@@ -56,5 +56,9 @@ public class AccountService {
         return accountDao.getAccountByEmailAndAccountId(email, id);
     }
 
+    public String linkUserToAccount(int aId, int uId) throws SQLException {
+        return accountDao.linkUserToAccount(aId, uId);
+    }
+
 }
 
