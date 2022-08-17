@@ -18,7 +18,7 @@ public class AccountController implements Controller{
     }
     @Override
     public void mapEndpoints(Javalin app) {
-        app.post("/account", ctx -> {
+        app.post("/accounts", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -34,6 +34,39 @@ public class AccountController implements Controller{
             }
         });
 
+        app.put("/accounts", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+            ctx.json(accountService.linkUserToAccount(4, 5));
+            ctx.status(200);
+        });
 
+        app.delete("/accounts", ctx -> {
+           HttpServletRequest req = ctx.req;
+           HttpSession session = req.getSession();
+           User myUser = (User) session.getAttribute("logged_in_user");
+           ctx.json(accountService.unlinkUserFromAccount(4,5));
+           ctx.status(200);
+        });
+
+        app.get("/accounts", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+
+            ctx.json(accountService.getAccountsByEmail("jd80@a.ca"));
+            ctx.status(200);
+        });
+
+        app.get("/account", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+            ctx.json(accountService.getAccountByEmailAndAccountId("jd80@a.ca", 1));
+            ctx.status(200);
+        });
     }
+
+
 }

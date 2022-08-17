@@ -71,6 +71,9 @@ CREATE TABLE transactions(
 	amount BIGINT NOT NULL,
 	status_id INT NOT NULL,
 	desc_id INT NOT NULL,
+	receiving_email VARCHAR(30) NOT NULL,
+    CONSTRAINT fk_trx_email
+    	FOREIGN KEY (receiving_email) REFERENCES "users" (email),
 	CONSTRAINT fk_trx_sending_id
   		FOREIGN KEY (sending_id) REFERENCES "accounts" (id),
   	CONSTRAINT fk_trx_receiving_id
@@ -87,19 +90,19 @@ CREATE TABLE transactions(
   ----------------------------------------INSERTS-------------------------------------------------
 INSERT INTO roles (role_name) VALUES ('USER'),('EMPLOYEE');
 
-INSERT INTO users (first_name, last_name, email, pass, phone, role_id) VALUES 
+INSERT INTO users (first_name, last_name, email, pass, phone, role_id) VALUES
 	('John', 'Doe', 'jd80@a.ca', 'Password123!', '555-555-5000', 1),
-	('Jane', 'Doe', 'jd81@a.ca', 'Password123!', '555-555-5001', 1), 
+	('Jane', 'Doe', 'jd81@a.ca', 'Password123!', '555-555-5001', 1),
 	('Johny', 'Doe', 'jd05@a.ca', 'Password123!', '555-555-5002', 1),
 	('Valentin', 'Vlad', 'vv@a.ca', 'Password123!', '555-555-5555', 1);
-	
+
 INSERT INTO account_types (type_name) VALUES ('CHEQUING'), ('SAVINGS');
 
-INSERT INTO accounts (type_id, balance) VALUES 
+INSERT INTO accounts (type_id, balance) VALUES
 	(1, 5000),(1, 5000000), (1, 70000),(1, 5000),(1, 70000),(1, 200000),
 	(2, 50000),(2, 500000), (2, 50000),(2, 50000),(2, 700000),(2, 2000000);
-	
-INSERT INTO users_with_accounts (account_id, user_id) VALUES 
+
+INSERT INTO users_with_accounts (account_id, user_id) VALUES
 	(1,1),(7,1),(2,1), (8,1),(3,1),(9,1),
 	(4,2),(5,2),(6,2), (10,2),(11,2),(12,2);
 
@@ -108,14 +111,15 @@ INSERT INTO transaction_descriptions (description) VALUES ('Salary'), ('Payment'
 INSERT INTO status_types (type_name) VALUES ('PENDING'), ('APPROVED'), ('DECLINED');
 
 --Insert transfers ---
-INSERT INTO transactions (requester_id, sending_id, receiving_id, req_time, status_id, amount, desc_id) VALUES
-	(1,2,4,Now(),2,500,2);
-	
+INSERT INTO transactions (requester_id, sending_id, receiving_id, req_time, status_id, amount, desc_id, receiving_email) VALUES
+	(1,2,4,Now(),2,500, 2, 'jd80@a.ca');
 
---Select Jon's accounts -- 
-SELECT  act.type_name, a.balance/100 as amount_in_dollars, a.id as acc_id, uwa.user_id 
+SELECT * FROM transactions;
+
+--Select Jon's accounts --
+SELECT  act.type_name, a.type_id, a.balance/100 as amount_in_dollars, a.id as acc_id, uwa.user_id
 	FROM account_types act
 	JOIN accounts a ON a.type_id = act.id
 	JOIN users_with_accounts uwa ON a.id = uwa.account_id
 	JOIN users u ON u.id = uwa.user_id
-	WHERE u.email = 'jd80@a.ca'; 
+	WHERE u.email = 'jd80@a.ca';
