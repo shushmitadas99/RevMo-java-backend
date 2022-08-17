@@ -1,4 +1,4 @@
-package com.revature.controller;
+package com.revature.contoller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.controller.Controller;
@@ -42,6 +42,68 @@ public class TransactionController implements Controller {
             }
 
         });
+        app.get("/transactions", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+            ctx.json(transactionService.getAllTransactions());
+            ctx.status(200);
+        });
+
+        app.get("/Transaction/requesterId", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+
+            ctx.json(transactionService.getAllTransactionsByRequesterId("1"));
+            ctx.status(200);
+        });
+
+        app.get("/Transaction/senderId", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+
+            ctx.json(transactionService.getAllTransactionsbySenderId("1"));
+            ctx.status(200);
+        });
+
+        app.get("/Transaction/receivingId", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+
+            ctx.json(transactionService.getAllTransactionsByReceivingId("1"));
+            ctx.status(200);
+        });
+
+        app.get("/Transaction/statusId", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+
+            ctx.json(transactionService.getAllTransactionsByStatusId("1"));
+            ctx.status(200);
+        });
+
+        app.get("/Transaction/descriptionId", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+
+            ctx.json(transactionService.getAllTransactionsByDescriptionId("1"));
+            ctx.status(200);
+        });
+
+//        app.get("/Transaction/approved", ctx -> {
+//            HttpServletRequest req = ctx.req;
+//            HttpSession session = req.getSession();
+//            User myUser = (User) session.getAttribute("logged_in_user");
+//
+//            ctx.json(transactionService.getAllTransactionsByApproved("1"));
+//            ctx.status(200);
+//        });
+
     }
 }
 

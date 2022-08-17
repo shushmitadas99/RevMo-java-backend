@@ -59,7 +59,7 @@ public class AccountDao {
         }
     }
 
-    public Account getAccountsByEmailAndUserId(String email, int id) {
+    public Account getAccountByEmailAndAccountId(String email, int id) {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance/100 as " +
                     "amount_in_dollars, a.id as acc_id, uwa.user_id " +

@@ -15,7 +15,7 @@ public class User {
     private String userRole;
 
 
-    private List<Account> accounts;
+   // private List<Account> accounts;
 
 
 
@@ -139,6 +139,6 @@ public class User {
                 '}';
     }
     
-//                '}';
+                '}';
 
 }
