@@ -15,12 +15,12 @@ import java.util.Arrays;
 
 public class UserDao {
 
-    public User getUserByEmailAndPassword(String email, String pass) throws SQLException {
+    public User getUserByEmailAndPassword(String email, String password) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement pstmt = con.prepareStatement("SELECT * FROM users WHERE email=? AND pass=convert_to(?, 'LATIN1')");
 
             pstmt.setString(1, email);
-            pstmt.setString(2, pass);
+            pstmt.setString(2, password);
 
             ResultSet rs = pstmt.executeQuery();
 
