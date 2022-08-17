@@ -1,4 +1,4 @@
-package com.revature.contoller;
+package com.revature.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.controller.Controller;

@@ -18,7 +18,7 @@ public class AccountController implements Controller{
     }
     @Override
     public void mapEndpoints(Javalin app) {
-        app.post("/account", ctx -> {
+        app.post("users/<userId>/accounts", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -34,7 +34,7 @@ public class AccountController implements Controller{
             }
         });
 
-        app.get("/accounts", ctx -> {
+        app.get("users/<userId>/accounts", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -43,11 +43,11 @@ public class AccountController implements Controller{
             ctx.status(200);
         });
 
-        app.get("/account", ctx -> {
+        app.get("users/<userId>/account", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
-            ctx.json(accountService.getAccountByEmailAndAccountId("jd80@a.ca", 1));
+            ctx.json(accountService.getAccountsByEmailAndUserId("jd80@a.ca", 1, myUser));
             ctx.status(200);
         });
     }
