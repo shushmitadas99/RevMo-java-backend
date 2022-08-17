@@ -1,7 +1,6 @@
-package com.revature.contoller;
+package com.revature.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revature.controller.Controller;
 import com.revature.model.User;
 import com.revature.service.TransactionService;
 import io.javalin.Javalin;
