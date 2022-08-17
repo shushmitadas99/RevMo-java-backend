@@ -50,6 +50,14 @@ public class AccountController implements Controller{
            ctx.status(200);
         });
 
+        app.delete("/account", ctx -> {
+           HttpServletRequest req = ctx.req;
+           HttpSession session = req.getSession();
+           User myUser = (User) session.getAttribute("logged_in_user");
+           ctx.json(accountService.deleteAccount(17));
+           ctx.status(200);
+        });
+
         app.get("/accounts", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
