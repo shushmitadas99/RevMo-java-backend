@@ -1,7 +1,6 @@
-package com.revature.contoller;
+package com.revature.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revature.controller.Controller;
 import com.revature.model.User;
 import com.revature.service.TransactionService;
 import io.javalin.Javalin;
@@ -21,7 +20,7 @@ public class TransactionController implements Controller {
 
     @Override
     public void mapEndpoints(Javalin app) {
-        app.post("/account", ctx -> {
+        app.post("/transaction", ctx -> {
             HttpServletRequest req = ctx.req;
 
             HttpSession session = req.getSession();
@@ -42,6 +41,7 @@ public class TransactionController implements Controller {
             }
 
         });
+
         app.get("/transactions", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
@@ -50,7 +50,8 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-        app.get("/Transaction/requesterId", ctx -> {
+
+        app.get("/transaction/requesterId", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -59,7 +60,8 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-        app.get("/Transaction/senderId", ctx -> {
+
+        app.get("/transaction/senderId", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -68,7 +70,8 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-        app.get("/Transaction/receivingId", ctx -> {
+
+        app.get("/transaction/receivingId", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -77,7 +80,8 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-        app.get("/Transaction/statusId", ctx -> {
+
+        app.get("/transaction/statusId", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -86,7 +90,7 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-        app.get("/Transaction/descriptionId", ctx -> {
+        app.get("/transaction/descriptionId", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -103,6 +107,7 @@ public class TransactionController implements Controller {
 //            ctx.json(transactionService.getAllTransactionsByApproved("1"));
 //            ctx.status(200);
 //        });
+
 
     }
 }
