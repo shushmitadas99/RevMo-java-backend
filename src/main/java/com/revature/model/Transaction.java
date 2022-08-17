@@ -6,22 +6,28 @@ import java.util.Objects;
 public class Transaction {
 
     private int transactionId;
+    private int requestId;
     private int sendingId;
     private int receivingId;
     private Timestamp requestTime;
     private Timestamp resolveTime;
+    private boolean approved;
+
     private int status_id;
     private int descriptionId;
     private long balance;
 
 
-    public Transaction(int transactionId, int sendingId, int receivingId, Timestamp requestTime, Timestamp resolveTime, int status_id, int descriptionId, long balance) {
+    public Transaction(int transactionId, int requestId, int sendingId, int receivingId, Timestamp requestTime,
+                       Timestamp resolveTime, boolean approved, int status_id, int descriptionId, long balance) {
 
         this.transactionId = transactionId;
+        this.requestId = requestId;
         this.sendingId = sendingId;
         this.receivingId = receivingId;
         this.requestTime = requestTime;
         this.resolveTime = resolveTime;
+        this.approved = approved;
         this.status_id = status_id;
         this.descriptionId = descriptionId;
         this.balance = balance;

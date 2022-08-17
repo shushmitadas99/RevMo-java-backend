@@ -20,11 +20,11 @@ public class TransactionController implements Controller {
 
     @Override
     public void mapEndpoints(Javalin app) {
-        app.post("/trx", ctx -> {
-            HttpServletRequest req = ctx.req;
-
-            HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+        app.post("/transaction", ctx -> {
+//            HttpServletRequest req = ctx.req;
+//
+//            HttpSession session = req.getSession();
+//            User myUser = (User) session.getAttribute("logged_in_user");
 
             ObjectMapper om = new ObjectMapper();
             Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
@@ -41,7 +41,17 @@ public class TransactionController implements Controller {
             }
 
         });
+        app.get("/transactions",ctx->{
+//         HttpServletRequest req = ctx.req;
+//         HttpSession session = req.getSession();
+
+            ctx.json(transactionService.getAllTransactions());
+            ctx.status(200);
+        });
+
+
     }
+
 }
 
 
