@@ -89,4 +89,30 @@ public class AccountDao {
         }
 
     }
+
+    public String linkUserToAccount(int aId, int uId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO users_with_accounts " +
+                    "(account_id, user_id) VALUES (?, ?) RETURNING *");
+            ps.setInt(1, aId);
+            ps.setInt(2, uId);
+
+            ResultSet rs = ps.executeQuery();
+            Account account = null;
+            while (rs.next()) {
+                int accountId = rs.getInt("account_id");
+                int userId = rs.getInt("user_id");
+                account = new Account(accountId, userId);
+            }
+            return "Account " + aId + " successfully linked to user " + uId + "!";
+        }
+    }
+
+//    public Account updateAccount() {
+//        return null;
+//    }
+//
+//    public void deleteAccount() {
+//
+//    }
 }
