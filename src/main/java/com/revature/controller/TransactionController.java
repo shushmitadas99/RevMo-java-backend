@@ -42,11 +42,7 @@ public class TransactionController implements Controller {
             }
 
         });
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
+
         app.get("/transactions", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
@@ -55,11 +51,8 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-<<<<<<< Updated upstream
-        app.get("/Transaction/requesterId", ctx -> {
-=======
+
         app.get("/transaction/requesterId", ctx -> {
->>>>>>> Stashed changes
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -68,11 +61,8 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-<<<<<<< Updated upstream
-        app.get("/Transaction/senderId", ctx -> {
-=======
+
         app.get("/transaction/senderId", ctx -> {
->>>>>>> Stashed changes
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -81,11 +71,8 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-<<<<<<< Updated upstream
-        app.get("/Transaction/receivingId", ctx -> {
-=======
+
         app.get("/transaction/receivingId", ctx -> {
->>>>>>> Stashed changes
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -94,11 +81,8 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-<<<<<<< Updated upstream
-        app.get("/Transaction/statusId", ctx -> {
-=======
+
         app.get("/transaction/statusId", ctx -> {
->>>>>>> Stashed changes
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -107,11 +91,7 @@ public class TransactionController implements Controller {
             ctx.status(200);
         });
 
-<<<<<<< Updated upstream
-        app.get("/Transaction/descriptionId", ctx -> {
-=======
         app.get("/transaction/descriptionId", ctx -> {
->>>>>>> Stashed changes
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -129,10 +109,7 @@ public class TransactionController implements Controller {
 //            ctx.status(200);
 //        });
 
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+
     }
 }
 
