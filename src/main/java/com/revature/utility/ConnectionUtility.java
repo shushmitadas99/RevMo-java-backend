@@ -1,5 +1,6 @@
 package com.revature.utility;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.postgresql.Driver;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
@@ -10,6 +11,7 @@ public class ConnectionUtility {
 
     public static Connection createConnection() throws SQLException {
         Dotenv dotenv = Dotenv.load();
+
         Driver postgresDriver = new Driver();
         DriverManager.registerDriver(postgresDriver);
 
@@ -17,10 +19,7 @@ public class ConnectionUtility {
         String username = dotenv.get("db_username");
         String password = dotenv.get("db_password");
 
-
-        Connection con = DriverManager.getConnection(url, username, password);
-
-        return con;
+        return DriverManager.getConnection(url, username, password);
     }
 
 }

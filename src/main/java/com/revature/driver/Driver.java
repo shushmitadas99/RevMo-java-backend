@@ -6,12 +6,11 @@ import com.revature.controller.Controller;
 import com.revature.controller.TransactionController;
 import com.revature.controller.UserController;
 import io.javalin.Javalin;
+import io.javalin.core.JavalinConfig;
 
 public class Driver {
     public static void main(String[] args) {
-        Javalin app = Javalin.create(javalinConfig -> {
-            javalinConfig.enableCorsForAllOrigins();
-        });
+        Javalin app = Javalin.create(JavalinConfig::enableCorsForAllOrigins);
 
         Controller[] controllers = { new UserController(), new TransactionController(), new AccountController()};
 
