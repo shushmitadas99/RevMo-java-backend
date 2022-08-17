@@ -33,7 +33,11 @@ public class TransactionDao {
 
     public List<Transaction> getAllTransactions() throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM transactions");
+            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.approved, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description \n" +
+                    "\tFROM transactions t\n" +
+                    "\tJOIN users u ON t.requester_id = u.id\n" +
+                    "\tJOIN status_types st ON t.status_id  = st.id\n" +
+                    "\tJOIN transaction_descriptions td ON t.desc_id  = td.id;");
 
             ResultSet rs = ps.executeQuery();
             List<Transaction> transactionsList = new ArrayList<>();
@@ -46,11 +50,13 @@ public class TransactionDao {
                 Timestamp resTime = rs.getTimestamp("res_time");
                 boolean approve = rs.getBoolean("approved");
                 long amount = rs.getLong("amount");
-                int status_id = rs.getInt("status_id");
-                int descriptionId = rs.getInt("desc_id");
+                String receivingEmail = rs.getString("receiving_email");
+                String initiatedBy = rs.getString("initiated_by");
+                String typeName = rs.getString("type_name");
+                String description = rs.getString("description");
                 Transaction transaction = new Transaction(transactionId, requesterId,
-                        sendingId, receivingId, reqTime, resTime, approve, status_id,
-                        descriptionId, amount);
+                        sendingId, receivingId, reqTime, resTime, approve,receivingEmail,
+                        initiatedBy, typeName, description, amount);
                 transactionsList.add(transaction);
             }
             return transactionsList;
