@@ -1,5 +1,4 @@
 .idea/
-target/
-java-backend.iml
+sendgrid.env
 .target/
-.env
+java-backend.iml
