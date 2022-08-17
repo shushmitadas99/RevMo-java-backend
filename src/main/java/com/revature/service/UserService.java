@@ -14,8 +14,8 @@ public class UserService {
         userDao = new UserDao();
     }
 
-    public User login(String email, String pass) throws SQLException, InvalidLoginException {
-        User user = userDao.getUserByEmailAndPassword(email, pass);
+    public User login(String email, String password) throws SQLException, InvalidLoginException {
+        User user = userDao.getUserByEmailAndPassword(email, password);
 
         if (user == null) {
             throw new InvalidLoginException("Invalid email and/or password");

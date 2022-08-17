@@ -40,7 +40,7 @@ public class UserController implements Controller {
             User user = ctx.bodyAsClass(User.class);
 
             String email = user.getEmail();
-            String pass = user.getPass();
+            String pass = user.getPassword();
             try {
                 User loggedInUser = userService.login(email, pass);
 
@@ -65,16 +65,19 @@ public class UserController implements Controller {
         });
 
         app.get("/logged-in-user", ctx -> {
-            HttpServletRequest req = ctx.req;
+                    HttpServletRequest req = ctx.req;
 
-            HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+                    HttpSession session = req.getSession();
+                    User myUser = (User) session.getAttribute("logged_in_user");
 
-            if (myUser == null) {
-                ctx.result("You are not logged in!");
-                ctx.status(404);
-            } else {
+                    if (myUser == null) {
+                        ctx.result("You are not logged in!");
+                        ctx.status(404);
+                    } else {
 
+                    }
+
+                });
 
         // returns currently logged in user's info
         app.get("/user", ctx -> {
@@ -99,6 +102,4 @@ public class UserController implements Controller {
             }
         });
     }
-
-
 }

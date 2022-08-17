@@ -10,8 +10,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private String pass;
-    private String phone;
+    private String password;
+    private String phoneNumber;
     private String userRole;
 
 
@@ -51,20 +51,20 @@ public class User {
         this.email = email;
     }
 
-    public String getPass() {
-        return pass;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
+    public void setPassword(String pass) {
+        this.password = pass;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhoneNumber(String phone) {
+        this.phoneNumber = phone;
     }
 
     public String getUserRole() {
@@ -92,8 +92,8 @@ public class User {
         this.firstName = "";
         this.lastName = "";
         this.email = "";
-        this.pass = "";
-        this.phone = "";
+        this.password = "";
+        this.phoneNumber = "";
         this.userRole = "";
   //      this.accounts = new ArrayList<>();
 
@@ -104,8 +104,8 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.pass = pass;
-        this.phone = phone;
+        this.password = pass;
+        this.phoneNumber = phone;
         this.userRole = userRole;
        // this.accounts = new ArrayList<>();
 
@@ -116,13 +116,13 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return userId == user.userId && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(pass, user.pass) && Objects.equals(phone, user.phone) && Objects.equals(userRole, user.userRole);
+        return userId == user.userId && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(userRole, user.userRole);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(userId, firstName, lastName, email, pass, phone, userRole);
+//        return Objects.hash(userId, firstName, lastName, email, pass, phone, userRole);
 
         //return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole, accounts);
         return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole);
@@ -136,8 +136,8 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", pass='" + pass + '\'' +
-                ", phone='" + phone + '\'' +
+                ", pass='" + password + '\'' +
+                ", phone='" + phoneNumber + '\'' +
                 ", userRole='" + userRole + '\'' +
               //  ", accounts=" + accounts +
                 '}';
