@@ -6,21 +6,35 @@ import java.util.Objects;
 public class Transaction {
 
     private int transactionId;
+    private int requestId;
     private int sendingId;
     private int receivingId;
     private Timestamp requestTime;
     private Timestamp resolveTime;
-    private boolean approved;
+    private boolean approve;
+    private int status_id;
     private int descriptionId;
+    private long balance;
 
-    public Transaction(int transactionId, int sendingId, int receivingId, Timestamp requestTime, Timestamp resolveTime, boolean approved, int descriptionId) {
+
+    public Transaction(int transactionId, int requesterId, int sendingId, int receivingId,
+                       Timestamp requestTime, Timestamp resolveTime, boolean approve,
+                       int status_id, int descriptionId, long balance) {
+
         this.transactionId = transactionId;
+        this.requestId = requesterId;
         this.sendingId = sendingId;
         this.receivingId = receivingId;
         this.requestTime = requestTime;
         this.resolveTime = resolveTime;
-        this.approved = approved;
+        this.approve = approve;
+        this.status_id = status_id;
         this.descriptionId = descriptionId;
+        this.balance = balance;
+    }
+
+    public Transaction() {
+
     }
 
     public int getTransactionId() {
@@ -63,12 +77,20 @@ public class Transaction {
         this.resolveTime = resolveTime;
     }
 
-    public boolean isApproved() {
-        return approved;
+
+    public int getStatus_id() {return status_id;}
+
+    public void setApproved(int status) {
+        this.status_id = status;
+
     }
 
-    public void setApproved(boolean approved) {
-        this.approved = approved;
+    public int getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(int requestId) {
+        this.requestId = requestId;
     }
 
     public int getDescriptionId() {
@@ -79,17 +101,23 @@ public class Transaction {
         this.descriptionId = descriptionId;
     }
 
+
+    public void setBalance(long balance){this.balance = balance;}
+
+    public long getBalance(){return balance;}
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
-        return transactionId == that.transactionId && sendingId == that.sendingId && receivingId == that.receivingId && approved == that.approved && descriptionId == that.descriptionId && Objects.equals(requestTime, that.requestTime) && Objects.equals(resolveTime, that.resolveTime);
+        return transactionId == that.transactionId && sendingId == that.sendingId && receivingId == that.receivingId && status_id == that.status_id && descriptionId == that.descriptionId && balance == that.balance && Objects.equals(requestTime, that.requestTime) && Objects.equals(resolveTime, that.resolveTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transactionId, sendingId, receivingId, requestTime, resolveTime, approved, descriptionId);
+        return Objects.hash(transactionId, sendingId, receivingId, requestTime, resolveTime, status_id, descriptionId, balance);
     }
 
     @Override
@@ -100,8 +128,9 @@ public class Transaction {
                 ", receivingId=" + receivingId +
                 ", requestTime=" + requestTime +
                 ", resolveTime=" + resolveTime +
-                ", approved=" + approved +
+                ", approved=" + status_id +
                 ", descriptionId=" + descriptionId +
+                ", transaction amount=" + balance +
                 '}';
     }
 }
