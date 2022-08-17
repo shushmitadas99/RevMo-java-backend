@@ -1,11 +1,4 @@
 .idea/
-<<<<<<< HEAD
 sendgrid.env
 .target/
 java-backend.iml
-=======
-target/
-java-backend.iml
-.target/
-.env
->>>>>>> main
