@@ -105,7 +105,7 @@ INSERT INTO users (id,first_name, last_name, email, pass, phone, role_id) VALUES
 INSERT INTO account_types (type_name) VALUES ('CHEQUING'), ('SAVINGS');
 
 INSERT INTO accounts (type_id, balance,main) VALUES
-	(1, 5000, True),(1, 5000000, False), (1, 70000, False),(1, 5000, False),(1, 70000, False),(1, 200000, False),
+	(1, 5000, True),(1, 5000000, False), (1, 70000, False),(1, 5000, True),(1, 70000, False),(1, 200000, False),
 	(2, 50000, True),(2, 500000, False), (2, 50000, False),(2, 50000, False),(2, 700000, False),(2, 2000000, False),
 	(1, 50000, True),(2, 500000, False), (1, 50000, False),(2, 50000, False),(1, 700000, False),(2, 2000000, False);
 
@@ -144,6 +144,20 @@ SELECT a.*, at2.type_name
 	FROM accounts a
 	Join account_types at2 ON a.type_id = at2.id
 	WHERE a.id = 2;
+
+--get default accounts by email
+SELECT a.id
+	FROM accounts a
+	JOIN users_with_accounts uwa ON uwa.account_id = a.id
+	JOIN users u ON uwa.user_id = u.id
+	WHERE u.email = 'jd80@a.ca' AND a.main = True;
+
+--get the first default account by email
+SELECT MIN(a.id) as id
+	FROM accounts a
+	JOIN users_with_accounts uwa ON uwa.account_id = a.id
+	JOIN users u ON uwa.user_id = u.id
+	WHERE u.email = 'jd80@a.ca' AND a.main = True;
 
 
 
