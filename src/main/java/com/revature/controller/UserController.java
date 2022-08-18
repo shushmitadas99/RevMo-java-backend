@@ -51,7 +51,7 @@ public class UserController implements Controller {
         });
 
         app.post("/logout", ctx -> {
-            System.out.println("logout");
+//            System.out.println("logout");
 
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
@@ -79,18 +79,20 @@ public class UserController implements Controller {
         app.get("/user", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
 
 
             //TODO undo when can login!
-            myUser = new User(1, "Bob", "Smith", "jd80@a.ca", "foobar", "666-123-4562", "user");
+//            myUser = new User(1, "Bob", "Smith", "jd80@a.ca", "foobar", "666-123-4562", "user");
 
-            if (myUser == null) {
+            if (email == null) {
+
                 ctx.result("You are not logged in!");
                 ctx.status(404);
             } else {
+                User myUser = userService.getUserByEmail(email);
+                List<Account> userAccounts = accountService.getAccountsByEmail(email);
 
-                List<Account> userAccounts = accountService.getAccountsByEmail(myUser.getEmail());
                 myUser.setAccounts(userAccounts);
 
                 ctx.json(myUser);
