@@ -153,4 +153,17 @@ public class AccountDao {
             }
         }
     }
+
+    public Account getAccountById(int aId) throws SQLException{
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
+            ps.setInt(1, aId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Account(aId, rs.getInt("type_id"), rs.getLong("balance"));
+            } else {
+                return null;
+            }
+        }
+    }
 }

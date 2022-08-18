@@ -1,6 +1,7 @@
 package com.revature.service;
 
 import com.revature.dao.AccountDao;
+import com.revature.exception.InvalidLoginException;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Account;
 
@@ -73,7 +74,13 @@ public class AccountService {
         return accountDao.unlinkUserFromAccount(aId, uId);
     }
 
-    public String deleteAccount(int aId) throws SQLException {
+    public String deleteAccount(int aId) throws SQLException, InvalidParameterException {
+        Account account = accountDao.getAccountById(aId);
+        if (account.getBalance() != 0) {
+            InvalidParameterException exception = new InvalidParameterException();
+            exception.addMessage("Account balance must be 0!");
+            throw exception;
+        }
         return accountDao.deleteAccount(aId);
     }
 
