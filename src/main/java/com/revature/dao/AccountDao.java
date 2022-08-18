@@ -33,7 +33,7 @@ public class AccountDao {
 
     public List<Account> getAccountsByEmail(String email) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance/100 as " +
+            PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance as " +
                     "amount_in_dollars, a.id as acc_id, uwa.user_id " +
                     "FROM account_types act " +
                     "JOIN accounts a ON a.type_id = act.id " +
@@ -60,7 +60,7 @@ public class AccountDao {
 
     public Account getAccountByEmailAndAccountId(String email, int id) {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance/100 as " +
+            PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance as " +
                     "amount_in_dollars, a.id as acc_id, uwa.user_id " +
                     "FROM account_types act " +
                     "JOIN accounts a ON a.type_id = act.id " +
