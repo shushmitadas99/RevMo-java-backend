@@ -2,9 +2,9 @@ DROP TABLE IF EXISTS users_with_accounts;
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS transaction_descriptions;
 DROP TABLE IF EXISTS status_types;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS accounts;
 DROP TABLE IF EXISTS account_types;
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
 
 
@@ -13,19 +13,6 @@ CREATE TABLE roles(
 	id SERIAL PRIMARY KEY,
 	role_name VARCHAR(30)
 );
-
-CREATE TABLE users(
-	id SERIAL PRIMARY KEY,
-	first_name VARCHAR(30) NOT NULL,
-	last_name VARCHAR(30),
-	email VARCHAR(30) NOT NULL UNIQUE,
-	pass BYTEA NOT NULL,
-	phone VARCHAR(12) NOT NULL,
-	role_id INT NOT NULL,
-	CONSTRAINT fk_user_roles_id
-  		FOREIGN KEY (role_id) REFERENCES "roles" (id)
-);
-
 
 CREATE TABLE account_types (
 	id SERIAL PRIMARY KEY,
@@ -36,10 +23,29 @@ CREATE TABLE accounts (
 	id SERIAL PRIMARY KEY,
 	type_id INT NOT NULL,
 	balance BIGINT NOT NULL,
-	main BOOLEAN NOT NULL,
 	CONSTRAINT fk_account_type_id
   		FOREIGN KEY (type_id) REFERENCES "account_types" (id)
 );
+
+CREATE TABLE users(
+	id SERIAL PRIMARY KEY,
+	first_name VARCHAR(30) NOT NULL,
+	last_name VARCHAR(30),
+	email VARCHAR(30) NOT NULL UNIQUE,
+	pass BYTEA NOT NULL,
+	phone VARCHAR(12) NOT NULL,
+	role_id INT NOT NULL,
+	primary_acc INT,
+	CONSTRAINT fk_user_roles_id
+  		FOREIGN KEY (role_id) REFERENCES "roles" (id),
+  	CONSTRAINT fk_primary_acc
+  		FOREIGN KEY (primary_acc) REFERENCES "accounts" (id)
+);
+
+
+
+
+
 
 CREATE TABLE users_with_accounts(
 	account_id INT NOT NULL,
@@ -104,10 +110,10 @@ INSERT INTO users (id,first_name, last_name, email, pass, phone, role_id) VALUES
 
 INSERT INTO account_types (type_name) VALUES ('CHEQUING'), ('SAVINGS');
 
-INSERT INTO accounts (type_id, balance,main) VALUES
-	(1, 5000, True),(1, 5000000, False), (1, 70000, False),(1, 5000, True),(1, 70000, False),(1, 200000, False),
-	(2, 50000, True),(2, 500000, False), (2, 50000, False),(2, 50000, False),(2, 700000, False),(2, 2000000, False),
-	(1, 50000, True),(2, 500000, False), (1, 50000, False),(2, 50000, False),(1, 700000, False),(2, 2000000, False);
+INSERT INTO accounts (type_id, balance) VALUES
+	(1, 5000),(1, 5000000), (1, 70000),(1, 5000),(1, 70000),(1, 200000),
+	(2, 50000),(2, 500000), (2, 50000),(2, 50000),(2, 700000),(2, 2000000),
+	(1, 50000),(2, 500000), (1, 50000),(2, 50000),(1, 700000),(2, 2000000);
 
 INSERT INTO users_with_accounts (account_id, user_id) VALUES
 	(1,1),(7,1),(2,1), (8,1),(3,1),(9,1),
@@ -146,18 +152,14 @@ SELECT a.*, at2.type_name
 	WHERE a.id = 2;
 
 --get default accounts by email
-SELECT a.id
-	FROM accounts a
-	JOIN users_with_accounts uwa ON uwa.account_id = a.id
-	JOIN users u ON uwa.user_id = u.id
-	WHERE u.email = 'jd80@a.ca' AND a.main = True;
+SELECT u.primary_acc
+	FROM users u
+	WHERE u.email = 'jd80@a.ca';
 
---get the first default account by email
-SELECT MIN(a.id) as id
-	FROM accounts a
-	JOIN users_with_accounts uwa ON uwa.account_id = a.id
-	JOIN users u ON uwa.user_id = u.id
-	WHERE u.email = 'jd80@a.ca' AND a.main = True;
+UPDATE  users
+	SET primary_acc = 1
+	WHERE email = 'jd80@a.ca';
+
 
 
 
