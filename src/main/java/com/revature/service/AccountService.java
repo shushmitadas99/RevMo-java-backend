@@ -13,7 +13,11 @@ public class AccountService {
     private AccountDao accountDao;
 
     public AccountService() {
-        accountDao = new AccountDao();
+        this.accountDao = new AccountDao();
+    }
+
+    public AccountService(AccountDao mockDao) {
+        this.accountDao = mockDao;
     }
 
     public Account openAccount(Map<String, String> newAccount) throws InvalidParameterException {
