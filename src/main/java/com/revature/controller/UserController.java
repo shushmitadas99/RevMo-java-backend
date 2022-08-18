@@ -18,8 +18,6 @@ import com.revature.service.AccountService;
 import com.revature.service.UserService;
 import io.javalin.Javalin;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -46,7 +44,9 @@ public class UserController implements Controller {
 
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
-                session.setAttribute("logged_in_user", loggedInUser);
+                session.setAttribute("userId", loggedInUser.getUserId());
+                session.setAttribute("email", loggedInUser.getEmail());
+                session.setAttribute("userRole", loggedInUser.getUserRole());
 
                 ctx.json(loggedInUser);
             } catch (InvalidLoginException | SQLException e) {
@@ -57,11 +57,13 @@ public class UserController implements Controller {
         });
 
         app.post("/logout", ctx -> {
-            HttpServletRequest req = ctx.req;
+            System.out.println("logout");
 
+            HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             ctx.result("Successfully logged out");
             session.invalidate();
+            ctx.status(201);
         });
 
         app.get("/logged-in-user", ctx -> {
