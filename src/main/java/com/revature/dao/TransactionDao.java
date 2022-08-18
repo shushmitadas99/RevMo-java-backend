@@ -103,7 +103,7 @@ public class TransactionDao {
                     "                    \"\\tJOIN users u ON t.requester_id = u.id\\n\" +\n" +
                     "                    \"\\tJOIN status_types st ON t.status_id  = st.id\\n\" +\n" +
                     "                    \"\\tJOIN transaction_descriptions td ON t.desc_id  = td.id" +
-                    "                    \"\\tWHERE t.requester_id  = ?");
+                    "                    \"\\tWHERE t.sending_id  = ?");
             ps.setInt(1, senderId);
             ResultSet rs = ps.executeQuery();
             List<Transaction> transactionsList = new ArrayList<>();
@@ -136,7 +136,7 @@ public class TransactionDao {
                     "                    \"\\tJOIN users u ON t.requester_id = u.id\\n\" +\n" +
                     "                    \"\\tJOIN status_types st ON t.status_id  = st.id\\n\" +\n" +
                     "                    \"\\tJOIN transaction_descriptions td ON t.desc_id  = td.id" +
-                    "                    \"\\tWHERE t.requester_id  = ?");
+                    "                    \"\\tWHERE t.receiving_id  = ?");
             ps.setInt(1, receiveId);
             ResultSet rs = ps.executeQuery();
             List<Transaction> transactionsList = new ArrayList<>();
