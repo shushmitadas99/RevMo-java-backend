@@ -76,9 +76,15 @@ public class AccountService {
 
     public String deleteAccount(int aId) throws SQLException, InvalidParameterException {
         Account account = accountDao.getAccountById(aId);
+        List<String> accountOwners = accountDao.obtainListOfAccountOwners(aId);
+        InvalidParameterException exception = new InvalidParameterException();
         if (account.getBalance() != 0) {
-            InvalidParameterException exception = new InvalidParameterException();
             exception.addMessage("Account balance must be 0!");
+        }
+        if (accountOwners.size() > 1) {
+            exception.addMessage("An account with more than one linked user cannot be deleted!");
+        }
+        if (exception.containsMessage()) {
             throw exception;
         }
         return accountDao.deleteAccount(aId);
