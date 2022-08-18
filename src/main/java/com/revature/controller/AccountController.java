@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.User;
 import com.revature.service.AccountService;
+import com.revature.service.UserService;
 import io.javalin.Javalin;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,21 +13,25 @@ import java.util.Map;
 
 public class AccountController implements Controller{
     private AccountService accountService;
+    private UserService userService;
 
     public AccountController() {
         accountService = new AccountService();
+        userService = new UserService();
     }
     @Override
     public void mapEndpoints(Javalin app) {
         app.post("/accounts", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
+            System.out.println(email);
+            User myUser = userService.getUserByEmail(email);
 
-            if (myUser == null) {
+            if (email == null) {
                 ctx.result("You are not logged in!");
                 ctx.status(404);
-            }else if (myUser.getUserRole().equals("employee")) {
+            }else if (myUser.getUserRole().equals("2")) {
                 ObjectMapper om = new ObjectMapper();
                 Map<String, String> newAccount = om.readValue(ctx.body(), Map.class);
                 try {
