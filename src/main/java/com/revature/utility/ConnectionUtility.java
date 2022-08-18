@@ -17,8 +17,11 @@ public class ConnectionUtility {
         String username = dotenv.get("db_username");
         String password = dotenv.get("db_password");
 
+<<<<<<< HEAD
         //System.out.println(url + " " + username + " " + password);
         //System.out.println(DriverManager.getConnection(url, username, password));
+=======
+>>>>>>> main
         return DriverManager.getConnection(url, username, password);
     }
 
