@@ -68,11 +68,17 @@ public class AccountController implements Controller{
         app.delete("/accounts/{aId}", ctx -> {
            HttpServletRequest req = ctx.req;
            HttpSession session = req.getSession();
-            String email = (String) session.getAttribute("email");
-            User myUser = userService.getUserByEmail(email);
-           int aId = Integer.parseInt(ctx.pathParam("aId"));
-           ctx.json(accountService.deleteAccount(aId));
-           ctx.status(200);
+           String email = (String) session.getAttribute("email");
+           User myUser = userService.getUserByEmail(email);
+           try {
+               int aId = Integer.parseInt(ctx.pathParam("aId"));
+               ctx.json(accountService.deleteAccount(aId));
+               ctx.status(200);
+           } catch (InvalidParameterException e) {
+               ctx.json(e.getMessages());
+               ctx.status(400);
+           }
+
         });
 
         app.get("/accounts", ctx -> {
