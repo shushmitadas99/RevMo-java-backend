@@ -13,8 +13,8 @@ public class UserService {
     public static boolean getUserEmailByEmail(String email){
         return UserDao.getUserEmailByEmail(email);
     }
-    public static Boolean updatePassword(String password, int userId){
-        return UserDao.updatePassword(password, userId);
+    public static void updatePassword(String password, String token){
+        UserDao.updatePassword(password, token);
     }
 
     public static User getUserByEmail(String inputEmail) {
@@ -23,5 +23,13 @@ public class UserService {
 
     public static void sendToken(String token, int userId) {
         UserDao.sendToken(token, userId);
+    }
+
+    public static boolean validateToken(String token) {
+        return UserDao.validateToken(token);
+    }
+
+    public static void deleteToken(String token) {
+        UserDao.deleteToken(token);
     }
 }

@@ -1,8 +1,10 @@
 package com.revature.controller;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.revature.model.User;
 import io.jsonwebtoken.Jwts;
-
+import java.lang.Exception;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -16,7 +18,7 @@ import java.sql.SQLException;
 
 public class UserController implements Controller {
     private UserService userService;
-    String token;
+
     public UserController() {
         this.userService = new UserService();
     }
@@ -27,9 +29,26 @@ public class UserController implements Controller {
 
         });
 
-        //TODO: Implement resetpassword URL
-        app.get("/resetpassword/", ctx -> {
-            System.out.println(token);
+        app.put("/resetpassword", ctx -> {
+            String token = ctx.req.getParameter("token");
+
+            DecodedJWT jwt = JWT.decode(token);
+            if( jwt.getExpiresAt().before(new Date())) {
+                System.out.println("token is expired");
+                throw new RuntimeException("Token is expired. Create new Token.");
+            }else{
+                boolean validateToken = UserService.validateToken(token); // we need to write a code to verify the token validity
+                if (validateToken) {
+                    JSONObject newPassword = new JSONObject(ctx.body());
+                    UserService.updatePassword(newPassword.getString("newpassword"), token);
+                    UserService.deleteToken(token);
+                    // redirect user to setup a new password page
+                } else {
+                    System.out.println("Invalid Token");
+                    // return user a message with invalid token
+                }
+            }
+
         });
 
         app.post("/forgotpassword", ctx->{
@@ -40,15 +59,23 @@ public class UserController implements Controller {
             try {
                 if (UserService.getUserEmailByEmail(inputEmail.getString("email"))) {
 
-                    User currUser = UserService.getUserByEmail(inputEmail.getString("email"));
+                    User currUser = new User();
+
+                    currUser = UserService.getUserByEmail(inputEmail.getString("email"));
 
                     String jwtToken = Jwts.builder().claim("last_name", currUser.getLastName()).claim("userId", currUser.getUserId()).claim("email", currUser.getEmail()).setSubject(currUser.getFirstName()).setId(UUID.randomUUID().toString()).setIssuedAt(Date.from(Instant.now())).setExpiration(Date.from(Instant.now().plus(5L, ChronoUnit.MINUTES))).compact();
 
                     UserService.sendToken(jwtToken, currUser.getUserId());
-                    System.out.println(jwtToken);
-                    token = jwtToken;
 
-                    //UserService.updatePassword(password, userId);
+                    System.out.println(jwtToken);
+
+                    String addressUrl =  "/resetpassword?"+jwtToken;
+                    //int status = EmailUtility.email(inputEmail.getString("email")), "Reset your RevMo password", addressUrl);
+                    //if (status == 202) {
+                    //    System.out.println("Please Check Your Email!");
+                    //}else{
+                    //    System.out.println("Invalid email! Please Enter a new one");
+                    //}
                 } else {
                     System.out.println("Invalid email");
                 }
