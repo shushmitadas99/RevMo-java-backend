@@ -25,7 +25,6 @@ public class AccountController implements Controller{
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             String email = (String) session.getAttribute("email");
-            System.out.println(email);
             User myUser = userService.getUserByEmail(email);
 
             if (email == null) {
@@ -47,7 +46,8 @@ public class AccountController implements Controller{
         app.put("/accounts/{aId}/users", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
+            User myUser = userService.getUserByEmail(email);
             int aId = Integer.parseInt(ctx.pathParam("aId"));
             int uId = myUser.getUserId();
             ctx.json(accountService.linkUserToAccount(aId, uId));
@@ -57,7 +57,8 @@ public class AccountController implements Controller{
         app.delete("/accounts/{aId}/users", ctx -> {
            HttpServletRequest req = ctx.req;
            HttpSession session = req.getSession();
-           User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
+            User myUser = userService.getUserByEmail(email);
            int aId = Integer.parseInt(ctx.pathParam("aId"));
            int uId = myUser.getUserId();
            ctx.json(accountService.unlinkUserFromAccount(aId, uId));
@@ -67,7 +68,8 @@ public class AccountController implements Controller{
         app.delete("/accounts/{aId}", ctx -> {
            HttpServletRequest req = ctx.req;
            HttpSession session = req.getSession();
-           User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
+            User myUser = userService.getUserByEmail(email);
            int aId = Integer.parseInt(ctx.pathParam("aId"));
            ctx.json(accountService.deleteAccount(aId));
            ctx.status(200);
@@ -76,13 +78,13 @@ public class AccountController implements Controller{
         app.get("/accounts", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
+            User myUser = userService.getUserByEmail(email);
 
             if (myUser == null) {
                 ctx.result("You are not logged in!");
                 ctx.status(404);
             } else {
-                String email = myUser.getEmail();
                 ctx.json(accountService.getAccountsByEmail(email));
                 ctx.status(200);
             }
@@ -91,9 +93,9 @@ public class AccountController implements Controller{
         app.get("/accounts/{aId}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
+            User myUser = userService.getUserByEmail(email);
             int aId = Integer.parseInt(ctx.pathParam("aId"));
-            String email = myUser.getEmail();
             ctx.json(accountService.getAccountByEmailAndAccountId(email, aId));
             ctx.status(200);
         });
@@ -101,7 +103,8 @@ public class AccountController implements Controller{
         app.get("/accounts/{aId}/users", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
+            User myUser = userService.getUserByEmail(email);
             int aId = Integer.parseInt(ctx.pathParam("aId"));
             ctx.json(accountService.obtainListOfAccountOwners(aId));
             ctx.status(200);
