@@ -1,4 +1,4 @@
-package com.revature.exceptions;
+package com.revature.exception;
 
 public class InvalidLoginException extends Exception{
 

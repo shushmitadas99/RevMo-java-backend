@@ -23,10 +23,9 @@ public class AccountDao {
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new Account(rs.getInt("id"), rs.getInt("type_id"), rs.getLong("balance"));
-            } else {
-                return null;
+                    return new Account(rs.getInt("id"), rs.getInt("type_id"),  rs.getLong("balance"));
             }
+            return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -123,11 +122,17 @@ public class AccountDao {
         }
     }
 
-//    public Account updateAccount() {
-//        return null;
-//    }
-//
-//    public void deleteAccount() {
-//
-//    }
+    public String deleteAccount(int aId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("DELETE FROM accounts " +
+                    "WHERE id = ? RETURNING *");
+            ps.setInt(1, aId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return "Account " + aId + " successfully deleted!";
+            } else {
+                return "Account " + aId + " could not be deleted!";
+            }
+        }
+    }
 }
