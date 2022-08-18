@@ -64,13 +64,13 @@ public class TransactionService {
         int receiveId = Integer.parseInt(receive);
         return transactionDao.getAllTransactionsbyRecievingId(receiveId);
     }
-    public List<Transaction> getAllTransactionsByStatusId(String status) throws SQLException {
-        int statusId = Integer.parseInt(status);
-        return transactionDao.getAllTransactionsbyStatus(statusId);
+    public List<Transaction> getAllTransactionsByStatusName(String statusName) throws SQLException {
+        //int statusName = Integer.parseInt(status);
+        return transactionDao.getAllTransactionsbyStatusName(statusName);
     }
-    public List<Transaction> getAllTransactionsByDescriptionId(String description) throws SQLException {
-        int descriptionId = Integer.parseInt(description);
-        return transactionDao.getAllTransactionsByDiscriptionId(descriptionId);
+    public List<Transaction> getAllTransactionsByDescription(String description) throws SQLException {
+        //int descriptionId = Integer.parseInt(description);
+        return transactionDao.getAllTransactionsByDiscription(description);
     }
 //    public List<Transaction> getAllTransactionsByApproved(String approve) throws SQLException {
 //        int
