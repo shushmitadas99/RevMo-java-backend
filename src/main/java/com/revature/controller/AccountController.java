@@ -39,27 +39,32 @@ public class AccountController implements Controller{
             }
         });
 
-        app.put("/accounts", ctx -> {
+        app.put("/accounts/{aId}/users", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
-            ctx.json(accountService.linkUserToAccount(4, 5));
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
+            int uId = myUser.getUserId();
+            ctx.json(accountService.linkUserToAccount(aId, uId));
             ctx.status(200);
         });
 
-        app.delete("/accounts", ctx -> {
+        app.delete("/accounts/{aId}/users", ctx -> {
            HttpServletRequest req = ctx.req;
            HttpSession session = req.getSession();
            User myUser = (User) session.getAttribute("logged_in_user");
-           ctx.json(accountService.unlinkUserFromAccount(4,5));
+           int aId = Integer.parseInt(ctx.pathParam("aId"));
+           int uId = myUser.getUserId();
+           ctx.json(accountService.unlinkUserFromAccount(aId, uId));
            ctx.status(200);
         });
 
-        app.delete("/account", ctx -> {
+        app.delete("/accounts/{aId}", ctx -> {
            HttpServletRequest req = ctx.req;
            HttpSession session = req.getSession();
            User myUser = (User) session.getAttribute("logged_in_user");
-           ctx.json(accountService.deleteAccount(17));
+           int aId = Integer.parseInt(ctx.pathParam("aId"));
+           ctx.json(accountService.deleteAccount(aId));
            ctx.status(200);
         });
 
@@ -78,11 +83,22 @@ public class AccountController implements Controller{
             }
         });
 
-        app.get("/account", ctx -> {
+        app.get("/accounts/{aId}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
-            ctx.json(accountService.getAccountByEmailAndAccountId("jd80@a.ca", 1));
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
+            String email = myUser.getEmail();
+            ctx.json(accountService.getAccountByEmailAndAccountId(email, aId));
+            ctx.status(200);
+        });
+
+        app.get("/accounts/{aId}/users", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
+            ctx.json(accountService.obtainListOfAccountOwners(aId));
             ctx.status(200);
         });
     }
