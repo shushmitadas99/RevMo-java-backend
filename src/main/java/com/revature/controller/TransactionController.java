@@ -86,7 +86,7 @@ public class TransactionController implements Controller {
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
 
-            ctx.json(transactionService.getAllTransactionsByStatusId("1"));
+            ctx.json(transactionService.getAllTransactionsByStatusName("PENDING"));
             ctx.status(200);
         });
 
@@ -95,7 +95,7 @@ public class TransactionController implements Controller {
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
 
-            ctx.json(transactionService.getAllTransactionsByDescriptionId("1"));
+            ctx.json(transactionService.getAllTransactionsByDescription("Payment"));
             ctx.status(200);
         });
 

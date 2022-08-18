@@ -1,7 +1,7 @@
 package com.revature.service;
 
 import com.revature.dao.UserDao;
-import com.revature.exceptions.InvalidLoginException;
+import com.revature.exception.InvalidLoginException;
 import com.revature.model.User;
 
 import java.sql.SQLException;

@@ -1,4 +1,5 @@
 package com.revature.model;
+import java.util.List;
 import java.util.Objects;
 
 public class Account {
@@ -7,6 +8,8 @@ public class Account {
     private int typeId;
     private long balance;
     private String typeName;
+    private List<Integer> accountOwners;
+    private int userId;
 
     public Account(int accountId, int typeId, String typeName, long balance) {
         this.accountId = accountId;
@@ -19,6 +22,11 @@ public class Account {
         this.accountId = accountId;
         this.typeId = typeId;
         this.balance = balance;
+    }
+
+    public Account(int accountId, int userId) {
+        this.accountId = accountId;
+        this.userId = userId;
     }
 
     public Account() {
