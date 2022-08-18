@@ -14,6 +14,7 @@ public class User {
     private String phoneNumber;
     private String userRole;
 
+
     private List<Account> accounts;
 
 
@@ -54,16 +55,16 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String pass) {
+        this.password = pass;
     }
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhoneNumber(String phone) {
+        this.phoneNumber = phone;
     }
 
     public String getUserRole() {
@@ -82,9 +83,10 @@ public class User {
         this.accounts = accounts;
     }
 
-    public void addAccount(Account account) {
-        accounts.add(account);
-    }
+//    public void addAccount(Account account) {
+//        accounts.add(account);
+//    }
+
 
     public User() {
         this.firstName = "";
@@ -93,18 +95,20 @@ public class User {
         this.password = "";
         this.phoneNumber = "";
         this.userRole = "";
-        this.accounts = new ArrayList<>();
+  //      this.accounts = new ArrayList<>();
+
     }
 
-    public User(int userId, String firstName, String lastName, String email, String password, String phoneNumber, String userRole) {
+    public User(int userId, String firstName, String lastName, String email, String pass, String phone, String userRole) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
+        this.password = pass;
+        this.phoneNumber = phone;
         this.userRole = userRole;
-        this.accounts = new ArrayList<>();
+       // this.accounts = new ArrayList<>();
+
     }
 
     @Override
@@ -117,7 +121,12 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole, accounts);
+
+//        return Objects.hash(userId, firstName, lastName, email, pass, phone, userRole);
+
+        //return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole, accounts);
+        return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole);
+
     }
 
     @Override
@@ -127,11 +136,12 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
+                ", pass='" + password + '\'' +
+                ", phone='" + phoneNumber + '\'' +
                 ", userRole='" + userRole + '\'' +
-                ", accounts=" + accounts +
+              //  ", accounts=" + accounts +
                 '}';
     }
+
 
 }

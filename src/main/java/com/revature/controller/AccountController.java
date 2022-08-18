@@ -18,20 +18,49 @@ public class AccountController implements Controller{
     }
     @Override
     public void mapEndpoints(Javalin app) {
-        app.post("/account", ctx -> {
+        app.post("/accounts", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
 
-            ObjectMapper om = new ObjectMapper();
-            Map<String, String> newAccount = om.readValue(ctx.body(), Map.class);
-            try {
-                ctx.json(accountService.openAccount(newAccount));
-                ctx.status(201);
-            } catch (InvalidParameterException e) {
-                ctx.json(e.getMessages());
-                ctx.status(400);
+            if (myUser == null) {
+                ctx.result("You are not logged in!");
+                ctx.status(404);
+            }else if (myUser.getUserRole().equals("employee")) {
+                ObjectMapper om = new ObjectMapper();
+                Map<String, String> newAccount = om.readValue(ctx.body(), Map.class);
+                try {
+                    ctx.json(accountService.openAccount(newAccount));
+                    ctx.status(201);
+                } catch (InvalidParameterException e) {
+                    ctx.json(e.getMessages());
+                    ctx.status(400);
+                }
             }
+        });
+
+        app.put("/accounts", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+            ctx.json(accountService.linkUserToAccount(4, 5));
+            ctx.status(200);
+        });
+
+        app.delete("/accounts", ctx -> {
+           HttpServletRequest req = ctx.req;
+           HttpSession session = req.getSession();
+           User myUser = (User) session.getAttribute("logged_in_user");
+           ctx.json(accountService.unlinkUserFromAccount(4,5));
+           ctx.status(200);
+        });
+
+        app.delete("/account", ctx -> {
+           HttpServletRequest req = ctx.req;
+           HttpSession session = req.getSession();
+           User myUser = (User) session.getAttribute("logged_in_user");
+           ctx.json(accountService.deleteAccount(17));
+           ctx.status(200);
         });
 
         app.get("/accounts", ctx -> {
@@ -39,7 +68,21 @@ public class AccountController implements Controller{
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
 
-            ctx.json(accountService.getAccountsByEmail("jd80@a.ca"));
+            if (myUser == null) {
+                ctx.result("You are not logged in!");
+                ctx.status(404);
+            } else {
+                String email = myUser.getEmail();
+                ctx.json(accountService.getAccountsByEmail(email));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/account", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+            ctx.json(accountService.getAccountByEmailAndAccountId("jd80@a.ca", 1));
             ctx.status(200);
         });
     }
