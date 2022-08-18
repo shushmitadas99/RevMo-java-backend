@@ -65,6 +65,21 @@ public class Account {
         this.typeName = typeName;
     }
 
+    public List<Integer> getAccountOwners() {
+        return accountOwners;
+    }
+
+    public void setAccountOwners(List<Integer> accountOwners) {
+        this.accountOwners = accountOwners;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -49,7 +49,7 @@ public class AccountController implements Controller{
             ctx.status(200);
         });
 
-        app.delete("/accounts/{aId}", ctx -> {
+        app.delete("/accounts-unlink/{aId}", ctx -> {
            HttpServletRequest req = ctx.req;
            HttpSession session = req.getSession();
            User myUser = (User) session.getAttribute("logged_in_user");
@@ -90,6 +90,15 @@ public class AccountController implements Controller{
             int aId = Integer.parseInt(ctx.pathParam("aId"));
             String email = myUser.getEmail();
             ctx.json(accountService.getAccountByEmailAndAccountId(email, aId));
+            ctx.status(200);
+        });
+
+        app.get("/accounts/{aId}/users", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
+            ctx.json(accountService.obtainListOfAccountOwners(aId));
             ctx.status(200);
         });
     }
