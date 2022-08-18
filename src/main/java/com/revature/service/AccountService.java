@@ -24,12 +24,15 @@ public class AccountService {
         Account account = new Account();
         InvalidParameterException exceptions = new InvalidParameterException();
         String typeId = newAccount.get("typeId");
+
         if (typeId == null) {
             exceptions.addMessage("Must have an account type");
+
         } else {
             account.setTypeId(Integer.parseInt(typeId));
         }
         String balance = newAccount.get("balance");
+
         if (balance == null) {
             exceptions.addMessage("Account balance must not be null");
         } else {
@@ -48,7 +51,7 @@ public class AccountService {
         if (exceptions.containsMessage()) {
             throw exceptions;
         }
-
+        System.out.println(account);
         return accountDao.openAccount(account);
     }
 
@@ -61,6 +64,8 @@ public class AccountService {
     }
 
     public String linkUserToAccount(int aId, int uId) throws SQLException {
+
+
         return accountDao.linkUserToAccount(aId, uId);
     }
 
