@@ -71,15 +71,15 @@ public class UserController implements Controller {
 
                 });
 
-        // returns currently logged in user's info
+        // returns currently logged-in user's info
         app.get("/user", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
 
 
-            //TODO undo when can login!
-            myUser = new User(1, "Bob", "Smith", "jd80@a.ca", "foobar", "666-123-4562", "user");
+
+            //myUser = new User(1, "Bob", "Smith", "jd80@a.ca", "foobar", "666-123-4562", "user");
 
             if (myUser == null) {
                 ctx.result("You are not logged in!");
