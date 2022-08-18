@@ -68,5 +68,9 @@ public class AccountService {
         return accountDao.deleteAccount(aId);
     }
 
+    public List<String> obtainListOfAccountOwners(int aId) throws SQLException {
+        return accountDao.obtainListOfAccountOwners(aId);
+    }
+
 }
 

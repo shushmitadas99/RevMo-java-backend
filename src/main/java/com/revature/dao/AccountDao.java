@@ -122,6 +122,24 @@ public class AccountDao {
         }
     }
 
+    public List<String> obtainListOfAccountOwners(int aId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT concat_ws(' ', u.first_name, u.last_name) as name " +
+                    "FROM users u " +
+                    "JOIN users_with_accounts uwa ON u.id = uwa.user_id " +
+                    "JOIN accounts a ON uwa.account_id = a.id " +
+                    "WHERE account_id = ?");
+            ps.setInt(1, aId);
+            ResultSet rs = ps.executeQuery();
+            List<String> owners = new ArrayList<>();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                owners.add(name);
+            }
+            return owners;
+        }
+    }
+
     public String deleteAccount(int aId) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("DELETE FROM accounts " +
