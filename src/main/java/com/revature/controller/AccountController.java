@@ -39,7 +39,7 @@ public class AccountController implements Controller{
             }
         });
 
-        app.put("/accounts/{aId}", ctx -> {
+        app.put("/accounts/{aId}/users", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             User myUser = (User) session.getAttribute("logged_in_user");
@@ -49,7 +49,7 @@ public class AccountController implements Controller{
             ctx.status(200);
         });
 
-        app.delete("/accounts-unlink/{aId}", ctx -> {
+        app.delete("/accounts/{aId}/users", ctx -> {
            HttpServletRequest req = ctx.req;
            HttpSession session = req.getSession();
            User myUser = (User) session.getAttribute("logged_in_user");
