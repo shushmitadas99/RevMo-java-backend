@@ -35,7 +35,6 @@
             <version>2.13.3</version>
         </dependency>
         <dependency>
-<<<<<<< HEAD
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.11.1</version>
@@ -67,7 +66,6 @@
             <artifactId>java-jwt</artifactId>
             <version>4.0.0</version>
         </dependency>
-=======
         <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>java-dotenv</artifactId>
@@ -78,8 +76,6 @@
             <artifactId>sendgrid-java</artifactId>
             <version>4.0.1</version>
         </dependency>
-
->>>>>>> main
     </dependencies>
 
 </project>

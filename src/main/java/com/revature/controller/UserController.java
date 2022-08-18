@@ -1,21 +1,20 @@
 package com.revature.controller;
-<<<<<<< HEAD
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.revature.model.User;
+import com.revature.utility.EmailUtility;
 import io.jsonwebtoken.Jwts;
 import java.lang.Exception;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
-=======
+
 
 
 import com.revature.exception.InvalidLoginException;
 import com.revature.model.User;
->>>>>>> main
 import com.revature.service.UserService;
 import io.javalin.Javalin;
 import org.eclipse.jetty.security.authentication.AuthorizationService;
@@ -151,13 +150,13 @@ public class UserController implements Controller {
 
                     System.out.println(jwtToken);
 
-                    String addressUrl =  "/resetpassword?"+jwtToken;
-                    //int status = EmailUtility.email(inputEmail.getString("email")), "Reset your RevMo password", addressUrl);
-                    //if (status == 202) {
-                    //    System.out.println("Please Check Your Email!");
-                    //}else{
-                    //    System.out.println("Invalid email! Please Enter a new one");
-                    //}
+                    String addressUrl =  "http://localhost:8080/resetpassword?token="+jwtToken;
+                    int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
+                    if (status == 202) {
+                        System.out.println("Please Check Your Email!");
+                    }else{
+                        throw new RuntimeException("Invalid email! Please Enter a new one");
+                    }
                 } else {
                     System.out.println("Invalid email");
                 }

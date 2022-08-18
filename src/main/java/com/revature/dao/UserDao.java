@@ -1,9 +1,17 @@
 package com.revature.dao;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
 
 import com.revature.model.User;
 import com.revature.utility.ConnectionUtility;
 
-<<<<<<< HEAD
+
 import java.sql.*;
 
 public class UserDao {
@@ -106,20 +114,10 @@ public class UserDao {
             PreparedStatement ps = con.prepareStatement("UPDATE users SET tokenvalue = null WHERE tokenvalue = convert_to(?, 'LATIN1')  RETURNING *");
             ps.setString(1, token);
             ResultSet rs = ps.executeQuery();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new RuntimeException(e);
-=======
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-
-
-public class UserDao {
+        }
+    }
 
     public User getUserByEmailAndPassword(String email, String password) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
@@ -138,7 +136,6 @@ public class UserDao {
             } else {
                 return null;
             }
->>>>>>> main
         }
     }
 }
