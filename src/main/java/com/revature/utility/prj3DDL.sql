@@ -94,6 +94,7 @@ CREATE TABLE transactions(
 );
 
 
+
   ----------------------------------------INSERTS-------------------------------------------------
 INSERT INTO roles (role_name) VALUES ('USER'),('EMPLOYEE'),('ATM');
 
