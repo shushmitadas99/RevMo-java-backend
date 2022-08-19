@@ -154,7 +154,7 @@ public class UserController implements Controller {
 
                     User currUser = new User();
 
-                    currUser = UserService.getUserByEmail(inputEmail.getString("email"));
+                    currUser = UserService.getUserByInputEmail(inputEmail.getString("email"));
 
                     String jwtToken = Jwts.builder().claim("last_name", currUser.getLastName()).claim("userId", currUser.getUserId()).claim("email", currUser.getEmail()).setSubject(currUser.getFirstName()).setId(UUID.randomUUID().toString()).setIssuedAt(Date.from(Instant.now())).setExpiration(Date.from(Instant.now().plus(5L, ChronoUnit.MINUTES))).compact();
 

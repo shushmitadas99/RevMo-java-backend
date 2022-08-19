@@ -46,7 +46,7 @@ public class UserDao {
     }
 
 
-    public static User getUserByEmail(String inputEmail) {
+    public static User getUserByInputEmail(String inputEmail) {
         int userId = 0;
         StringBuilder firstName = new StringBuilder();
         StringBuilder lastName = new StringBuilder();

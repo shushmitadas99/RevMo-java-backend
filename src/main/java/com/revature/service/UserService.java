@@ -22,8 +22,8 @@ public class UserService {
         UserDao.updatePassword(password, token);
     }
 
-    public static User getUserByEmail(String inputEmail) {
-        return UserDao.getUserByEmail(inputEmail);
+    public static User getUserByInputEmail(String inputEmail) {
+        return UserDao.getUserByInputEmail(inputEmail);
     }
 
     public static void sendToken(String token, int userId) {
