@@ -60,7 +60,9 @@ public class AccountService {
     }
 
     public Account getAccountByEmailAndAccountId(String email, int id) {
-        return accountDao.getAccountByEmailAndAccountId(email, id);
+        Account account = accountDao.getAccountByEmailAndAccountId(email, id);
+
+        return account;
     }
 
     public String linkUserToAccount(int aId, int uId) throws SQLException {
