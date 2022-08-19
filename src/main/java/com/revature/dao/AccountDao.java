@@ -80,6 +80,8 @@ public class AccountDao {
                 long balance = rs.getLong("amount_in_dollars");
                 account = new Account(accountId, typeId, typeName, balance);
             }
+            List<String> users = obtainListOfAccountOwners(id);
+            account.setAccountOwners(users);
             return account;
 
 
