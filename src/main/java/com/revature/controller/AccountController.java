@@ -43,22 +43,29 @@ public class AccountController implements Controller{
             }
         });
 
-        app.put("/accounts/{aId}/users", ctx -> {
+        app.put("/accounts/{aId}/users/{email}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            String email = (String) session.getAttribute("email");
-            User myUser = userService.getUserByEmail(email);
-            int aId = Integer.parseInt(ctx.pathParam("aId"));
-            int uId = myUser.getUserId();
-            ctx.json(accountService.linkUserToAccount(aId, uId));
-            ctx.status(200);
+            String role = (String) session.getAttribute("userRole");
+            if (role.equals("2")) {
+                String email = ctx.pathParam("email");
+                User myUser = userService.getUserByEmail(email);
+                int aId = Integer.parseInt(ctx.pathParam("aId"));
+                int uId = myUser.getUserId();
+                ctx.json(accountService.linkUserToAccount(aId, uId, myUser));
+                ctx.status(200);
+            } else {
+                ctx.json("Invalid role! You must be logged in as an employee");
+                ctx.status(400);
+            }
+
         });
 
         app.delete("/accounts/{aId}/users", ctx -> {
            HttpServletRequest req = ctx.req;
            HttpSession session = req.getSession();
-            String email = (String) session.getAttribute("email");
-            User myUser = userService.getUserByEmail(email);
+           String email = (String) session.getAttribute("email");
+           User myUser = userService.getUserByEmail(email);
            int aId = Integer.parseInt(ctx.pathParam("aId"));
            int uId = myUser.getUserId();
            ctx.json(accountService.unlinkUserFromAccount(aId, uId));

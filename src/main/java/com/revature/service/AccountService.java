@@ -4,17 +4,24 @@ import com.revature.dao.AccountDao;
 import com.revature.exception.InvalidLoginException;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Account;
+import com.revature.model.User;
 
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.System.in;
+
 public class AccountService {
     private AccountDao accountDao;
+    private UserService userService;
 
     public AccountService() {
         this.accountDao = new AccountDao();
+        this.userService = new UserService();
     }
 
     public AccountService(AccountDao mockDao) {
@@ -66,7 +73,12 @@ public class AccountService {
         return account;
     }
 
-    public String linkUserToAccount(int aId, int uId) throws SQLException {
+    public String linkUserToAccount(int aId, int uId, User myUser) throws SQLException {
+        List<String> owners = accountDao.obtainListOfAccountOwners(aId);
+        String fullName = myUser.getFirstName() + " " + myUser.getLastName();
+        if (owners.contains(fullName)) {
+            System.out.println("User already link to account");
+        }
         return accountDao.linkUserToAccount(aId, uId);
     }
 
