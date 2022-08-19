@@ -33,7 +33,7 @@ public class AccountDao {
 
     public List<Account> getAccountsByEmail(String email) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance/100 as " +
+            PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance as " +
                     "amount_in_dollars, a.id as acc_id, uwa.user_id " +
                     "FROM account_types act " +
                     "JOIN accounts a ON a.type_id = act.id " +
@@ -60,7 +60,7 @@ public class AccountDao {
 
     public Account getAccountByEmailAndAccountId(String email, int id) {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance/100 as " +
+            PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance as " +
                     "amount_in_dollars, a.id as acc_id, uwa.user_id " +
                     "FROM account_types act " +
                     "JOIN accounts a ON a.type_id = act.id " +
@@ -80,6 +80,8 @@ public class AccountDao {
                 long balance = rs.getLong("amount_in_dollars");
                 account = new Account(accountId, typeId, typeName, balance);
             }
+            List<String> users = obtainListOfAccountOwners(id);
+            account.setAccountOwners(users);
             return account;
 
 
@@ -122,6 +124,24 @@ public class AccountDao {
         }
     }
 
+    public List<String> obtainListOfAccountOwners(int aId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT concat_ws(' ', u.first_name, u.last_name) as name " +
+                    "FROM users u " +
+                    "JOIN users_with_accounts uwa ON u.id = uwa.user_id " +
+                    "JOIN accounts a ON uwa.account_id = a.id " +
+                    "WHERE account_id = ?");
+            ps.setInt(1, aId);
+            ResultSet rs = ps.executeQuery();
+            List<String> owners = new ArrayList<>();
+            while (rs.next()) {
+                String name = rs.getString("name");
+                owners.add(name);
+            }
+            return owners;
+        }
+    }
+
     public String deleteAccount(int aId) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("DELETE FROM accounts " +
@@ -134,5 +154,52 @@ public class AccountDao {
                 return "Account " + aId + " could not be deleted!";
             }
         }
+    }
+
+    public Account getAccountById(int aId) throws SQLException{
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
+            ps.setInt(1, aId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Account(aId, rs.getInt("type_id"), rs.getLong("balance"));
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public Boolean isOwnerOfAccount(int uId, int aId) {
+        try (Connection con = ConnectionUtility.createConnection();){
+            PreparedStatement ps = con.prepareStatement("SELECT ? IN(\n" +
+                    "\tSELECT uwa .account_id \n" +
+                    "\t\tFROM users_with_accounts uwa\n" +
+                    "\t\tWHERE uwa.user_id = ?\n" +
+                    "\t\t) as owns_account;");
+            ps.setInt(1, aId);
+            ps.setInt(2, uId);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                return rs.getBoolean("owns_account");}
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public Boolean canWithdraw(int aId, long amount){
+        try (Connection con = ConnectionUtility.createConnection();){
+            PreparedStatement ps = con.prepareStatement("SELECT (\n" +
+                    "\t\tSELECT balance FROM accounts a WHERE a.id = ?\n" +
+                    "\t\t) > ? as can_withdraw");
+            ps.setInt(1,aId);
+            ps.setLong(2,amount);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                return rs.getBoolean("can_withdraw");}
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 }
