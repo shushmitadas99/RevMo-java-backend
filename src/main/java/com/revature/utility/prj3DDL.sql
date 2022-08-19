@@ -36,6 +36,7 @@ CREATE TABLE users(
 	phone VARCHAR(12) NOT NULL,
 	role_id INT NOT NULL,
 	primary_acc INT,
+	tokenvalue BYTEA,
 	CONSTRAINT fk_user_roles_id
   		FOREIGN KEY (role_id) REFERENCES "roles" (id),
   	CONSTRAINT fk_primary_acc
@@ -100,7 +101,9 @@ INSERT INTO users (first_name, last_name, email, pass, phone, role_id) VALUES
 	('John', 'Doe', 'jd80@a.ca', 'Password123!', '555-555-5000', 1),
 	('Jane', 'Doe', 'jd81@a.ca', 'Password123!', '555-555-5001', 1),
 	('Johny', 'Doe', 'jd05@a.ca', 'Password123!', '555-555-5002', 1),
-	('Valentin', 'Vlad', 'vv@a.ca', 'Password123!', '555-555-5555', 1);
+	('Valentin', 'Vlad', 'vv@a.ca', 'Password123!', '555-555-5555', 1),
+	('Jonathan', 'Doe', 'jd800@a.ca', 'Password123!', '555-555-5556', 2),
+	('Rev', 'Mo', 'revmoatm@at.m', 'Password123!', '888-888-8888', 3);
 
 INSERT INTO users (id,first_name, last_name, email, pass, phone, role_id) VALUES
 	(999999,'ATM', '001', 'rvm001@a.ca', '-----------------', '555-555-5555', 3),

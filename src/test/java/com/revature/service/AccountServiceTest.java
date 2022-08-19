@@ -91,31 +91,31 @@ public class AccountServiceTest {
         Account expected = new Account(3,1,30);
         Assertions.assertEquals(expected, actual);
     }
-    @Test
-    public void testLinkToAccount() throws InvalidParameterException, SQLException {
-        // Arrange
-
-        AccountDao mockedObject = mock(AccountDao.class);
-        Account mockAccount = new Account(1, 1, 0);
-        User mockuser = new User(1, "John", "Doe", "jd@outlook.com", "password",
-                "1234567897", "user");
-
-        // Whenever the code in the Service layer calls the getAllStudents() method
-        // for the dao layer, then return the list of students
-        // we have specified above
-        String mockReturn = ("Account " + mockAccount.getAccountId() + " successfully linked to user" +
-                " " +  mockuser.getUserId() + "!");
-        when(mockedObject.linkUserToAccount(1,1)).thenReturn(mockReturn);
-
-        AccountService accountService = new AccountService(mockedObject);
-
-        // Act
-        String actual = accountService.linkUserToAccount(mockAccount.getAccountId(),mockuser.getUserId());
+    //@Test
+//    public void testLinkToAccount() throws InvalidParameterException, SQLException {
+//        // Arrange
 //
-//        // Assert
-        String expected = new String("Account " + 1 + " successfully linked to user " + 1 + "!");
-        Assertions.assertEquals(expected, actual);
-    }
+//        AccountDao mockedObject = mock(AccountDao.class);
+//        Account mockAccount = new Account(1, 1, 0);
+//        User mockuser = new User(1, "John", "Doe", "jd@outlook.com", "password",
+//                "1234567897", "user");
+//
+//        // Whenever the code in the Service layer calls the getAllStudents() method
+//        // for the dao layer, then return the list of students
+//        // we have specified above
+//        String mockReturn = ("Account " + mockAccount.getAccountId() + " successfully linked to user" +
+//                " " +  mockuser.getUserId() + "!");
+//        when(mockedObject.linkUserToAccount(1,1)).thenReturn(mockReturn);
+//
+//        AccountService accountService = new AccountService(mockedObject);
+//
+//        // Act
+//        String actual = accountService.linkUserToAccount(mockAccount.getAccountId(),mockuser.getUserId());
+////
+////        // Assert
+//        String expected = new String("Account " + 1 + " successfully linked to user " + 1 + "!");
+//        Assertions.assertEquals(expected, actual);
+//    }
     @Test
     public void testUnlinkToAccount() throws InvalidParameterException, SQLException {
         // Arrange

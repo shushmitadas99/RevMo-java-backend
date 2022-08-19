@@ -20,7 +20,7 @@ public class TransactionController implements Controller {
     @Override
     @SuppressWarnings("unchecked")
     public void mapEndpoints(Javalin app) {
-        app.post("/trx/move", ctx -> {
+        app.post("/trx/accounts", ctx -> {
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
                 int id = tr.getRequesterId();
