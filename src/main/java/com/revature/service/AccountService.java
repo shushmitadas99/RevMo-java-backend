@@ -1,6 +1,7 @@
 package com.revature.service;
 
 import com.revature.dao.AccountDao;
+import com.revature.exception.InvalidLoginException;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Account;
 
@@ -66,8 +67,6 @@ public class AccountService {
     }
 
     public String linkUserToAccount(int aId, int uId) throws SQLException {
-
-
         return accountDao.linkUserToAccount(aId, uId);
     }
 
@@ -75,7 +74,20 @@ public class AccountService {
         return accountDao.unlinkUserFromAccount(aId, uId);
     }
 
-    public String deleteAccount(int aId) throws SQLException {
+    public String deleteAccount(int aId) throws SQLException, InvalidParameterException {
+        Account account = accountDao.getAccountById(aId);
+        List<String> accountOwners = accountDao.obtainListOfAccountOwners(aId);
+        InvalidParameterException exception = new InvalidParameterException();
+        if (account.getBalance() != 0) {
+            exception.addMessage("Account balance must be 0!");
+        }
+        if (accountOwners.size() > 1) {
+
+            exception.addMessage("An account with more than one linked user cannot be deleted!");
+        }
+        if (exception.containsMessage()) {
+            throw exception;
+        }
         return accountDao.deleteAccount(aId);
     }
 
