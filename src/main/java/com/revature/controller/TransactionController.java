@@ -38,7 +38,7 @@ public class TransactionController implements Controller {
                         ctx.json(e.getMessages());
                         ctx.status(400);
                     }
-                }else{
+                } else{
                     ctx.json("User Not Found");
                     ctx.status(404);
                 }
