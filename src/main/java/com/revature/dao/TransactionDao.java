@@ -55,203 +55,200 @@ public class TransactionDao {
         }
         return "Transaction Successful";
     }
+
+    public List<Transaction> getAllTransactions() throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description " +
+                    "FROM transactions t " +
+                    "JOIN users u ON t.requester_id = u.id " +
+                    "JOIN status_types st ON t.status_id  = st.id " +
+                    "JOIN transaction_descriptions td ON t.desc_id  = td.id;");
+
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                long amount = rs.getLong("amount");
+                String receivingEmail = rs.getString("receiving_email");
+                String initiatedBy = rs.getString("initiated_by");
+                String typeName = rs.getString("type_name");
+                String description = rs.getString("description");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime, receivingEmail,
+                        initiatedBy, typeName, description, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+
+
+    public List<Transaction> getAllTransactionsByRequesterId(int requestId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description " +
+                    "FROM transactions t " +
+                    "JOIN users u ON t.requester_id = u.id " +
+                    "JOIN status_types st ON t.status_id  = st.id " +
+                    "JOIN transaction_descriptions td ON t.desc_id  = td.id " +
+                    "WHERE t.requester_id  = ?");
+            ps.setInt(1, requestId);
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                long amount = rs.getLong("amount");
+                String receivingEmail = rs.getString("receiving_email");
+                String initiatedBy = rs.getString("initiated_by");
+                String typeName = rs.getString("type_name");
+                String description = rs.getString("description");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime,receivingEmail,
+                        initiatedBy, typeName, description, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+
+    public List<Transaction> getAllTransactionsBySenderId(int senderId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description" +
+                    " FROM transactions t" +
+                    " JOIN users u ON t.requester_id = u.id" +
+                    " JOIN status_types st ON t.status_id  = st.id" +
+                    " JOIN transaction_descriptions td ON t.desc_id  = td.id" +
+                    " WHERE t.sending_id  = ?");
+            ps.setInt(1, senderId);
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                long amount = rs.getLong("amount");
+                String receivingEmail = rs.getString("receiving_email");
+                String initiatedBy = rs.getString("initiated_by");
+                String typeName = rs.getString("type_name");
+                String description = rs.getString("description");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime,receivingEmail,
+                        initiatedBy, typeName, description, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+    public List<Transaction> getAllTransactionsByRecievingId(int receiveId) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description" +
+                    " FROM transactions t" +
+                    " JOIN users u ON t.requester_id = u.id" +
+                    " JOIN status_types st ON t.status_id  = st.id" +
+                    " JOIN transaction_descriptions td ON t.desc_id  = td.id" +
+                    " WHERE t.receiving_id  = ?");
+            ps.setInt(1, receiveId);
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                long amount = rs.getLong("amount");
+                String receivingEmail = rs.getString("receiving_email");
+                String initiatedBy = rs.getString("initiated_by");
+                String typeName = rs.getString("type_name");
+                String description = rs.getString("description");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime,receivingEmail,
+                        initiatedBy, typeName, description, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+    public List<Transaction> getAllTransactionsByStatusName(String statusName) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description" +
+                    " FROM transactions t" +
+                    " JOIN users u ON t.requester_id = u.id" +
+                    " JOIN status_types st ON t.status_id  = st.id" +
+                    " JOIN transaction_descriptions td ON t.desc_id  = td.id" +
+                    " WHERE st.type_name  = ?");
+            ps.setString(1, statusName);
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                long amount = rs.getLong("amount");
+                String receivingEmail = rs.getString("receiving_email");
+                String initiatedBy = rs.getString("initiated_by");
+                String typeName = rs.getString("type_name");
+                String description = rs.getString("description");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime,receivingEmail,
+                        initiatedBy, typeName, description, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
+
+    public List<Transaction> getAllTransactionsByDescription(String desc) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description" +
+                    " FROM transactions t" +
+                    " JOIN users u ON t.requester_id = u.id" +
+                    " JOIN status_types st ON t.status_id  = st.id" +
+                    " JOIN transaction_descriptions td ON t.desc_id  = td.id" +
+                    " WHERE td.description  = ?");
+            ps.setString(1, desc);
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                long amount = rs.getLong("amount");
+                String receivingEmail = rs.getString("receiving_email");
+                String initiatedBy = rs.getString("initiated_by");
+                String typeName = rs.getString("type_name");
+                String description = rs.getString("description");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime,receivingEmail,
+                        initiatedBy, typeName, description, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
 }
-//    public List<Transaction> getAllTransactions() throws SQLException {
-//        try (Connection con = ConnectionUtility.createConnection()) {
-//            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description \n" +
-//                    "\tFROM transactions t\n" +
-//                    "\tJOIN users u ON t.requester_id = u.id\n" +
-//                    "\tJOIN status_types st ON t.status_id  = st.id\n" +
-//                    "\tJOIN transaction_descriptions td ON t.desc_id  = td.id;");
-//
-//            ResultSet rs = ps.executeQuery();
-//            List<Transaction> transactionsList = new ArrayList<>();
-//            while (rs.next()) {
-//                int transactionId = rs.getInt("id");
-//                int requesterId = rs.getInt("requester_id");
-//                int sendingId = rs.getInt("sending_id");
-//                int receivingId = rs.getInt("receiving_id");
-//                Timestamp reqTime = rs.getTimestamp("req_time");
-//                Timestamp resTime = rs.getTimestamp("res_time");
-//                boolean approve = rs.getBoolean("approved");
-//                long amount = rs.getLong("amount");
-//                String receivingEmail = rs.getString("receiving_email");
-//                String initiatedBy = rs.getString("initiated_by");
-//                String typeName = rs.getString("type_name");
-//                String description = rs.getString("description");
-//                Transaction transaction = new Transaction(transactionId, requesterId,
-//                        sendingId, receivingId, reqTime, resTime, approve,receivingEmail,
-//                        initiatedBy, typeName, description, amount);
-//                transactionsList.add(transaction);
-//            }
-//            return transactionsList;
-//        }
-//    }
-//
-//    public List<Transaction> getAllTransactionsbyRequesterId(int requestId) throws SQLException {
-//        try (Connection con = ConnectionUtility.createConnection()) {
-//            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description \\n\" +\n" +
-//                    "                    \"\\tFROM transactions t\\n\" +\n" +
-//                    "                    \"\\tJOIN users u ON t.requester_id = u.id\\n\" +\n" +
-//                    "                    \"\\tJOIN status_types st ON t.status_id  = st.id\\n\" +\n" +
-//                    "                    \"\\tJOIN transaction_descriptions td ON t.desc_id  = td.id" +
-//                    "                    \"\\tWHERE t.requester_id  = ?");
-//            ps.setInt(1, requestId);
-//            ResultSet rs = ps.executeQuery();
-//            List<Transaction> transactionsList = new ArrayList<>();
-//            while (rs.next()) {
-//                int transactionId = rs.getInt("id");
-//                int requesterId = rs.getInt("requester_id");
-//                int sendingId = rs.getInt("sending_id");
-//                int receivingId = rs.getInt("receiving_id");
-//                Timestamp reqTime = rs.getTimestamp("req_time");
-//                Timestamp resTime = rs.getTimestamp("res_time");
-//                boolean approve = rs.getBoolean("approved");
-//                long amount = rs.getLong("amount");
-//                String receivingEmail = rs.getString("receiving_email");
-//                String initiatedBy = rs.getString("initiated_by");
-//                String typeName = rs.getString("type_name");
-//                String description = rs.getString("description");
-//                Transaction transaction = new Transaction(transactionId, requesterId,
-//                        sendingId, receivingId, reqTime, resTime, approve,receivingEmail,
-//                        initiatedBy, typeName, description, amount);
-//                transactionsList.add(transaction);
-//            }
-//            return transactionsList;
-//        }
-//    }
-//
-//    public List<Transaction> getAllTransactionsbySenderId(int senderId) throws SQLException {
-//        try (Connection con = ConnectionUtility.createConnection()) {
-//            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description \\n\" +\n" +
-//                    "                    \"\\tFROM transactions t\\n\" +\n" +
-//                    "                    \"\\tJOIN users u ON t.requester_id = u.id\\n\" +\n" +
-//                    "                    \"\\tJOIN status_types st ON t.status_id  = st.id\\n\" +\n" +
-//                    "                    \"\\tJOIN transaction_descriptions td ON t.desc_id  = td.id" +
-//                    "                    \"\\tWHERE t.sending_id  = ?");
-//            ps.setInt(1, senderId);
-//            ResultSet rs = ps.executeQuery();
-//            List<Transaction> transactionsList = new ArrayList<>();
-//            while (rs.next()) {
-//                int transactionId = rs.getInt("id");
-//                int requesterId = rs.getInt("requester_id");
-//                int sendingId = rs.getInt("sending_id");
-//                int receivingId = rs.getInt("receiving_id");
-//                Timestamp reqTime = rs.getTimestamp("req_time");
-//                Timestamp resTime = rs.getTimestamp("res_time");
-//                boolean approve = rs.getBoolean("approved");
-//                long amount = rs.getLong("amount");
-//                String receivingEmail = rs.getString("receiving_email");
-//                String initiatedBy = rs.getString("initiated_by");
-//                String typeName = rs.getString("type_name");
-//                String description = rs.getString("description");
-//                Transaction transaction = new Transaction(transactionId, requesterId,
-//                        sendingId, receivingId, reqTime, resTime, approve,receivingEmail,
-//                        initiatedBy, typeName, description, amount);
-//                transactionsList.add(transaction);
-//            }
-//            return transactionsList;
-//        }
-//    }
-//
-//    public List<Transaction> getAllTransactionsbyRecievingId(int receiveId) throws SQLException {
-//        try (Connection con = ConnectionUtility.createConnection()) {
-//            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description \\n\" +\n" +
-//                    "                    \"\\tFROM transactions t\\n\" +\n" +
-//                    "                    \"\\tJOIN users u ON t.requester_id = u.id\\n\" +\n" +
-//                    "                    \"\\tJOIN status_types st ON t.status_id  = st.id\\n\" +\n" +
-//                    "                    \"\\tJOIN transaction_descriptions td ON t.desc_id  = td.id" +
-//                    "                    \"\\tWHERE t.receiving_id  = ?");
-//            ps.setInt(1, receiveId);
-//            ResultSet rs = ps.executeQuery();
-//            List<Transaction> transactionsList = new ArrayList<>();
-//            while (rs.next()) {
-//                int transactionId = rs.getInt("id");
-//                int requesterId = rs.getInt("requester_id");
-//                int sendingId = rs.getInt("sending_id");
-//                int receivingId = rs.getInt("receiving_id");
-//                Timestamp reqTime = rs.getTimestamp("req_time");
-//                Timestamp resTime = rs.getTimestamp("res_time");
-//                boolean approve = rs.getBoolean("approved");
-//                long amount = rs.getLong("amount");
-//                String receivingEmail = rs.getString("receiving_email");
-//                String initiatedBy = rs.getString("initiated_by");
-//                String typeName = rs.getString("type_name");
-//                String description = rs.getString("description");
-//                Transaction transaction = new Transaction(transactionId, requesterId,
-//                        sendingId, receivingId, reqTime, resTime, approve,receivingEmail,
-//                        initiatedBy, typeName, description, amount);
-//                transactionsList.add(transaction);
-//            }
-//            return transactionsList;
-//        }
-//    }
-//
-//    public List<Transaction> getAllTransactionsbyStatusName(String statusName) throws SQLException {
-//        try (Connection con = ConnectionUtility.createConnection()) {
-//            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description \\n\" +\n" +
-//                    "                    \"\\tFROM transactions t\\n\" +\n" +
-//                    "                    \"\\tJOIN users u ON t.requester_id = u.id\\n\" +\n" +
-//                    "                    \"\\tJOIN status_types st ON t.status_id  = st.id\\n\" +\n" +
-//                    "                    \"\\tJOIN transaction_descriptions td ON t.desc_id  = td.id" +
-//                    "                    \"\\tWHERE st.type_name  = ?");
-//            ps.setString(1, statusName);
-//            ResultSet rs = ps.executeQuery();
-//            List<Transaction> transactionsList = new ArrayList<>();
-//            while (rs.next()) {
-//                int transactionId = rs.getInt("id");
-//                int requesterId = rs.getInt("requester_id");
-//                int sendingId = rs.getInt("sending_id");
-//                int receivingId = rs.getInt("receiving_id");
-//                Timestamp reqTime = rs.getTimestamp("req_time");
-//                Timestamp resTime = rs.getTimestamp("res_time");
-//                boolean approve = rs.getBoolean("approved");
-//                long amount = rs.getLong("amount");
-//                String receivingEmail = rs.getString("receiving_email");
-//                String initiatedBy = rs.getString("initiated_by");
-//                String typeName = rs.getString("type_name");
-//                String description = rs.getString("description");
-//                Transaction transaction = new Transaction(transactionId, requesterId,
-//                        sendingId, receivingId, reqTime, resTime, approve,receivingEmail,
-//                        initiatedBy, typeName, description, amount);
-//                transactionsList.add(transaction);
-//            }
-//            return transactionsList;
-//        }
-//    }
-//
-//    public List<Transaction> getAllTransactionsByDiscription(String desc) throws SQLException {
-//        try (Connection con = ConnectionUtility.createConnection()) {
-//            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description \\n\" +\n" +
-//                    "                    \"\\tFROM transactions t\\n\" +\n" +
-//                    "                    \"\\tJOIN users u ON t.requester_id = u.id\\n\" +\n" +
-//                    "                    \"\\tJOIN status_types st ON t.status_id  = st.id\\n\" +\n" +
-//                    "                    \"\\tJOIN transaction_descriptions td ON t.desc_id  = td.id" +
-//                    "                    \"\\tWHERE td.description  = ?");
-//            ps.setString(1, desc);
-//            ResultSet rs = ps.executeQuery();
-//            List<Transaction> transactionsList = new ArrayList<>();
-//            while (rs.next()) {
-//                int transactionId = rs.getInt("id");
-//                int requesterId = rs.getInt("requester_id");
-//                int sendingId = rs.getInt("sending_id");
-//                int receivingId = rs.getInt("receiving_id");
-//                Timestamp reqTime = rs.getTimestamp("req_time");
-//                Timestamp resTime = rs.getTimestamp("res_time");
-//                boolean approve = rs.getBoolean("approved");
-//                long amount = rs.getLong("amount");
-//                String receivingEmail = rs.getString("receiving_email");
-//                String initiatedBy = rs.getString("initiated_by");
-//                String typeName = rs.getString("type_name");
-//                String description = rs.getString("description");
-//                Transaction transaction = new Transaction(transactionId, requesterId,
-//                        sendingId, receivingId, reqTime, resTime, approve,receivingEmail,
-//                        initiatedBy, typeName, description, amount);
-//                transactionsList.add(transaction);
-//            }
-//            return transactionsList;
-//        }
-//    }
+
+
+
 //
 //
 //    //              (update(approve/deny) give resolve time, descriptionId, change amount in accounts
