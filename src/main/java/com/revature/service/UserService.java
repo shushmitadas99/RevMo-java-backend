@@ -1,10 +1,13 @@
 package com.revature.service;
 
 import com.revature.dao.UserDao;
+import com.revature.exception.InvalidParameterException;
 import com.revature.model.User;
 import com.revature.exception.InvalidLoginException;
 
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Objects;
 
 public class UserService {
     private UserDao userDao;
@@ -47,6 +50,28 @@ public class UserService {
     public User getUserByEmail(String email) {
         User user = userDao.getUserByEmail(email);
         return user;
+    }
+
+    public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
+        InvalidParameterException exceptions = new InvalidParameterException();
+        String newEmail = newInfo.get("email");
+        String newPhone = newInfo.get("phone");
+        User oldUser = userDao.getUserByEmail(oldEmail);
+        if (userId != oldUser.getUserId()) {
+            exceptions.addMessage("User Id does not match our records.");
+            throw exceptions;
+        }
+        if (!Objects.equals(newEmail, oldUser.getEmail()) && userDao.getUserByEmail(newEmail) != null){
+            exceptions.addMessage("Email already in system");
+            throw exceptions;
+        }
+        if (!Objects.equals(newEmail, oldUser.getEmail())) {
+            userDao.updateEmail(userId, newEmail);
+        }
+        if (!Objects.equals(newPhone, oldUser.getPhoneNumber())) {
+            userDao.updatephone(userId, newPhone);
+        }
+
     }
 
 
