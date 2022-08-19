@@ -65,8 +65,6 @@ public class AccountService {
     }
 
     public String linkUserToAccount(int aId, int uId) throws SQLException {
-
-
         return accountDao.linkUserToAccount(aId, uId);
     }
 
@@ -82,6 +80,7 @@ public class AccountService {
             exception.addMessage("Account balance must be 0!");
         }
         if (accountOwners.size() > 1) {
+
             exception.addMessage("An account with more than one linked user cannot be deleted!");
         }
         if (exception.containsMessage()) {
