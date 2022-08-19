@@ -1,11 +1,14 @@
 package com.revature.service;
 
         import com.revature.dao.AccountDao;
+        import com.revature.dao.UserDao;
         import com.revature.exception.InvalidParameterException;
         import com.revature.model.Account;
         import com.revature.model.User;
         import org.junit.jupiter.api.Assertions;
         import org.junit.jupiter.api.Test;
+        import org.mockito.stubbing.Answer;
+
         import java.sql.SQLException;
         import java.util.ArrayList;
         import java.util.HashMap;
@@ -85,23 +88,25 @@ public class AccountServiceTest {
     @Test
     public void testLinkToAccount() throws InvalidParameterException, SQLException {
         // Arrange
-
         AccountDao mockedObject = mock(AccountDao.class);
+        UserService userService = mock(UserService.class);
+        AccountService accountService = new AccountService(mockedObject, userService);
         Account mockAccount = new Account(1, 1, 0);
-        User mockuser = new User(1, "John", "Doe", "jd@outlook.com", "password",
+        User mockUser = new User(1, "John", "Doe", "jd@outlook.com", "password",
                 "1234567897", "user");
-
-        // Whenever the code in the Service layer calls the getAllStudents() method
-        // for the dao layer, then return the list of students
-        // we have specified above
+        List<String> mockOwners = new ArrayList<>();
+        mockOwners.add("Jenny Johnson");
+        mockOwners.add("Barry Allen");
         String mockReturn = ("Account " + mockAccount.getAccountId() + " successfully linked to user" +
-                " " +  mockuser.getUserId() + "!");
+                " " +  mockUser.getUserId() + "!");
+        when(mockedObject.obtainListOfAccountOwners(mockAccount.getAccountId())).thenReturn(mockOwners);
+        when(userService.getUserByEmail(eq(mockUser.getEmail()))).thenReturn(mockUser);
         when(mockedObject.linkUserToAccount(1,1)).thenReturn(mockReturn);
 
-        AccountService accountService = new AccountService(mockedObject);
+
 
         // Act
-        String actual = accountService.linkUserToAccount(mockAccount.getAccountId(),mockuser);
+        String actual = accountService.linkUserToAccount(mockAccount.getAccountId(),mockUser.getEmail());
 //
 //        // Assert
         String expected = new String("Account " + 1 + " successfully linked to user " + 1 + "!");
@@ -112,19 +117,24 @@ public class AccountServiceTest {
         // Arrange
 
         AccountDao mockedObject = mock(AccountDao.class);
+        UserService userService = mock(UserService.class);
+        AccountService accountService = new AccountService(mockedObject, userService);
         Account mockAccount = new Account(1, 1, 0);
-        User mockuser = new User(1, "John", "Doe", "jd@outlook.com", "password",
+        User mockUser = new User(1, "John", "Doe", "jd@outlook.com", "password",
                 "1234567897", "user");
-
-
+        List<String> mockOwners = new ArrayList<>();
+        mockOwners.add("Jenny Johnson");
+        mockOwners.add("Barry Allen");
+        mockOwners.add("John Doe");
         String mockReturn = ("Account " + mockAccount.getAccountId() + " successfully unlinked from user" +
-                " " +  mockuser.getUserId() + "!");
+                " " +  mockUser.getUserId() + "!");
+        when(mockedObject.obtainListOfAccountOwners(mockAccount.getAccountId())).thenReturn(mockOwners);
+        when(userService.getUserByEmail(eq(mockUser.getEmail()))).thenReturn(mockUser);
         when(mockedObject.unlinkUserFromAccount(1,1)).thenReturn(mockReturn);
 
-        AccountService accountService = new AccountService(mockedObject);
 
         // Act
-        String actual = accountService.unlinkUserFromAccount(mockAccount.getAccountId(),mockuser.getUserId());
+        String actual = accountService.unlinkUserFromAccount(mockAccount.getAccountId(),mockUser.getEmail());
 //
 //        // Assert
         String expected = new String("Account " + 1 + " successfully unlinked from user " + 1 + "!");
