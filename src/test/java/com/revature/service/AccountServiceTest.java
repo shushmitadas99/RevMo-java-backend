@@ -1,20 +1,19 @@
-package com.revature.service.service;
+package com.revature.service;
 
-import com.revature.dao.AccountDao;
-import com.revature.exception.InvalidParameterException;
-import com.revature.model.Account;
-import com.revature.model.User;
-import com.revature.service.AccountService;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+        import com.revature.dao.AccountDao;
+        import com.revature.exception.InvalidParameterException;
+        import com.revature.model.Account;
+        import com.revature.model.User;
+        import org.junit.jupiter.api.Assertions;
+        import org.junit.jupiter.api.Test;
+        import java.sql.SQLException;
+        import java.util.ArrayList;
+        import java.util.HashMap;
+        import java.util.List;
+        import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.*;
+        import static org.junit.jupiter.api.Assertions.fail;
+        import static org.mockito.Mockito.*;
 
 public class AccountServiceTest {
     @Test
@@ -183,7 +182,7 @@ public class AccountServiceTest {
         AccountService accountService = new AccountService(mockedObject);
 
         // Act
-       List<String> actual = accountService.obtainListOfAccountOwners(1);
+        List<String> actual = accountService.obtainListOfAccountOwners(1);
 //
 //        // Assert
         List<String> expected = mockowners;
@@ -206,13 +205,13 @@ public class AccountServiceTest {
             accountService.deleteAccount(1);
             fail();
         } catch (InvalidParameterException e){
-        // Act
-        List<String> actual = e.getMessages();
+            // Act
+            List<String> actual = e.getMessages();
 //
 //        // Assert
-        List<String> expected = mockReturn;
-        Assertions.assertEquals(expected, actual);
-    }}
+            List<String> expected = mockReturn;
+            Assertions.assertEquals(expected, actual);
+        }}
     @Test
     public void testDeleteAccountMoreThanOneLinkedUser() throws SQLException {
         // Arrange
@@ -275,5 +274,5 @@ public class AccountServiceTest {
             List<String> expected = mockReturn;
             Assertions.assertEquals(expected, actual);
         }}
-    }
+}
 
