@@ -166,4 +166,38 @@ public class AccountDao {
             }
         }
     }
+
+    public Boolean isOwnerOfAccount(int uId, int aId) {
+        try (Connection con = ConnectionUtility.createConnection();){
+            PreparedStatement ps = con.prepareStatement("SELECT ? IN(\n" +
+                    "\tSELECT uwa .account_id \n" +
+                    "\t\tFROM users_with_accounts uwa\n" +
+                    "\t\tWHERE uwa.user_id = ?\n" +
+                    "\t\t) as owns_account;");
+            ps.setInt(1, aId);
+            ps.setInt(2, uId);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                return rs.getBoolean("owns_account");}
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    public Boolean canWithdraw(int aId, long amount){
+        try (Connection con = ConnectionUtility.createConnection();){
+            PreparedStatement ps = con.prepareStatement("SELECT (\n" +
+                    "\t\tSELECT balance FROM accounts a WHERE a.id = ?\n" +
+                    "\t\t) > ? as can_withdraw");
+            ps.setInt(1,aId);
+            ps.setLong(2,amount);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                return rs.getBoolean("can_withdraw");}
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
 }
