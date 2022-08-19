@@ -57,6 +57,10 @@
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.8.8</version>
         </dependency>
+            <groupId>com.sendgrid</groupId>
+            <artifactId>sendgrid-java</artifactId>
+            <version>4.0.1</version>
+        </dependency>
     </dependencies>
 
 </project>
