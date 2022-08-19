@@ -2,14 +2,20 @@ package com.revature.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Transaction;
+import com.revature.model.User;
 import com.revature.service.TransactionService;
+import com.revature.service.UserService;
 import io.javalin.Javalin;
+
+import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Locale;
 import java.util.Map;
 
 public class TransactionController implements Controller {
     private final TransactionService transactionService;
+    private UserService userService;
 
     public TransactionController() {
 
@@ -49,73 +55,80 @@ public class TransactionController implements Controller {
 
         });
 
-//        app.get("/transactions", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
-//            ctx.json(transactionService.getAllTransactions());
-//            ctx.status(200);
-//        });
-//
-//
-//        app.get("/transaction/requesterId", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
-//
-//            ctx.json(transactionService.getAllTransactionsByRequesterId("1"));
-//            ctx.status(200);
-//        });
-//
-//
-//        app.get("/transaction/senderId", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
-//
-//            ctx.json(transactionService.getAllTransactionsbySenderId("1"));
-//            ctx.status(200);
-//        });
-//
-//
-//        app.get("/transaction/receivingId", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
-//
-//            ctx.json(transactionService.getAllTransactionsByReceivingId("1"));
-//            ctx.status(200);
-//        });
-//
-//
-//        app.get("/transaction/statusId", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
-//
-//            ctx.json(transactionService.getAllTransactionsByStatusName("PENDING"));
-//            ctx.status(200);
-//        });
-//
-//        app.get("/transaction/descriptionId", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
-//
-//            ctx.json(transactionService.getAllTransactionsByDescription("Payment"));
-//            ctx.status(200);
-//        });
+        app.get("/trx", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactions());
+                ctx.status(200);
+            }
+        });
 
-//        app.get("/Transaction/approved", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
-//
-//            ctx.json(transactionService.getAllTransactionsByApproved("1"));
-//            ctx.status(200);
+        app.get("/trx/{requesterId}/requester", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String requesterId = ctx.pathParam("requesterId");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsByRequesterId(requesterId));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/trx/{senderId}/sender", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String senderId = ctx.pathParam("senderId");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsBySenderId(senderId));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/trx/{receivingId}/receiver", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String receivingId = ctx.pathParam("receivingId");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsByReceivingId(receivingId));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/trx/{status-name}/status-name", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String statusName = ctx.pathParam("status-name").toUpperCase();
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsByStatusName(statusName));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/trx/{descriptionId}/description", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String description = ctx.pathParam("descriptionId");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsByDescription(description));
+                ctx.status(200);
+            }
+        });
+
+//        app.post("/trx/request", ctx -> {
+//           HttpServletRequest req = ctx.req;
+//           HttpSession session = req.getSession();
+//           Integer uId = (Integer) session.getAttribute("userId");
+//           ObjectMapper om = new ObjectMapper();
+//           Map<String, String> trx = om.readValue(ctx.body(), Map.class);
+//           ctx.json(transactionService.sendMoneyRequest(trx, uId));
+//           ctx.status(200);
 //        });
-
-
     }
 }
 

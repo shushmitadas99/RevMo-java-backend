@@ -4,7 +4,6 @@ import com.revature.dao.UserDao;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.User;
 import com.revature.exception.InvalidLoginException;
-import com.revature.model.User;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -13,12 +12,8 @@ import java.util.Objects;
 public class UserService {
     private UserDao userDao;
 
-    public UserService(UserDao ud) {
-        this.userDao = new UserDao();
-    }
-    public UserService() {
-
-        userDao = new UserDao();
+    public UserService(UserDao mockedObject) {
+        userDao = mockedObject;
     }
 
     public static boolean getUserEmailByEmail(String email){

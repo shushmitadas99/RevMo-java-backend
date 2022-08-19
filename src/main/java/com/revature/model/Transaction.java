@@ -58,6 +58,19 @@ public class Transaction {
         this.amount = amount;
     }
 
+    public Transaction(int transactionId, int requesterId, int sendingId, int receivingId, Timestamp reqTime, String receivingEmail, String initiatedBy, String typeName, String description, long amount) {
+        this.transactionId = transactionId;
+        this.requesterId = requesterId;
+        this.sendingId = sendingId;
+        this.receivingId = receivingId;
+        this.requestTime = reqTime;
+        this.receivingEmail = receivingEmail;
+        this.initiatedBy = initiatedBy;
+        this.typeName = typeName;
+        this.description = description;
+        this.amount = amount;
+    }
+
     public String getInitiatedBy() {
         return initiatedBy;
     }
@@ -187,8 +200,6 @@ public class Transaction {
                 ", receivingId=" + receivingId +
                 ", requestTime=" + requestTime +
                 ", resolveTime=" + resolveTime +
-                ", statusId=" + statusId +
-                ", descriptionId=" + descriptionId +
                 ", amount=" + amount +
                 ", description='" + description + '\'' +
                 '}';

@@ -1,9 +1,11 @@
 package com.revature.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.revature.exception.InvalidParameterException;
+
 import com.revature.model.User;
 import com.revature.utility.EmailUtility;
 import io.jsonwebtoken.Jwts;
@@ -17,17 +19,14 @@ import java.util.UUID;
 
 
 import com.revature.exception.InvalidLoginException;
-import com.revature.model.User;
 import com.revature.service.UserService;
 import io.javalin.Javalin;
-import org.eclipse.jetty.security.authentication.AuthorizationService;
 import org.json.JSONObject;
 
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.sql.SQLException;
 
 import com.revature.model.Account;
 import com.revature.service.AccountService;
@@ -40,7 +39,7 @@ public class UserController implements Controller {
     private AccountService accountService;
 
     public UserController() {
-        this.userService = new UserService();
+
         this.accountService = new AccountService();
     }
 
