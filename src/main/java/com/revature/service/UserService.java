@@ -45,5 +45,12 @@ public class UserService {
         }
         return user;
     }
+
+    public User getUserByEmail(String email) {
+        User user = userDao.getUserByEmail(email);
+        return user;
+    }
+
+
 }
 

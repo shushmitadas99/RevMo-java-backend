@@ -54,7 +54,9 @@ public class UserController implements Controller {
 
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
-                session.setAttribute("logged_in_user", loggedInUser);
+                session.setAttribute("userId", loggedInUser.getUserId());
+                session.setAttribute("email", loggedInUser.getEmail());
+                session.setAttribute("userRole", loggedInUser.getUserRole());
 
                 ctx.json(loggedInUser);
             } catch (InvalidLoginException | SQLException e) {
@@ -65,11 +67,13 @@ public class UserController implements Controller {
         });
 
         app.post("/logout", ctx -> {
-            HttpServletRequest req = ctx.req;
+//            System.out.println("logout");
 
+            HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             ctx.result("Successfully logged out");
             session.invalidate();
+            ctx.status(201);
         });
 
         app.get("/logged-in-user", ctx -> {
@@ -91,18 +95,20 @@ public class UserController implements Controller {
         app.get("/user", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
 
 
             //TODO undo when can login!
-            myUser = new User(1, "Bob", "Smith", "jd80@a.ca", "foobar", "666-123-4562", "user");
+//            myUser = new User(1, "Bob", "Smith", "jd80@a.ca", "foobar", "666-123-4562", "user");
 
-            if (myUser == null) {
+            if (email == null) {
+
                 ctx.result("You are not logged in!");
                 ctx.status(404);
             } else {
+                User myUser = userService.getUserByEmail(email);
+                List<Account> userAccounts = accountService.getAccountsByEmail(email);
 
-                List<Account> userAccounts = accountService.getAccountsByEmail(myUser.getEmail());
                 myUser.setAccounts(userAccounts);
 
                 ctx.json(myUser);

@@ -138,6 +138,29 @@ public class UserDao {
             }
         }
     }
+
+    public User getUserByEmail(String email) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement pstmt = con.prepareStatement("SELECT * FROM users WHERE email=?");
+
+            pstmt.setString(1, email);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()){
+                return new User(rs.getInt("id"), rs.getString("first_name"),
+                        rs.getString("last_name"), rs.getString("email"),
+                        rs.getString("pass"), rs.getString("phone"),
+                        rs.getString("role_id"));
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }
 
 
