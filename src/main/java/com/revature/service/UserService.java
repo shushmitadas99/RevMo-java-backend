@@ -10,7 +10,6 @@ public class UserService {
     private UserDao userDao;
 
     public UserService(UserDao mockedObject) {
-
         userDao = mockedObject;
     }
 
