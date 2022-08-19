@@ -6,12 +6,12 @@ import java.io.IOException;
 public class EmailUtility {
 
     // Test Sending Email
-//    public static void main(String[] args) throws Exception {
-//       // Connection conn = ConnectionUtility.createConnection();
-//       email("mazizi.c@gmail.com",
-//               "Reset your RevMo password",
-//               "<strong>We will be sending an html forget password template</strong>");
-//    }
+    public static void main(String[] args) throws Exception {
+       // Connection conn = ConnectionUtility.createConnection();
+       email("mazizi.c@gmail.com",
+               "Reset your RevMo password",
+               "<strong>We will be sending an html forget password template</strong>");
+    }
 
     public static void email(String email_to, String sub, String email_content) throws IOException {
 
