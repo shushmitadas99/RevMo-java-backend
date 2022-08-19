@@ -8,7 +8,7 @@ public class Account {
     private int typeId;
     private long balance;
     private String typeName;
-    private List<Integer> accountOwners;
+    private List<String> accountOwners;
     private int userId;
 
     public Account(int accountId, int typeId, String typeName, long balance) {
@@ -65,6 +65,21 @@ public class Account {
         this.typeName = typeName;
     }
 
+    public List<String> getAccountOwners() {
+        return accountOwners;
+    }
+
+    public void setAccountOwners(List<String> accountOwners) {
+        this.accountOwners = accountOwners;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
     @Override
     public boolean equals(Object o) {
