@@ -1,6 +1,7 @@
 package com.revature.service;
 
 import com.revature.dao.AccountDao;
+import com.revature.exception.InvalidLoginException;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Account;
 
@@ -13,19 +14,26 @@ public class AccountService {
     private AccountDao accountDao;
 
     public AccountService() {
-        accountDao = new AccountDao();
+        this.accountDao = new AccountDao();
+    }
+
+    public AccountService(AccountDao mockDao) {
+        this.accountDao = mockDao;
     }
 
     public Account openAccount(Map<String, String> newAccount) throws InvalidParameterException {
         Account account = new Account();
         InvalidParameterException exceptions = new InvalidParameterException();
         String typeId = newAccount.get("typeId");
+
         if (typeId == null) {
             exceptions.addMessage("Must have an account type");
+
         } else {
             account.setTypeId(Integer.parseInt(typeId));
         }
         String balance = newAccount.get("balance");
+
         if (balance == null) {
             exceptions.addMessage("Account balance must not be null");
         } else {
@@ -44,7 +52,7 @@ public class AccountService {
         if (exceptions.containsMessage()) {
             throw exceptions;
         }
-
+        System.out.println(account);
         return accountDao.openAccount(account);
     }
 
@@ -53,7 +61,9 @@ public class AccountService {
     }
 
     public Account getAccountByEmailAndAccountId(String email, int id) {
-        return accountDao.getAccountByEmailAndAccountId(email, id);
+        Account account = accountDao.getAccountByEmailAndAccountId(email, id);
+
+        return account;
     }
 
     public String linkUserToAccount(int aId, int uId) throws SQLException {
@@ -64,7 +74,20 @@ public class AccountService {
         return accountDao.unlinkUserFromAccount(aId, uId);
     }
 
-    public String deleteAccount(int aId) throws SQLException {
+    public String deleteAccount(int aId) throws SQLException, InvalidParameterException {
+        Account account = accountDao.getAccountById(aId);
+        List<String> accountOwners = accountDao.obtainListOfAccountOwners(aId);
+        InvalidParameterException exception = new InvalidParameterException();
+        if (account.getBalance() != 0) {
+            exception.addMessage("Account balance must be 0!");
+        }
+        if (accountOwners.size() > 1) {
+
+            exception.addMessage("An account with more than one linked user cannot be deleted!");
+        }
+        if (exception.containsMessage()) {
+            throw exception;
+        }
         return accountDao.deleteAccount(aId);
     }
 
