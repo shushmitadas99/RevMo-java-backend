@@ -10,6 +10,9 @@ import java.sql.SQLException;
 public class UserService {
     private UserDao userDao;
 
+    public UserService(UserDao ud) {
+        this.userDao = new UserDao();
+    }
     public UserService() {
 
         userDao = new UserDao();
