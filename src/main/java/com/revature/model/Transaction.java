@@ -187,8 +187,6 @@ public class Transaction {
                 ", receivingId=" + receivingId +
                 ", requestTime=" + requestTime +
                 ", resolveTime=" + resolveTime +
-                ", statusId=" + statusId +
-                ", descriptionId=" + descriptionId +
                 ", amount=" + amount +
                 ", description='" + description + '\'' +
                 '}';

@@ -3,6 +3,9 @@ import com.revature.dao.AccountDao;
 import com.revature.dao.TransactionDao;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Transaction;
+
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import static com.revature.utility.Helpers.validateTransactionParams;
@@ -34,31 +37,29 @@ public class TransactionService {
         return transactionDao.moveAmountBetweenSameOwnerAccounts(validateTransactionParams(addedTransaction));
     }
 
-//    public List<Transaction> getAllTransactions() throws SQLException {
-//        return transactionDao.getAllTransactions();
-//
-//    }
-//
-//    public List<Transaction> getAllTransactionsByRequesterId(String requestId) throws SQLException {
-//        int request = Integer.parseInt(requestId);
-//        return transactionDao.getAllTransactionsbyRequesterId(request);
-//    }
-//    public List<Transaction> getAllTransactionsbySenderId(String sender) throws SQLException {
-//        int sendId = Integer.parseInt(sender);
-//        return transactionDao.getAllTransactionsbySenderId(sendId);
-//    }
-//    public List<Transaction> getAllTransactionsByReceivingId(String receive) throws SQLException {
-//        int receiveId = Integer.parseInt(receive);
-//        return transactionDao.getAllTransactionsbyRecievingId(receiveId);
-//    }
-//    public List<Transaction> getAllTransactionsByStatusName(String statusName) throws SQLException {
-//        //int statusName = Integer.parseInt(status);
-//        return transactionDao.getAllTransactionsbyStatusName(statusName);
-//    }
-//    public List<Transaction> getAllTransactionsByDescription(String description) throws SQLException {
-//        //int descriptionId = Integer.parseInt(description);
-//        return transactionDao.getAllTransactionsByDiscription(description);
-//    }
+    public List<Transaction> getAllTransactions() throws SQLException {
+        return transactionDao.getAllTransactions();
+
+    }
+
+    public List<Transaction> getAllTransactionsByRequesterId(String requestId) throws SQLException {
+        int request = Integer.parseInt(requestId);
+        return transactionDao.getAllTransactionsByRequesterId(request);
+    }
+    public List<Transaction> getAllTransactionsBySenderId(String sender) throws SQLException {
+        int sendId = Integer.parseInt(sender);
+        return transactionDao.getAllTransactionsBySenderId(sendId);
+    }
+    public List<Transaction> getAllTransactionsByReceivingId(String receive) throws SQLException {
+        int receiveId = Integer.parseInt(receive);
+        return transactionDao.getAllTransactionsByRecievingId(receiveId);
+    }
+    public List<Transaction> getAllTransactionsByStatusName(String statusName) throws SQLException {
+        return transactionDao.getAllTransactionsByStatusName(statusName);
+    }
+    public List<Transaction> getAllTransactionsByDescription(String description) throws SQLException {
+        return transactionDao.getAllTransactionsByDescription(description);
+    }
 //    public List<Transaction> getAllTransactionsByApproved(String approve) throws SQLException {
 //        int
 //        return transactionDao.getAllTransactionsbyApproved();
