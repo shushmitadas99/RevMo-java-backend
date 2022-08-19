@@ -111,25 +111,31 @@ public class UserController implements Controller {
         });
 
         app.put("/resetpassword", ctx -> {
-            String token = ctx.req.getParameter("token");
 
-            DecodedJWT jwt = JWT.decode(token);
-            if( jwt.getExpiresAt().before(new Date())) {
-                System.out.println("token is expired");
-                throw new RuntimeException("Token is expired. Create new Token.");
-            }else{
-                boolean validateToken = UserService.validateToken(token); // we need to write a code to verify the token validity
-                if (validateToken) {
-                    JSONObject newPassword = new JSONObject(ctx.body());
-                    UserService.updatePassword(newPassword.getString("newpassword"), token);
-                    UserService.deleteToken(token);
-                    // redirect user to setup a new password page
+            try {
+                String token = ctx.req.getParameter("token");
+
+                DecodedJWT jwt = JWT.decode(token);
+                if (jwt.getExpiresAt().before(new Date())) {
+                    ctx.status(404);
+                    throw new RuntimeException("Reset Link Expired. Please try again");
                 } else {
-                    System.out.println("Invalid Token");
-                    // return user a message with invalid token
+                    boolean validateToken = UserService.validateToken(token); // we need to write a code to verify the token validity
+                    if (validateToken) {
+                        JSONObject newPassword = new JSONObject(ctx.body());
+                        UserService.updatePassword(newPassword.getString("newpassword"), token);
+                        UserService.deleteToken(token);
+                        // redirect user to setup a new password page
+                    } else {
+                        ctx.status(404);
+                        throw new RuntimeException("OOPS something went wrong. Reset Link Expired");
+                        // return user a message with invalid token
+                    }
                 }
+            }catch (Exception e){
+                ctx.status(404);
+                throw new RuntimeException("Reset Link Expired. Please try again");
             }
-
         });
 
         app.post("/forgotpassword", ctx->{
@@ -155,13 +161,16 @@ public class UserController implements Controller {
                     if (status == 202) {
                         System.out.println("Please Check Your Email!");
                     }else{
-                        throw new RuntimeException("Invalid email! Please Enter a new one");
+                        ctx.status(404);
+                        throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
                     }
                 } else {
-                    System.out.println("Invalid email");
+                    ctx.status(404);
+                    System.out.println("The email pertaining to the account has been sent an email. Please check email for reset link.");
                 }
             }catch (Exception e){
-                throw new RuntimeException(e);
+                ctx.status(404);
+                throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
             }
         } );
 
