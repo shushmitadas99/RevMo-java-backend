@@ -51,8 +51,8 @@ public class AccountController implements Controller{
                 String email = ctx.pathParam("email");
                 User myUser = userService.getUserByEmail(email);
                 int aId = Integer.parseInt(ctx.pathParam("aId"));
-                int uId = myUser.getUserId();
-                ctx.json(accountService.linkUserToAccount(aId, uId, myUser));
+
+                ctx.json(accountService.linkUserToAccount(aId, myUser));
                 ctx.status(200);
             } else {
                 ctx.json("Invalid role! You must be logged in as an employee");

@@ -73,13 +73,13 @@ public class AccountService {
         return account;
     }
 
-    public String linkUserToAccount(int aId, int uId, User myUser) throws SQLException {
+    public String linkUserToAccount(int aId, User myUser) throws SQLException {
         List<String> owners = accountDao.obtainListOfAccountOwners(aId);
         String fullName = myUser.getFirstName() + " " + myUser.getLastName();
         if (owners.contains(fullName)) {
             System.out.println("User already link to account");
         }
-        return accountDao.linkUserToAccount(aId, uId);
+        return accountDao.linkUserToAccount(aId, myUser.getUserId());
     }
 
     public String unlinkUserFromAccount(int aId, int uId) throws SQLException {
