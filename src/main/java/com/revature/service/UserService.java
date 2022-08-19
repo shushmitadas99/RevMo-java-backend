@@ -3,16 +3,14 @@ package com.revature.service;
 import com.revature.dao.UserDao;
 import com.revature.model.User;
 import com.revature.exception.InvalidLoginException;
-import com.revature.model.User;
 
 import java.sql.SQLException;
 
 public class UserService {
     private UserDao userDao;
 
-    public UserService() {
-
-        userDao = new UserDao();
+    public UserService(UserDao mockedObject) {
+        userDao = mockedObject;
     }
 
     public static boolean getUserEmailByEmail(String email){

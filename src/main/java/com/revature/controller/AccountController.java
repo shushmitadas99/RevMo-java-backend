@@ -17,7 +17,7 @@ public class AccountController implements Controller{
 
     public AccountController() {
         accountService = new AccountService();
-        userService = new UserService();
+
     }
     @Override
     public void mapEndpoints(Javalin app) {
