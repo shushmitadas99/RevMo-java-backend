@@ -74,7 +74,6 @@ CREATE TABLE transactions(
 	receiving_id INT NOT NULL,
 	req_time TIMESTAMP NOT NULL DEFAULT Now(),
 	res_time TIMESTAMP,
-	approved BOOLEAN,
 	amount BIGINT NOT NULL,
 	status_id INT NOT NULL,
 	desc_id INT NOT NULL,
@@ -140,7 +139,7 @@ SELECT  act.type_name, a.type_id, a.balance/100 as amount_in_dollars, a.id as ac
 	WHERE u.email = 'jd80@a.ca';
 
 ---select getAll trx
-SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.approved, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description
+SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description
 	FROM transactions t
 	JOIN users u ON t.requester_id = u.id
 	JOIN status_types st ON t.status_id  = st.id
@@ -160,6 +159,31 @@ UPDATE  users
 	SET primary_acc = 1
 	WHERE email = 'jd80@a.ca';
 
+SELECT balance
+	FROM accounts a
+	WHERE a.id IN(1,2,3);
+
+SELECT * FROM transactions;
+
+UPDATE accounts
+	SET balance = balance + 1
+	WHERE id = 1;
+
+--check if owner 1 has account 23
+SELECT 3 IN(
+	SELECT uwa .account_id
+		FROM users_with_accounts uwa
+		WHERE uwa.user_id = 1
+		) as owns_accounts;
+
+--check if account 1 has balance > 500;
+SELECT (
+		SELECT balance FROM accounts a WHERE a.id = 2
+		) >= 5000000000 as can_withdraw;
+
+SELECT uwa .account_id
+	FROM users_with_accounts uwa
+	WHERE uwa.user_id = 1;
 
 
 
