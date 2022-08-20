@@ -34,7 +34,7 @@ public class TransactionController implements Controller {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
-                        ctx.json(transactionService.addTransactionById(newTransaction));
+                        ctx.json(transactionService.moveAmountBetweenSameOwnerAccounts(newTransaction));
                         ctx.status(201);
                     } catch (InvalidParameterException e) {
                         ctx.json(e.getMessages());
