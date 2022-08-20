@@ -1,10 +1,8 @@
 package com.revature.service;
-
 import com.revature.dao.UserDao;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.User;
 import com.revature.exception.InvalidLoginException;
-
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
@@ -47,9 +45,7 @@ public class UserService {
         return user;
     }
 
-    public User getUserByEmail(String email) {
-        User user = userDao.getUserByEmail(email);
-        return user;
+    public User getUserByEmail(String email) { return userDao.getUserByEmail(email);
     }
 
     public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
