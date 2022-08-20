@@ -1,12 +1,14 @@
 package com.revature.dao;
+
 import com.revature.model.*;
 import com.revature.utility.ConnectionUtility;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionDao {
-    public String moveAmountBetweenSameOwnerAccounts(Transaction transaction) {
+    public String moveAmountBetweenAccounts(Transaction transaction) {
         try (Connection con = ConnectionUtility.createConnection()) {
             con.setAutoCommit(false);
 
@@ -52,6 +54,7 @@ public class TransactionDao {
         }
         return "Transaction Successful";
     }
+
 
     public List<Transaction> getAllTransactions() throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
@@ -290,11 +293,19 @@ public class TransactionDao {
             who would be transferring money to the requester.
              */
 
-    public String completeMoneyRequest() throws SQLException {
-        /*
-        This method will finish the money transfer request. The sender will approve or deny the money transfer request.
-         */
-        return null;
+    public String completeRequestDenied(Transaction t) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("UPDATE transactions SET status_id = 3, res_time = Now() " +
+                    "WHERE id = ? RETURNING *");
+            ps.setInt(1, t.getTransactionId());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return "Request successfully denied.";
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return "Transaction update failed.";
     }
 
     public String cancelTransaction() throws SQLException {
@@ -303,10 +314,48 @@ public class TransactionDao {
          */
         return null;
     }
+
+
+    public Object completeRequestApproved(Transaction transaction) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            con.setAutoCommit(false);
+
+            try (
+                    PreparedStatement ps = con.prepareStatement("UPDATE transactions SET status_id = 2,  " +
+                            " res_time = Now() WHERE id = ? ");
+                    PreparedStatement ps1 = con.prepareStatement("UPDATE accounts SET balance = balance - ? " +
+                            "WHERE id = ? ");
+                    PreparedStatement ps2 = con.prepareStatement("UPDATE accounts SET balance = balance + ? " +
+                            "WHERE id = ? ");
+            ) {
+                // Update transaction record
+                ps.setInt(1, transaction.getTransactionId());
+                ps.executeUpdate();
+                //change balance for account moving amount out of
+                ps1.setLong(1, transaction.getAmount());
+                ps1.setInt(2, transaction.getSendingId());
+                ps1.executeUpdate();
+                // change balance for account receiving amount
+                ps2.setLong(1, transaction.getAmount());
+                ps2.setInt(2, transaction.getReceivingId());
+                ps2.executeUpdate();
+                con.commit();
+            } catch (SQLException e) {
+                System.out.println(e);
+                try {
+                    // Roll back transaction
+                    con.rollback();
+                    return "Transaction is being rolled back.";
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return "Transaction Successfully Approved and Executed";
+    }
 }
-
-
-
 
 
 // (update(approve/deny) give resolve time, descriptionId, change amount in accounts

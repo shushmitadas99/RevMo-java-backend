@@ -1,17 +1,18 @@
 package com.revature.controller;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Transaction;
 import com.revature.service.TransactionService;
 import com.revature.service.UserService;
 import io.javalin.Javalin;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 public class TransactionController implements Controller {
     private final TransactionService transactionService;
-    private UserService userService;
 
     public TransactionController() {
 
@@ -29,8 +30,8 @@ public class TransactionController implements Controller {
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
                 Integer uId = (Integer) session.getAttribute("userId");
-
-                if(id == uId){
+                String role = (String) session.getAttribute("userRole");
+                if (id == uId || role == "Employee") {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
@@ -40,11 +41,69 @@ public class TransactionController implements Controller {
                         ctx.json(e.getMessages());
                         ctx.status(400);
                     }
-                } else{
+                } else {
                     ctx.json("User Not Found");
                     ctx.status(404);
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
+            }
+
+        });
+
+        app.post("/trx-req", ctx -> {
+            try {
+                Transaction tr = ctx.bodyAsClass(Transaction.class);
+                int id = tr.getRequesterId();
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                Integer uId = (Integer) session.getAttribute("userId");
+                String role = (String) session.getAttribute("userRole");
+                if (id == uId || role == "Employee") {
+                    ObjectMapper om = new ObjectMapper();
+                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                    try {
+                        ctx.json(transactionService.requestAmount(newTransaction));
+                        ctx.status(201);
+                    } catch (InvalidParameterException e) {
+                        ctx.json(e.getMessages());
+                        ctx.status(400);
+                    }
+                } else {
+                    ctx.json("User Not Found");
+                    ctx.status(404);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
+            }
+
+        });
+
+        app.put("/trx-req", ctx -> {
+            try {
+                Transaction tr = ctx.bodyAsClass(Transaction.class);
+                int id = tr.getRequesterId();
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                Integer uId = (Integer) session.getAttribute("userId");
+                String role = (String) session.getAttribute("userRole");
+                if (id == uId || role == "Employee") {
+                    ObjectMapper om = new ObjectMapper();
+                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                    try {
+                        ctx.json(transactionService.handleRequestAmount(newTransaction));
+                        ctx.status(201);
+                    } catch (InvalidParameterException e) {
+                        ctx.json(e.getMessages());
+                        ctx.status(400);
+                    }
+                } else {
+                    ctx.json("User Not Found");
+                    ctx.status(404);
+                }
+            } catch (Exception e) {
                 ctx.json(e.getMessage());
                 ctx.status(400);
             }

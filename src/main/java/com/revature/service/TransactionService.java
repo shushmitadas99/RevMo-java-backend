@@ -9,10 +9,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import static com.revature.utility.Helpers.validatePositiveInt;
 import static com.revature.utility.Helpers.validateTransactionParams;
 
 public class TransactionService {
-    private TransactionDao transactionDao;
+    private final TransactionDao transactionDao;
     private AccountDao accountDao;
 
     public TransactionService() {
@@ -46,7 +47,52 @@ public class TransactionService {
         }
         //check if statusId = 2 not required user owns both accounts
 
-        return transactionDao.moveAmountBetweenSameOwnerAccounts(t);
+        return transactionDao.moveAmountBetweenAccounts(t);
+    }
+
+    public String requestAmount(Map<String, String> addedTransaction) throws InvalidParameterException {
+        Transaction t = validateTransactionParams(addedTransaction);
+        //the requester is the recipient their primary account goes in receivingId
+        t.setReceivingId(accountDao.getPrimaryAccountById(t.getRequesterId()));
+        //the requestee's sending account by email
+        t.setSendingId(accountDao.getPrimaryAccountByEmail(t.getReceivingEmail()));
+        InvalidParameterException exceptions = new InvalidParameterException();
+        //check if sendingId account balance is >= t.amount and :) receivingId.balance < (MAX(Long) - amount -1) -- Jeff Bezos case
+        if (!accountDao.canWithdraw(t.getSendingId(), t.getAmount())) {
+            exceptions.addMessage("User's balance for the sending account is lower than the amount to be transferred.");
+            throw exceptions;
+        }
+        //check if statusId = 2 not required user owns both accounts
+        if (t.getStatusId() != 1) {
+            exceptions.addMessage("To request money the statusId must be <Pending>");
+            throw exceptions;
+        }
+        // reuse function
+        return transactionDao.moveAmountBetweenAccounts(t);
+    }
+
+
+    public Object handleRequestAmount(Map<String, String> tr) throws InvalidParameterException {
+        // this map contains t.id, t.requester_id, t.status_id
+        Transaction t = new Transaction();
+        String transactionId = tr.get("transactionId");
+        t.setTransactionId(validatePositiveInt(transactionId, "Transaction Id "));
+        String requesterId = tr.get("requesterId");
+        t.setRequesterId(validatePositiveInt(requesterId, "User ID "));
+        String statusId = tr.get("statusId");
+        t.setRequesterId(validatePositiveInt(statusId, "Transaction status id "));
+        InvalidParameterException exceptions = new InvalidParameterException();
+        //check if statusId = 2 not required user owns both accounts
+        if (t.getStatusId() > 1) {
+            exceptions.addMessage("To handle the request the status must change from <Pending> to <Approved> or <Denied>");
+            throw exceptions;
+        }
+        // reuse function
+        if (t.getStatusId() == 3) {
+            return transactionDao.completeRequestDenied(t);
+        } else {
+            return transactionDao.completeRequestApproved(t);
+        }
     }
 
     public List<Transaction> getAllTransactions() throws SQLException {
@@ -76,6 +122,7 @@ public class TransactionService {
     public List<Transaction> getAllTransactionsByDescription(String description) throws SQLException {
         return transactionDao.getAllTransactionsByDescription(description);
     }
+
 
 //    public Transaction sendMoneyRequest(Map<String, String> transaction, int uId) throws SQLException, InvalidParameterException {
 //        Transaction t = validateTransactionParams(transaction);

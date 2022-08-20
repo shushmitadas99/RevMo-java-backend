@@ -37,7 +37,7 @@ public class TransactionServiceTest {
         trx.put("amount", "5000");
         trx.put("receivingEmail", "jd80@a.ca");
 
-        when(mockedObject.moveAmountBetweenSameOwnerAccounts(t)).thenReturn("Transaction Successful");
+        when(mockedObject.moveAmountBetweenAccounts(t)).thenReturn("Transaction Successful");
         when(mockedObject2.isOwnerOfAccount(1, 1)).thenReturn(true);
         when(mockedObject2.isOwnerOfAccount(1, 2)).thenReturn(true);
         when(mockedObject2.canWithdraw(1, 5000)).thenReturn(true);
