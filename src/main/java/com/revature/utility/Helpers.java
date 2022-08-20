@@ -5,11 +5,27 @@ import com.revature.model.Account;
 import com.revature.model.Transaction;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class Helpers {
 
-    public static Boolean validateAccount(Account acc) throws InvalidParameterException{
+    public static Boolean validateAccount(Account acc) throws InvalidParameterException {
 
+        return true;
+    }
+
+    public static Boolean validateEmail(String email) throws InvalidParameterException {
+        InvalidParameterException exceptions = new InvalidParameterException();
+        if (email == null || email.isEmpty()) {
+            exceptions.addMessage("Value for receivingEmail must exist.");
+            throw exceptions;
+        }
+        String regex = "^(.+)@(.+)$";
+        Pattern pattern = Pattern.compile(regex);
+        if (!pattern.matcher(email).matches()) {
+            exceptions.addMessage("Value for receivingEmail does not match <username>@<domain> pattern");
+            throw exceptions;
+        }
         return true;
     }
 
@@ -48,7 +64,7 @@ public class Helpers {
     }
 
 
-    public static Transaction validateTransactionParams(Map<String, String> trx) throws InvalidParameterException{
+    public static Transaction validateTransactionParams(Map<String, String> trx) throws InvalidParameterException {
 
         Transaction t = new Transaction();
         String requesterId = trx.get("requesterId");
@@ -63,7 +79,7 @@ public class Helpers {
         t.setDescriptionId(validatePositiveInt(descriptionId, "Transaction Description ID"));
         String amount = trx.get("amount");
         t.setAmount(validatePositiveLong(amount, "Transaction amount"));
-        t.setReceivingEmail(trx.get("receivingEmail"));
+        if (validateEmail(trx.get("receivingEmail"))) t.setReceivingEmail(trx.get("receivingEmail"));
         return t;
     }
 

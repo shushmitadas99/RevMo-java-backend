@@ -2,15 +2,11 @@ package com.revature.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Transaction;
-import com.revature.model.User;
 import com.revature.service.TransactionService;
 import com.revature.service.UserService;
 import io.javalin.Javalin;
-
-import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Locale;
 import java.util.Map;
 
 public class TransactionController implements Controller {
@@ -38,7 +34,7 @@ public class TransactionController implements Controller {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
-                        ctx.json(transactionService.addTransactionById(newTransaction));
+                        ctx.json(transactionService.moveAmountBetweenSameOwnerAccounts(newTransaction));
                         ctx.status(201);
                     } catch (InvalidParameterException e) {
                         ctx.json(e.getMessages());
