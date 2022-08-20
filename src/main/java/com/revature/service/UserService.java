@@ -1,8 +1,10 @@
 package com.revature.service;
+
 import com.revature.dao.UserDao;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.User;
 import com.revature.exception.InvalidLoginException;
+
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
@@ -14,10 +16,11 @@ public class UserService {
         userDao = mockedObject;
     }
 
-    public static boolean getUserEmailByEmail(String email){
+    public static boolean getUserEmailByEmail(String email) {
         return UserDao.getUserEmailByEmail(email);
     }
-    public static void updatePassword(String password, String token){
+
+    public static void updatePassword(String password, String token) {
         UserDao.updatePassword(password, token);
     }
 
@@ -36,6 +39,7 @@ public class UserService {
     public static void deleteToken(String token) {
         UserDao.deleteToken(token);
     }
+
     public User login(String email, String password) throws SQLException, InvalidLoginException {
         User user = userDao.getUserByEmailAndPassword(email, password);
 
@@ -45,7 +49,8 @@ public class UserService {
         return user;
     }
 
-    public User getUserByEmail(String email) { return userDao.getUserByEmail(email);
+    public User getUserByEmail(String email) {
+        return userDao.getUserByEmail(email);
     }
 
     public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
@@ -57,7 +62,7 @@ public class UserService {
             exceptions.addMessage("User Id does not match our records.");
             throw exceptions;
         }
-        if (!Objects.equals(newEmail, oldUser.getEmail()) && userDao.getUserByEmail(newEmail) != null){
+        if (!Objects.equals(newEmail, oldUser.getEmail()) && userDao.getUserByEmail(newEmail) != null) {
             exceptions.addMessage("Email already in system");
             throw exceptions;
         }
