@@ -24,6 +24,7 @@ public class AccountService {
         this.accountDao = accountDao;
         this.userService = userService;
     }
+
     public AccountService(AccountDao mockDao) {
         this.accountDao = mockDao;
     }
@@ -90,7 +91,7 @@ public class AccountService {
             throw exceptions;
         }
         return accountDao.linkUserToAccount(aId, myUser.getUserId());
-        }
+    }
 
     public String unlinkUserFromAccount(int aId, String email) throws SQLException, InvalidParameterException {
         List<String> owners = accountDao.obtainListOfAccountOwners(aId);
@@ -111,7 +112,7 @@ public class AccountService {
     }
 
     public String deleteAccount(int aId) throws SQLException, InvalidParameterException {
-        Account account = accountDao.getAccountById(aId);
+        Account account = accountDao.getAccountsById(aId);
         List<String> accountOwners = accountDao.obtainListOfAccountOwners(aId);
         InvalidParameterException exception = new InvalidParameterException();
         if (account.getBalance() != 0) {
