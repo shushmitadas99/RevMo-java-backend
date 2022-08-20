@@ -86,7 +86,7 @@ public class AccountServiceTest {
         Assertions.assertEquals(expected, actual);
     }
     @Test
-    public void testLinkToAccount() throws InvalidParameterException, SQLException {
+    public void testLinkToAccountPositive() throws InvalidParameterException, SQLException {
         // Arrange
         AccountDao mockedObject = mock(AccountDao.class);
         UserService userService = mock(UserService.class);
@@ -112,6 +112,62 @@ public class AccountServiceTest {
         String expected = new String("Account " + 1 + " successfully linked to user " + 1 + "!");
         Assertions.assertEquals(expected, actual);
     }
+    @Test
+    public void testLinkToAccountNoUser() throws InvalidParameterException, SQLException {
+        // Arrange
+        AccountDao mockedObject = mock(AccountDao.class);
+        UserService userService = mock(UserService.class);
+        AccountService accountService = new AccountService(mockedObject, userService);
+        Account mockAccount = new Account(1, 1, 0);
+        User mockUser = new User(1, "John", "Doe", "jd@outlook.com", "password",
+                "1234567897", "user");
+        List<String> mockOwners = new ArrayList<>();
+        mockOwners.add("Jenny Johnson");
+        mockOwners.add("Barry Allen");
+        List <String> mockReturn = new ArrayList<>();
+        mockReturn.add("User not found");
+        when(mockedObject.obtainListOfAccountOwners(mockAccount.getAccountId())).thenReturn(mockOwners);
+        when(userService.getUserByEmail(eq(mockUser.getEmail()))).thenReturn(null);
+
+        try {
+            accountService.linkUserToAccount(1,"prestiege@ww.com");
+            fail();
+        } catch (InvalidParameterException e){
+            // Act
+            List<String> actual = e.getMessages();
+
+          // Assert
+            Assertions.assertEquals(mockReturn, actual);
+        }}
+    @Test
+    public void testLinkToAccountAlreadyLinked() throws InvalidParameterException, SQLException {
+        // Arrange
+        AccountDao mockedObject = mock(AccountDao.class);
+        UserService userService = mock(UserService.class);
+        AccountService accountService = new AccountService(mockedObject, userService);
+        Account mockAccount = new Account(1, 1, 0);
+        User mockUser = new User(1, "John", "Doe", "jd@outlook.com", "password",
+                "1234567897", "user");
+        List<String> mockOwners = new ArrayList<>();
+        mockOwners.add("Jenny Johnson");
+        mockOwners.add("Barry Allen");
+        mockOwners.add("John Doe");
+        List <String> mockReturn = new ArrayList<>();
+        mockReturn.add("User " + mockUser.getUserId() + " already linked to account " + 1);
+        when(mockedObject.obtainListOfAccountOwners(mockAccount.getAccountId())).thenReturn(mockOwners);
+        when(userService.getUserByEmail(eq(mockUser.getEmail()))).thenReturn(mockUser);
+
+        try {
+            accountService.linkUserToAccount(1,"jd@outlook.com");
+            fail();
+        } catch (InvalidParameterException e){
+            // Act
+            List<String> actual = e.getMessages();
+
+            // Assert
+            Assertions.assertEquals(mockReturn, actual);
+        }}
+
     @Test
     public void testUnlinkToAccount() throws InvalidParameterException, SQLException {
         // Arrange
@@ -140,6 +196,60 @@ public class AccountServiceTest {
         String expected = new String("Account " + 1 + " successfully unlinked from user " + 1 + "!");
         Assertions.assertEquals(expected, actual);
     }
+    @Test
+    public void testUnlinkToAccountNoUser() throws InvalidParameterException, SQLException {
+        // Arrange
+        AccountDao mockedObject = mock(AccountDao.class);
+        UserService userService = mock(UserService.class);
+        AccountService accountService = new AccountService(mockedObject, userService);
+        Account mockAccount = new Account(1, 1, 0);
+        User mockUser = new User(1, "John", "Doe", "jd@outlook.com", "password",
+                "1234567897", "user");
+        List<String> mockOwners = new ArrayList<>();
+        mockOwners.add("Jenny Johnson");
+        mockOwners.add("Barry Allen");
+        List <String> mockReturn = new ArrayList<>();
+        mockReturn.add("User not found");
+        when(mockedObject.obtainListOfAccountOwners(mockAccount.getAccountId())).thenReturn(mockOwners);
+        when(userService.getUserByEmail(eq(mockUser.getEmail()))).thenReturn(null);
+
+        try {
+            accountService.unlinkUserFromAccount(1,"prestiege@ww.com");
+            fail();
+        } catch (InvalidParameterException e){
+            // Act
+            List<String> actual = e.getMessages();
+
+            // Assert
+            Assertions.assertEquals(mockReturn, actual);
+        }}
+    @Test
+    public void testUnlinkToAccountNotLinked() throws InvalidParameterException, SQLException {
+        // Arrange
+        AccountDao mockedObject = mock(AccountDao.class);
+        UserService userService = mock(UserService.class);
+        AccountService accountService = new AccountService(mockedObject, userService);
+        Account mockAccount = new Account(1, 1, 0);
+        User mockUser = new User(1, "John", "Doe", "jd@outlook.com", "password",
+                "1234567897", "user");
+        List<String> mockOwners = new ArrayList<>();
+        mockOwners.add("Jenny Johnson");
+        mockOwners.add("Barry Allen");
+        List <String> mockReturn = new ArrayList<>();
+        mockReturn.add("User " + mockUser.getUserId() + " not linked to account " + 1);
+        when(mockedObject.obtainListOfAccountOwners(mockAccount.getAccountId())).thenReturn(mockOwners);
+        when(userService.getUserByEmail(eq(mockUser.getEmail()))).thenReturn(mockUser);
+
+        try {
+            accountService.unlinkUserFromAccount(1,"jd@outlook.com");
+            fail();
+        } catch (InvalidParameterException e){
+            // Act
+            List<String> actual = e.getMessages();
+
+            // Assert
+            Assertions.assertEquals(mockReturn, actual);
+        }}
     @Test
     public void testDeleteAccountPositive() throws InvalidParameterException, SQLException {
         // Arrange
@@ -238,8 +348,7 @@ public class AccountServiceTest {
             List<String> actual = e.getMessages();
 //
 //        // Assert
-            List<String> expected = mockReturn;
-            Assertions.assertEquals(expected, actual);
+            Assertions.assertEquals(mockReturn, actual);
         }}
     @Test
     public void testDeleteAccountbothFail() throws SQLException {
@@ -270,8 +379,7 @@ public class AccountServiceTest {
             List<String> actual = e.getMessages();
 //
 //        // Assert
-            List<String> expected = mockReturn;
-            Assertions.assertEquals(expected, actual);
+            Assertions.assertEquals(mockReturn, actual);
         }}
 }
 
