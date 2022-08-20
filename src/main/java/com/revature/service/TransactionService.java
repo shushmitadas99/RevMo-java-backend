@@ -18,6 +18,15 @@ public class TransactionService {
         this.accountDao = new AccountDao();
         this.transactionDao = new TransactionDao();
     }
+    public TransactionService(TransactionDao mockDao) {
+        this.transactionDao = mockDao;
+    }
+
+    public TransactionService(TransactionDao mockedObject, AccountDao mockedObject2) {
+        this.transactionDao = mockedObject;
+        this.accountDao = mockedObject2;
+    }
+
 
     public String addTransactionById(Map<String, String> addedTransaction) throws InvalidParameterException {
         Transaction t = validateTransactionParams(addedTransaction);

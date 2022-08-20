@@ -58,6 +58,20 @@ public class Transaction {
         this.amount = amount;
     }
 
+    public Transaction(int transactionId, int requesterId, int sendingId, int receivingId, String receivingEmail, String initiatedBy, String typeName, String description, int amount) {
+        this.transactionId = transactionId;
+        this.requesterId = requesterId;
+        this.sendingId = sendingId;
+        this.receivingId =receivingId;
+        this.receivingEmail = receivingEmail;
+        this.typeName = typeName;
+        this.initiatedBy = initiatedBy;
+        this.description = description;
+        this.amount = amount;
+
+
+    }
+
     public String getInitiatedBy() {
         return initiatedBy;
     }
