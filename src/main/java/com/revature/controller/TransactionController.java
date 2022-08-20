@@ -120,16 +120,15 @@ public class TransactionController implements Controller {
             }
         });
 
-//        app.get("/Transaction/approved", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
-//
-//            ctx.json(transactionService.getAllTransactionsByApproved("1"));
-//            ctx.status(200);
+//        app.post("/trx/request", ctx -> {
+//           HttpServletRequest req = ctx.req;
+//           HttpSession session = req.getSession();
+//           Integer uId = (Integer) session.getAttribute("userId");
+//           ObjectMapper om = new ObjectMapper();
+//           Map<String, String> trx = om.readValue(ctx.body(), Map.class);
+//           ctx.json(transactionService.sendMoneyRequest(trx, uId));
+//           ctx.status(200);
 //        });
-
-
     }
 }
 

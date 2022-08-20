@@ -161,6 +161,34 @@ public class UserDao {
         }
 
     }
+
+    public String updateEmail(int userId, String email){
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement pstmt = con.prepareStatement("UPDATE users SET email=? WHERE id=? RETURNING *");
+            pstmt.setString(1, email);
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            return "Email updated.";
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String updatephone(int userId, String phoneNumber){
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement pstmt = con.prepareStatement("UPDATE users SET phone=? WHERE id=? RETURNING *");
+            pstmt.setString(1, phoneNumber);
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            return "phone updated. Congrats?";
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
 

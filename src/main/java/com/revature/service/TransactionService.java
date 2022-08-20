@@ -69,11 +69,22 @@ public class TransactionService {
     public List<Transaction> getAllTransactionsByDescription(String description) throws SQLException {
         return transactionDao.getAllTransactionsByDescription(description);
     }
-//    public List<Transaction> getAllTransactionsByApproved(String approve) throws SQLException {
-//        int
-//        return transactionDao.getAllTransactionsbyApproved();
+
+//    public Transaction sendMoneyRequest(Map<String, String> transaction, int uId) throws SQLException, InvalidParameterException {
+//        Transaction t = validateTransactionParams(transaction);
+//        t.setRequesterId(uId);
+////        InvalidParameterException exceptions = new InvalidParameterException();
+//        //check if both sendingId and receivingId belong to user requesterId
+////        System.out.println(accountDao.isOwnerOfAccount(t.getRequesterId(),t.getSendingId()));
+//        //check if sendingId account balance is >= t.amount and :) receivingId.balance < (MAX(Long) - amount -1) -- Jeff Bezos case
+////        if(!accountDao.canWithdraw(t.getSendingId(), t.getAmount()))
+////            System.out.println("general kenobi");
+////            exceptions.addMessage("User's balance for the sending account is lower than the amount to be transferred.");
+//        //check if statusId = 2 not required user owns both accounts
+////        System.out.println(accountDao.canWithdraw(t.getSendingId(), t.getAmount()));
+////        if(exceptions.containsMessage())
+////            throw exceptions;
+//        System.out.println(t);
+//        return transactionDao.sendMoneyRequest(validateTransactionParams(transaction));
 //    }
-
-
-
 }

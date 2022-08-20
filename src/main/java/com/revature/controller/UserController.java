@@ -1,6 +1,11 @@
 package com.revature.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.revature.exception.InvalidParameterException;
+
 import com.revature.model.User;
 import com.revature.utility.EmailUtility;
 import io.jsonwebtoken.Jwts;
@@ -8,6 +13,7 @@ import java.lang.Exception;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -94,7 +100,7 @@ public class UserController implements Controller {
             String email = (String) session.getAttribute("email");
 
 
-            //TODO undo when can login!
+            //use to override myUser
 //            myUser = new User(1, "Bob", "Smith", "jd80@a.ca", "foobar", "666-123-4562", "user");
 
             if (email == null) {
@@ -109,6 +115,28 @@ public class UserController implements Controller {
 
                 ctx.json(myUser);
                 ctx.status(200);
+            }
+        });
+
+        app.post("/user", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String email = (String) session.getAttribute("email");
+
+            if (email == null){
+                ctx.result("You are not logged in!");
+                ctx.status(404);
+            } else {
+                ObjectMapper om = new ObjectMapper();
+                Map<String, String> newInfo = om.readValue(ctx.body(), Map.class);
+                try {
+                    userService.updateInfo(newInfo, (Integer) session.getAttribute("userId"), email);
+                    ctx.status(201);
+                } catch (InvalidParameterException e) {
+                    ctx.json(e.getMessages());
+                    ctx.status(400);
+                }
+
             }
         });
 
