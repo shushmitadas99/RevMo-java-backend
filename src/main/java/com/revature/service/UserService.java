@@ -16,6 +16,10 @@ public class UserService {
         userDao = mockedObject;
     }
 
+    public UserService() {
+        this.userDao = new UserDao();
+    }
+
     public static boolean getUserEmailByEmail(String email) {
         return UserDao.getUserEmailByEmail(email);
     }

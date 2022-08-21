@@ -1,4 +1,5 @@
 package com.revature.controller;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
@@ -9,13 +10,13 @@ import com.revature.exception.InvalidParameterException;
 import com.revature.model.User;
 import com.revature.utility.EmailUtility;
 import io.jsonwebtoken.Jwts;
+
 import java.lang.Exception;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
-
 
 
 import com.revature.exception.InvalidLoginException;
@@ -39,7 +40,7 @@ public class UserController implements Controller {
     private AccountService accountService;
 
     public UserController() {
-
+        this.userService = new UserService();
         this.accountService = new AccountService();
     }
 
@@ -79,19 +80,19 @@ public class UserController implements Controller {
         });
 
         app.get("/logged-in-user", ctx -> {
-                    HttpServletRequest req = ctx.req;
+            HttpServletRequest req = ctx.req;
 
-                    HttpSession session = req.getSession();
-                    User myUser = (User) session.getAttribute("logged_in_user");
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
 
-                    if (myUser == null) {
-                        ctx.result("You are not logged in!");
-                        ctx.status(404);
-                    } else {
+            if (myUser == null) {
+                ctx.result("You are not logged in!");
+                ctx.status(404);
+            } else {
 
-                    }
+            }
 
-                });
+        });
 
         // returns currently logged in user's info
         app.get("/user", ctx -> {
@@ -123,7 +124,7 @@ public class UserController implements Controller {
             HttpSession session = req.getSession();
             String email = (String) session.getAttribute("email");
 
-            if (email == null){
+            if (email == null) {
                 ctx.result("You are not logged in!");
                 ctx.status(404);
             } else {
@@ -162,13 +163,13 @@ public class UserController implements Controller {
                         // return user a message with invalid token
                     }
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 ctx.status(404);
                 throw new RuntimeException("Reset Link Expired. Please try again");
             }
         });
 
-        app.post("/forgotpassword", ctx->{
+        app.post("/forgotpassword", ctx -> {
             //String email="";
 
             JSONObject inputEmail = new JSONObject(ctx.body());
@@ -186,11 +187,11 @@ public class UserController implements Controller {
 
                     System.out.println(jwtToken);
 
-                    String addressUrl =  "http://localhost:8080/resetpassword?token="+jwtToken;
+                    String addressUrl = "http://localhost:8080/resetpassword?token=" + jwtToken;
                     int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
                     if (status == 202) {
                         System.out.println("Please Check Your Email!");
-                    }else{
+                    } else {
                         ctx.status(404);
                         throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
                     }
@@ -198,11 +199,11 @@ public class UserController implements Controller {
                     ctx.status(404);
                     System.out.println("The email pertaining to the account has been sent an email. Please check email for reset link.");
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 ctx.status(404);
                 throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
             }
-        } );
+        });
 
 
     }
