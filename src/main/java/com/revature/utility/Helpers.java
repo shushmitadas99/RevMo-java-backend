@@ -5,6 +5,7 @@ import com.revature.model.Account;
 import com.revature.model.Transaction;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Helpers {
@@ -69,17 +70,20 @@ public class Helpers {
         Transaction t = new Transaction();
         String requesterId = trx.get("requesterId");
         t.setRequesterId(validatePositiveInt(requesterId, "User ID"));
+        String transactionId = trx.get("transactionId");
+        if (transactionId != null) t.setTransactionId(validatePositiveInt(transactionId, "Transaction ID"));
         String sendingId = trx.get("sendingId");
-        t.setSendingId(validatePositiveInt(sendingId, "Sending Account ID"));
+        if (sendingId != null) t.setSendingId(validatePositiveInt(sendingId, "Sending Account ID"));
         String receivingId = trx.get("receivingId");
-        t.setReceivingId(validatePositiveInt(receivingId, "Receiving Account ID"));
+        if (receivingId != null) t.setReceivingId(validatePositiveInt(receivingId, "Receiving Account ID"));
         String statusId = trx.get("statusId");
-        t.setStatusId(validatePositiveInt(statusId, "Transaction Status ID"));
+        if (statusId != null) t.setStatusId(validatePositiveInt(statusId, "Transaction Status ID"));
         String descriptionId = trx.get("descriptionId");
-        t.setDescriptionId(validatePositiveInt(descriptionId, "Transaction Description ID"));
+        if (descriptionId != null) t.setDescriptionId(validatePositiveInt(descriptionId, "Transaction Description ID"));
         String amount = trx.get("amount");
-        t.setAmount(validatePositiveLong(amount, "Transaction amount"));
-        if (validateEmail(trx.get("receivingEmail"))) t.setReceivingEmail(trx.get("receivingEmail"));
+        if (amount != null) t.setAmount(validatePositiveLong(amount, "Transaction amount"));
+        if (trx.get("receivingEmail") != null)
+            if (validateEmail(trx.get("receivingEmail"))) t.setReceivingEmail(trx.get("receivingEmail"));
         return t;
     }
 

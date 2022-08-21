@@ -15,7 +15,7 @@ public class TransactionDao {
             try (
                     PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
                             "sending_id,receiving_id, req_time, res_time, status_id, amount, desc_id, receiving_email) " +
-                            "VALUES(?, ?, ?, Now(), Now(),?, ?, ?,?)");
+                            "VALUES(?, ?, ?, Now(), Now(),2, ?, ?,?)");
                     PreparedStatement ps1 = con.prepareStatement("UPDATE accounts SET balance = balance - ? " +
                             "WHERE id = ? ");
                     PreparedStatement ps2 = con.prepareStatement("UPDATE accounts SET balance = balance + ? " +
@@ -25,10 +25,9 @@ public class TransactionDao {
                 ps.setInt(1, transaction.getRequesterId());
                 ps.setInt(2, transaction.getSendingId());
                 ps.setInt(3, transaction.getReceivingId());
-                ps.setInt(4, transaction.getStatusId());
-                ps.setLong(5, transaction.getAmount());
-                ps.setInt(6, transaction.getDescriptionId());
-                ps.setString(7, transaction.getReceivingEmail());
+                ps.setLong(4, transaction.getAmount());
+                ps.setInt(5, transaction.getDescriptionId());
+                ps.setString(6, transaction.getReceivingEmail());
                 ps.executeUpdate();
                 //change balance for account moving amount out of
                 ps1.setLong(1, transaction.getAmount());
@@ -55,6 +54,25 @@ public class TransactionDao {
         return "Transaction Successful";
     }
 
+    public String storeRequest(Transaction transaction) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
+                    "sending_id,receiving_id, req_time, status_id, amount, desc_id, receiving_email) " +
+                    "VALUES(?, ?, ?, Now(),1, ?, ?,?) RETURNING *");
+//            Create insert statement
+            ps.setInt(1, transaction.getRequesterId());
+            ps.setInt(2, transaction.getSendingId());
+            ps.setInt(3, transaction.getReceivingId());
+            ps.setLong(4, transaction.getAmount());
+            ps.setInt(5, transaction.getDescriptionId());
+            ps.setString(6, transaction.getReceivingEmail());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return "Transaction Successful";
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return "Transaction Failed!";
+    }
 
     public List<Transaction> getAllTransactions() throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
@@ -322,22 +340,29 @@ public class TransactionDao {
 
             try (
                     PreparedStatement ps = con.prepareStatement("UPDATE transactions SET status_id = 2,  " +
-                            " res_time = Now() WHERE id = ? ");
+                            " res_time = Now() WHERE id = ? RETURNING *");
                     PreparedStatement ps1 = con.prepareStatement("UPDATE accounts SET balance = balance - ? " +
                             "WHERE id = ? ");
                     PreparedStatement ps2 = con.prepareStatement("UPDATE accounts SET balance = balance + ? " +
                             "WHERE id = ? ");
             ) {
+                int sendingId = 0, receivingId = 0;
+                long amount = 0L;
                 // Update transaction record
                 ps.setInt(1, transaction.getTransactionId());
-                ps.executeUpdate();
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    sendingId = rs.getInt("sending_id");
+                    receivingId = rs.getInt("receiving_id");
+                    amount = rs.getLong("amount");
+                }
                 //change balance for account moving amount out of
-                ps1.setLong(1, transaction.getAmount());
-                ps1.setInt(2, transaction.getSendingId());
+                ps1.setLong(1, amount);
+                ps1.setInt(2, sendingId);
                 ps1.executeUpdate();
                 // change balance for account receiving amount
-                ps2.setLong(1, transaction.getAmount());
-                ps2.setInt(2, transaction.getReceivingId());
+                ps2.setLong(1, amount);
+                ps2.setInt(2, receivingId);
                 ps2.executeUpdate();
                 con.commit();
             } catch (SQLException e) {

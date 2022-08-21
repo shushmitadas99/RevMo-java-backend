@@ -10,12 +10,14 @@ import io.javalin.Javalin;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.Objects;
 
 public class TransactionController implements Controller {
     private final TransactionService transactionService;
+    private UserService userService;
 
     public TransactionController() {
-
+        userService = new UserService();
         transactionService = new TransactionService();
     }
 
@@ -23,7 +25,7 @@ public class TransactionController implements Controller {
     @Override
     @SuppressWarnings("unchecked")
     public void mapEndpoints(Javalin app) {
-        app.post("/trx/accounts", ctx -> {
+        app.post("/trx-send", ctx -> {
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
                 int id = tr.getRequesterId();
@@ -31,11 +33,11 @@ public class TransactionController implements Controller {
                 HttpSession session = req.getSession();
                 Integer uId = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || role == "Employee") {
+                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
-                        ctx.json(transactionService.moveAmountBetweenSameOwnerAccounts(newTransaction));
+                        ctx.json(transactionService.moveAmountBetweenAccounts(newTransaction));
                         ctx.status(201);
                     } catch (InvalidParameterException e) {
                         ctx.json(e.getMessages());
@@ -60,7 +62,7 @@ public class TransactionController implements Controller {
                 HttpSession session = req.getSession();
                 Integer uId = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || role == "Employee") {
+                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
@@ -84,12 +86,13 @@ public class TransactionController implements Controller {
         app.put("/trx-req", ctx -> {
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
-                int id = tr.getRequesterId();
+                String email = tr.getReceivingEmail();
+                int uId = userService.getUserByEmail(email).getUserId();
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
-                Integer uId = (Integer) session.getAttribute("userId");
+                Integer id = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || role == "Employee") {
+                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
