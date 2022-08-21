@@ -31,22 +31,21 @@ public class TransactionService {
     }
 
 
-    public String moveAmountBetweenSameOwnerAccounts(Map<String, String> addedTransaction) throws InvalidParameterException {
+    public String moveAmountBetweenAccounts(Map<String, String> addedTransaction) throws InvalidParameterException {
         Transaction t = validateTransactionParams(addedTransaction);
         InvalidParameterException exceptions = new InvalidParameterException();
-        //check if both sendingId and receivingId belong to user requesterId
-        if (!accountDao.isOwnerOfAccount(t.getRequesterId(), t.getSendingId()) ||
-                !accountDao.isOwnerOfAccount(t.getRequesterId(), t.getReceivingId())) {
+        if ((t.getSendingId() > 0 && t.getReceivingId() > 0) && (!accountDao.isOwnerOfAccount(t.getRequesterId(), t.getSendingId()) ||
+                !accountDao.isOwnerOfAccount(t.getRequesterId(), t.getReceivingId()))) {
             exceptions.addMessage("User does not have access to both accounts.");
             throw exceptions;
         }
+        if (t.getSendingId() == 0) t.setSendingId(accountDao.getPrimaryAccountById(t.getRequesterId()));
+        if (t.getReceivingId() == 0) t.setReceivingId(accountDao.getPrimaryAccountByEmail(t.getReceivingEmail()));
         //check if sendingId account balance is >= t.amount and :) receivingId.balance < (MAX(Long) - amount -1) -- Jeff Bezos case
         if (!accountDao.canWithdraw(t.getSendingId(), t.getAmount())) {
-            exceptions.addMessage("User's balance for the sending account is lower than the amount to be transferred.");
+            exceptions.addMessage("User's balance is lower than the amount to be transferred.");
             throw exceptions;
         }
-        //check if statusId = 2 not required user owns both accounts
-
         return transactionDao.moveAmountBetweenAccounts(t);
     }
 
@@ -62,32 +61,20 @@ public class TransactionService {
             exceptions.addMessage("User's balance for the sending account is lower than the amount to be transferred.");
             throw exceptions;
         }
-        //check if statusId = 2 not required user owns both accounts
-        if (t.getStatusId() != 1) {
-            exceptions.addMessage("To request money the statusId must be <Pending>");
-            throw exceptions;
-        }
-        // reuse function
-        return transactionDao.moveAmountBetweenAccounts(t);
+
+        return transactionDao.storeRequest(t);
     }
 
 
     public Object handleRequestAmount(Map<String, String> tr) throws InvalidParameterException {
         // this map contains t.id, t.requester_id, t.status_id
-        Transaction t = new Transaction();
-        String transactionId = tr.get("transactionId");
-        t.setTransactionId(validatePositiveInt(transactionId, "Transaction Id "));
-        String requesterId = tr.get("requesterId");
-        t.setRequesterId(validatePositiveInt(requesterId, "User ID "));
-        String statusId = tr.get("statusId");
-        t.setRequesterId(validatePositiveInt(statusId, "Transaction status id "));
+        Transaction t = validateTransactionParams(tr);
         InvalidParameterException exceptions = new InvalidParameterException();
         //check if statusId = 2 not required user owns both accounts
-        if (t.getStatusId() > 1) {
+        if (t.getStatusId() == 1) {
             exceptions.addMessage("To handle the request the status must change from <Pending> to <Approved> or <Denied>");
             throw exceptions;
         }
-        // reuse function
         if (t.getStatusId() == 3) {
             return transactionDao.completeRequestDenied(t);
         } else {
