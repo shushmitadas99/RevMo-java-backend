@@ -23,7 +23,7 @@ public class AccountDao {
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                    return new Account(rs.getInt("id"), rs.getInt("type_id"),  rs.getLong("balance"));
+                return new Account(rs.getInt("id"), rs.getInt("type_id"), rs.getLong("balance"));
             }
             return null;
         } catch (SQLException e) {
@@ -156,7 +156,7 @@ public class AccountDao {
         }
     }
 
-    public Account getAccountById(int aId) throws SQLException{
+    public Account getAccountsById(int aId) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
             ps.setInt(1, aId);
@@ -170,7 +170,7 @@ public class AccountDao {
     }
 
     public Boolean isOwnerOfAccount(int uId, int aId) {
-        try (Connection con = ConnectionUtility.createConnection();){
+        try (Connection con = ConnectionUtility.createConnection();) {
             PreparedStatement ps = con.prepareStatement("SELECT ? IN(\n" +
                     "\tSELECT uwa .account_id \n" +
                     "\t\tFROM users_with_accounts uwa\n" +
@@ -179,27 +179,57 @@ public class AccountDao {
             ps.setInt(1, aId);
             ps.setInt(2, uId);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
-                return rs.getBoolean("owns_account");}
+            if (rs.next()) {
+                return rs.getBoolean("owns_account");
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return false;
     }
 
-    public Boolean canWithdraw(int aId, long amount){
-        try (Connection con = ConnectionUtility.createConnection();){
+    public Boolean canWithdraw(int aId, long amount) {
+        try (Connection con = ConnectionUtility.createConnection();) {
             PreparedStatement ps = con.prepareStatement("SELECT (\n" +
                     "\t\tSELECT balance FROM accounts a WHERE a.id = ?\n" +
                     "\t\t) > ? as can_withdraw");
-            ps.setInt(1,aId);
-            ps.setLong(2,amount);
+            ps.setInt(1, aId);
+            ps.setLong(2, amount);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
-                return rs.getBoolean("can_withdraw");}
-        }catch (SQLException e){
+            if (rs.next()) {
+                return rs.getBoolean("can_withdraw");
+            }
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    public int getPrimaryAccountById(int uId) {
+        try (Connection con = ConnectionUtility.createConnection();) {
+            PreparedStatement ps = con.prepareStatement("SELECT primary_acc FROM users  WHERE id = ?");
+            ps.setInt(1, uId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("primary_acc");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
+    public int getPrimaryAccountByEmail(String receivingEmail) {
+        try (Connection con = ConnectionUtility.createConnection();) {
+            PreparedStatement ps = con.prepareStatement("SELECT primary_acc FROM users  WHERE email = ?");
+            ps.setString(1, receivingEmail);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("primary_acc");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
 }
