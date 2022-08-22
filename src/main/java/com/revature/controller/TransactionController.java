@@ -3,6 +3,7 @@ package com.revature.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Transaction;
+import com.revature.model.User;
 import com.revature.service.TransactionService;
 import com.revature.service.UserService;
 import io.javalin.Javalin;
@@ -33,7 +34,7 @@ public class TransactionController implements Controller {
                 HttpSession session = req.getSession();
                 Integer uId = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
+                if (id == uId || Objects.equals(role, "2")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
@@ -86,13 +87,13 @@ public class TransactionController implements Controller {
         app.put("/trx-req", ctx -> {
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
-                String email = tr.getReceivingEmail();
-                int uId = userService.getUserByEmail(email).getUserId();
+                int transactionId = tr.getTransactionId();
+                String email = userService.getRequesteeByTransactionId(transactionId);
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
-                Integer id = (Integer) session.getAttribute("userId");
+                String emailSignedInUser = (String) session.getAttribute("email");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
+                if (Objects.equals(email, emailSignedInUser) || Objects.equals(role, "2")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
