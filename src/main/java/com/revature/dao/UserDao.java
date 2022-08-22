@@ -15,7 +15,7 @@ import com.revature.utility.ConnectionUtility;
 import java.sql.*;
 
 public class UserDao {
-    public static boolean getUserEmailByEmail(String email) {
+    public boolean getUserEmailByEmail(String email) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("SELECT * from users WHERE email=?");
@@ -30,7 +30,7 @@ public class UserDao {
         }
     }
 
-    public static void updatePassword(String password, String token) {
+    public void updatePassword(String password, String token) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("UPDATE users SET pass = convert_to(?, 'LATIN1') WHERE tokenvalue=convert_to(?, 'LATIN1') RETURNING *");
@@ -46,7 +46,7 @@ public class UserDao {
     }
 
 
-    public static User getUserByInputEmail(String inputEmail) {
+    public User getUserByInputEmail(String inputEmail) {
         int userId = 0;
         StringBuilder firstName = new StringBuilder();
         StringBuilder lastName = new StringBuilder();
@@ -82,7 +82,7 @@ public class UserDao {
         }
     }
 
-    public static void sendToken(String token, int userId) {
+    public void sendToken(String token, int userId) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("UPDATE users SET tokenvalue= convert_to(?, 'LATIN1') WHERE id=? RETURNING *");
@@ -95,7 +95,7 @@ public class UserDao {
         }
     }
 
-    public static boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE tokenvalue=convert_to(?, 'LATIN1')");
@@ -108,7 +108,7 @@ public class UserDao {
         }
     }
 
-    public static void deleteToken(String token) {
+    public void deleteToken(String token) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("UPDATE users SET tokenvalue = null WHERE tokenvalue = convert_to(?, 'LATIN1')  RETURNING *");
