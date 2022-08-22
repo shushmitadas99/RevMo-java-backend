@@ -93,11 +93,11 @@ public class AccountController implements Controller{
                }
            }
         });
-//
+
 //        app.get("/{userEmail}/accounts", ctx -> {
 //            String email = ctx.pathParam("userEmail");
 //            User myUser = userService.getUserByEmail(email);
-
+//
 //            if (Objects.equals(myUser.getUserRole(), "1")) {
 //                ctx.json(accountService.getAccountsByEmail(email));
 //                ctx.status(200);
@@ -107,13 +107,10 @@ public class AccountController implements Controller{
 //            }
 //        });
 
-        app.get("/{email}/accounts/{aId}", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            String email = (String) session.getAttribute("email");
-
-            String email = ctx.pathParam("userEmail");
-//            User myUser = userService.getUserByEmail(email);
+        app.get("/accounts/{aId}", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String email = (String) session.getAttribute("email");
             int aId = Integer.parseInt(ctx.pathParam("aId"));
             ctx.json(accountService.getAccountByEmailAndAccountId(email, aId));
             ctx.status(200);
