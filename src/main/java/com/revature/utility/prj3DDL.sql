@@ -124,7 +124,8 @@ INSERT INTO transactions (requester_id, sending_id, receiving_id, req_time, stat
 	(1,2,4,Now(),2,500, 2, 'jd80@a.ca'),(2,7,5,Now(),1,500, 2, 'jd81@a.ca'),
 	(3,2,13,Now(),2,500, 2, 'jd05@a.ca'),(2,7,5,Now(),1,500, 1, 'jd81@a.ca');
 
-
+INSERT INTO transactions (requester_id, sending_id, receiving_id, req_time, res_time, status_id, amount, desc_id, receiving_email) VALUES
+(2,	1,	4,	Now(),Now(),	2,600,	2,	'jd80@a.ca');
 ------------SELECTS-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 SELECT * FROM transactions;
 
@@ -183,5 +184,15 @@ SELECT uwa .account_id
 	FROM users_with_accounts uwa
 	WHERE uwa.user_id = 1;
 
+--monthly income query
+SELECT  SUM(t.amount) AS monthly_income, TO_CHAR(t.res_time,'Month') as mon, TO_CHAR(t.res_time,'YYYY') as yyyy
+	FROM transactions t
+	WHERE t.receiving_id = 5
+	GROUP BY TO_CHAR(t.res_time,'Month'), TO_CHAR(t.res_time,'YYYY');
 
+--monthly income query (dao function takes an Account ID and two ints)
+SELECT  SUM(t.amount) AS monthly_income, DATE_TRUNC('month', t.res_time) as mon, DATE_TRUNC('year', t.res_time) as yyyy
+	FROM transactions t
+	WHERE t.receiving_id = 4 AND DATE_TRUNC('month', t.res_time) = '2022-08-01 00:00:00.000' AND DATE_TRUNC('year', t.res_time) = '2023-01-01 00:00:00.000'
+	GROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time) ;
 
