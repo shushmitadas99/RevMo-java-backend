@@ -98,6 +98,7 @@ public class TransactionController implements Controller {
                 HttpSession session = req.getSession();
                 String emailSignedInUser = (String) session.getAttribute("email");
                 String role = (String) session.getAttribute("userRole");
+
                 if (Objects.equals(email, emailSignedInUser) || Objects.equals(role, "2")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
