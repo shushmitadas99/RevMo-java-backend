@@ -69,7 +69,7 @@ public class Helpers {
 
         Transaction t = new Transaction();
         String requesterId = trx.get("requesterId");
-        t.setRequesterId(validatePositiveInt(requesterId, "User ID"));
+        if (requesterId != null) t.setRequesterId(validatePositiveInt(requesterId, "User ID"));
         String transactionId = trx.get("transactionId");
         if (transactionId != null) t.setTransactionId(validatePositiveInt(transactionId, "Transaction ID"));
         String sendingId = trx.get("sendingId");
