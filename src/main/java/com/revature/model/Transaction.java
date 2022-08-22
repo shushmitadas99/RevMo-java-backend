@@ -58,6 +58,44 @@ public class Transaction {
         this.amount = amount;
     }
 
+    public Transaction(int requesterId, int sendingId, int receivingId, int descriptionId,
+                       String receivingEmail, long amount) {
+
+        this.requesterId = requesterId;
+        this.sendingId = sendingId;
+        this.receivingId = receivingId;
+        this.descriptionId = descriptionId;
+        this.receivingEmail = receivingEmail;
+        this.amount = amount;
+    }
+
+    public Transaction(int transactionId, int requesterId, int sendingId, int receivingId, String receivingEmail,
+                       String initiatedBy, String typeName, String description, int amount) {
+        this.transactionId = transactionId;
+        this.requesterId = requesterId;
+        this.sendingId = sendingId;
+        this.receivingId = receivingId;
+        this.receivingEmail = receivingEmail;
+        this.typeName = typeName;
+        this.initiatedBy = initiatedBy;
+        this.description = description;
+        this.amount = amount;
+    }
+
+    public Transaction(int transactionId, int requesterId, int sendingId, int receivingId, Timestamp reqTime,
+                       String receivingEmail, String initiatedBy, String typeName, String description, long amount) {
+        this.transactionId = transactionId;
+        this.requesterId = requesterId;
+        this.sendingId = sendingId;
+        this.receivingId = receivingId;
+        this.requestTime = reqTime;
+        this.receivingEmail = receivingEmail;
+        this.initiatedBy = initiatedBy;
+        this.typeName = typeName;
+        this.description = description;
+        this.amount = amount;
+    }
+
     public String getInitiatedBy() {
         return initiatedBy;
     }
@@ -167,7 +205,7 @@ public class Transaction {
         if (this == o) return true;
         if (!(o instanceof Transaction)) return false;
         Transaction that = (Transaction) o;
-        return getTransactionId() == that.getTransactionId() && getRequesterId() == that.getRequesterId() && getSendingId() == that.getSendingId() && getReceivingId() == that.getReceivingId() && getStatusId() == that.getStatusId() && getDescriptionId() == that.getDescriptionId() && getAmount() == that.getAmount() && getInitiatedBy().equals(that.getInitiatedBy()) && getReceivingEmail().equals(that.getReceivingEmail()) && Objects.equals(getTypeName(), that.getTypeName()) && getRequestTime().equals(that.getRequestTime()) && Objects.equals(getResolveTime(), that.getResolveTime()) && Objects.equals(getDescription(), that.getDescription());
+        return getTransactionId() == that.getTransactionId() && getRequesterId() == that.getRequesterId() && getSendingId() == that.getSendingId() && getReceivingId() == that.getReceivingId() && getStatusId() == that.getStatusId() && getDescriptionId() == that.getDescriptionId() && getAmount() == that.getAmount() && getReceivingEmail().equals(that.getReceivingEmail()) && Objects.equals(getTypeName(), that.getTypeName()) && Objects.equals(getResolveTime(), that.getResolveTime()) && Objects.equals(getDescription(), that.getDescription());
     }
 
     @Override
@@ -187,8 +225,6 @@ public class Transaction {
                 ", receivingId=" + receivingId +
                 ", requestTime=" + requestTime +
                 ", resolveTime=" + resolveTime +
-                ", statusId=" + statusId +
-                ", descriptionId=" + descriptionId +
                 ", amount=" + amount +
                 ", description='" + description + '\'' +
                 '}';

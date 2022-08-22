@@ -10,6 +10,7 @@ import io.javalin.Javalin;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.Objects;
 
 public class AccountController implements Controller{
     private AccountService accountService;
@@ -17,7 +18,7 @@ public class AccountController implements Controller{
 
     public AccountController() {
         accountService = new AccountService();
-        userService = new UserService();
+
     }
     @Override
     public void mapEndpoints(Javalin app) {
@@ -93,18 +94,16 @@ public class AccountController implements Controller{
            }
         });
 
-        app.get("/accounts", ctx -> {
-            HttpServletRequest req = ctx.req;
-            HttpSession session = req.getSession();
-            String email = (String) session.getAttribute("email");
+        app.get("/{userEmail}/accounts", ctx -> {
+            String email = ctx.pathParam("userEmail");
             User myUser = userService.getUserByEmail(email);
 
-            if (myUser == null) {
-                ctx.result("You are not logged in!");
-                ctx.status(404);
-            } else {
+            if (Objects.equals(myUser.getUserRole(), "user")) {
                 ctx.json(accountService.getAccountsByEmail(email));
                 ctx.status(200);
+            } else {
+                ctx.result("You are not logged in!");
+                ctx.status(404);
             }
         });
 

@@ -1,4 +1,5 @@
 package com.revature.dao;
+
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +16,7 @@ import com.revature.utility.ConnectionUtility;
 import java.sql.*;
 
 public class UserDao {
-    public static boolean getUserEmailByEmail(String email) {
+    public boolean getUserEmailByEmail(String email) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("SELECT * from users WHERE email=?");
@@ -30,7 +31,7 @@ public class UserDao {
         }
     }
 
-    public static void updatePassword(String password, String token) {
+    public void updatePassword(String password, String token) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("UPDATE users SET pass = convert_to(?, 'LATIN1') WHERE tokenvalue=convert_to(?, 'LATIN1') RETURNING *");
@@ -46,7 +47,7 @@ public class UserDao {
     }
 
 
-    public static User getUserByInputEmail(String inputEmail) {
+    public User getUserByInputEmail(String inputEmail) {
         int userId = 0;
         StringBuilder firstName = new StringBuilder();
         StringBuilder lastName = new StringBuilder();
@@ -82,7 +83,7 @@ public class UserDao {
         }
     }
 
-    public static void sendToken(String token, int userId) {
+    public void sendToken(String token, int userId) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("UPDATE users SET tokenvalue= convert_to(?, 'LATIN1') WHERE id=? RETURNING *");
@@ -95,7 +96,7 @@ public class UserDao {
         }
     }
 
-    public static boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE tokenvalue=convert_to(?, 'LATIN1')");
@@ -108,7 +109,7 @@ public class UserDao {
         }
     }
 
-    public static void deleteToken(String token) {
+    public void deleteToken(String token) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("UPDATE users SET tokenvalue = null WHERE tokenvalue = convert_to(?, 'LATIN1')  RETURNING *");
@@ -147,7 +148,7 @@ public class UserDao {
 
             ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()){
+            while (rs.next()) {
                 return new User(rs.getInt("id"), rs.getString("first_name"),
                         rs.getString("last_name"), rs.getString("email"),
                         rs.getString("pass"), rs.getString("phone"),
@@ -160,6 +161,51 @@ public class UserDao {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public String updateEmail(int userId, String email) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement pstmt = con.prepareStatement("UPDATE users SET email=? WHERE id=? RETURNING *");
+            pstmt.setString(1, email);
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            return "Email updated.";
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String updatephone(int userId, String phoneNumber) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement pstmt = con.prepareStatement("UPDATE users SET phone=? WHERE id=? RETURNING *");
+            pstmt.setString(1, phoneNumber);
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            return "phone updated. Congrats?";
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getRequesteeEmailByTransactionId(int transactionId) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT u.email FROM users u " +
+                    "JOIN users_with_accounts uwa ON uwa.user_id = u.id " +
+                    "JOIN transactions t ON uwa.account_id = t.sending_id " +
+                    "WHERE t.id = ?");
+            ps.setInt(1, transactionId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 }
 

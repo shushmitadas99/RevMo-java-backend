@@ -1,8 +1,7 @@
-package com.revature.service.service;
+package com.revature.service;
 
-import com.revature.exception.InvalidLoginException;
-import com.revature.service.UserService;
 import com.revature.dao.UserDao;
+import com.revature.exception.InvalidLoginException;
 import com.revature.model.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,14 +19,11 @@ public class LoginTest {
         UserDao mockUserDao = mock(UserDao.class);
         String email = "jd80@a.ca";
         String password = "Password123!";
-//        byte[] passwordBytes = new byte[]{Byte.parseByte(password)};
 
         User user = new User(1, "John", "Doe", "jd80@a.ca", "Password123!", "555-555-5000", "1");
         when(mockUserDao.getUserByEmailAndPassword(email, password)).thenReturn(user);
         UserService userService = new UserService(mockUserDao);
         User actual = userService.login(email, password);
         Assertions.assertEquals(user, actual);
-
     }
-
 }
