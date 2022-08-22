@@ -380,6 +380,40 @@ public class TransactionDao {
         }
         return "Transaction Successfully Approved and Executed";
     }
+
+    public Long monthlyIncome(int uId, int month, int year) {
+        String mon = "";
+        if (month < 10) {
+            mon = "0" + month;
+        } else {
+            mon = "" + month;
+        }
+        String timestampMonth = "" + year + "-" + mon + "-01 00:00:00.000";
+        String timestampYear = "" + year + "-01-01 00:00:00.000";
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS monthly_income, " +
+                    "DATE_TRUNC('month', t.res_time) as mon, DATE_TRUNC('year', t.res_time) as yyyy\n" +
+                    "\tFROM transactions t \n" +
+                    "\tWHERE t.receiving_id IN(" +
+                    "SELECT a.id" +
+                    "\tFROM accounts a" +
+                    "\tJOIN users_with_accounts uwa ON uwa.account_id = a.id" +
+                    "\tWHERE uwa.user_id = ?" +
+                    ") AND DATE_TRUNC('month', t.res_time) = ? AND DATE_TRUNC('year', t.res_time) = ?\n" +
+                    "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
+            ps.setInt(1, uId);
+            ps.setString(2, timestampMonth);
+            ps.setString(3, timestampYear);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getLong("monthly_income");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1L;
+
+    }
 }
 
 
