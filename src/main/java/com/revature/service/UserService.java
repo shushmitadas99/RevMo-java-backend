@@ -80,5 +80,8 @@ public class UserService {
     }
 
 
+    public String getRequesteeByTransactionId(int transactionId) {
+        return userDao.getRequesteeEmailByTransactionId(transactionId);
+    }
 }
 

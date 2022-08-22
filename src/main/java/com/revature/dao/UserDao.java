@@ -1,4 +1,5 @@
 package com.revature.dao;
+
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -147,7 +148,7 @@ public class UserDao {
 
             ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()){
+            while (rs.next()) {
                 return new User(rs.getInt("id"), rs.getString("first_name"),
                         rs.getString("last_name"), rs.getString("email"),
                         rs.getString("pass"), rs.getString("phone"),
@@ -162,7 +163,7 @@ public class UserDao {
 
     }
 
-    public String updateEmail(int userId, String email){
+    public String updateEmail(int userId, String email) {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement pstmt = con.prepareStatement("UPDATE users SET email=? WHERE id=? RETURNING *");
             pstmt.setString(1, email);
@@ -176,7 +177,7 @@ public class UserDao {
         }
     }
 
-    public String updatephone(int userId, String phoneNumber){
+    public String updatephone(int userId, String phoneNumber) {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement pstmt = con.prepareStatement("UPDATE users SET phone=? WHERE id=? RETURNING *");
             pstmt.setString(1, phoneNumber);
@@ -188,6 +189,23 @@ public class UserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getRequesteeEmailByTransactionId(int transactionId) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT u.email FROM users u " +
+                    "JOIN users_with_accounts uwa ON uwa.user_id = u.id " +
+                    "JOIN transactions t ON uwa.account_id = t.sending_id " +
+                    "WHERE t.id = ?");
+            ps.setInt(1, transactionId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 }
 

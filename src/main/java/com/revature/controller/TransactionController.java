@@ -2,22 +2,28 @@ package com.revature.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
+import com.revature.model.Account;
 import com.revature.model.Transaction;
+import com.revature.service.AccountService;
 import com.revature.service.TransactionService;
 import com.revature.service.UserService;
 import io.javalin.Javalin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class TransactionController implements Controller {
     private final TransactionService transactionService;
     private UserService userService;
+    private AccountService accountService;
 
     public TransactionController() {
         userService = new UserService();
+        accountService = new AccountService();
         transactionService = new TransactionService();
     }
 
@@ -33,7 +39,7 @@ public class TransactionController implements Controller {
                 HttpSession session = req.getSession();
                 Integer uId = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
+                if (id == uId || Objects.equals(role, "2")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
@@ -86,13 +92,14 @@ public class TransactionController implements Controller {
         app.put("/trx-req", ctx -> {
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
-                String email = tr.getReceivingEmail();
-                int uId = userService.getUserByEmail(email).getUserId();
+                int transactionId = tr.getTransactionId();
+                String email = userService.getRequesteeByTransactionId(transactionId);
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
-                Integer id = (Integer) session.getAttribute("userId");
+                String emailSignedInUser = (String) session.getAttribute("email");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || Objects.equals(role, "2")) {
+
+                if (Objects.equals(email, emailSignedInUser) || Objects.equals(role, "2")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
@@ -175,6 +182,32 @@ public class TransactionController implements Controller {
             if (role.equals("2")) {
                 ctx.json(transactionService.getAllTransactionsByDescription(description));
                 ctx.status(200);
+            }
+        });
+
+        app.get("/trx/income-tracking/{aId}/{month}/{year}", ctx -> {
+            try {
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                String emailSignedInUser = (String) session.getAttribute("email");
+                String role = (String) session.getAttribute("userRole");
+                int aId = Integer.parseInt(ctx.pathParam("aId"));
+                int month = Integer.parseInt(ctx.pathParam("month"));
+                int year = Integer.parseInt(ctx.pathParam("year"));
+                List<Account> accounts = accountService.getAccountsByEmail(emailSignedInUser);
+                List<Integer> accountIds = new ArrayList<Integer>();
+                for (Account a : accounts)
+                    accountIds.add(a.getAccountId());
+                if (accountIds.contains(aId) || Objects.equals(role, "2")) {
+                    ctx.json(transactionService.trackAccountIncome(aId, month, year));
+                    ctx.status(201);
+                } else {
+                    ctx.json("Access Denied");
+                    ctx.status(401);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
             }
         });
 
