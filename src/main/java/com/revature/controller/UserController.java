@@ -149,11 +149,11 @@ public class UserController implements Controller {
                     ctx.status(404);
                     throw new RuntimeException("Reset Link Expired. Please try again");
                 } else {
-                    boolean validateToken = UserService.validateToken(token); // we need to write a code to verify the token validity
+                    boolean validateToken = userService.validateToken(token); // we need to write a code to verify the token validity
                     if (validateToken) {
                         JSONObject newPassword = new JSONObject(ctx.body());
-                        UserService.updatePassword(newPassword.getString("newpassword"), token);
-                        UserService.deleteToken(token);
+                        userService.updatePassword(newPassword.getString("newpassword"), token);
+                        userService.deleteToken(token);
                         // redirect user to setup a new password page
                     } else {
                         ctx.status(404);
@@ -173,15 +173,13 @@ public class UserController implements Controller {
             JSONObject inputEmail = new JSONObject(ctx.body());
             //System.out.println(UserService.getUserEmailByEmail(inputEmail.getString("email")));
             try {
-                if (UserService.getUserEmailByEmail(inputEmail.getString("email"))) {
+                if (userService.getUserEmailByEmail(inputEmail.getString("email"))) {
 
-                    User currUser = new User();
-
-                    currUser = UserService.getUserByInputEmail(inputEmail.getString("email"));
+                    User currUser = userService.getUserByInputEmail(inputEmail.getString("email"));
 
                     String jwtToken = Jwts.builder().claim("last_name", currUser.getLastName()).claim("userId", currUser.getUserId()).claim("email", currUser.getEmail()).setSubject(currUser.getFirstName()).setId(UUID.randomUUID().toString()).setIssuedAt(Date.from(Instant.now())).setExpiration(Date.from(Instant.now().plus(5L, ChronoUnit.MINUTES))).compact();
 
-                    UserService.sendToken(jwtToken, currUser.getUserId());
+                    userService.sendToken(jwtToken, currUser.getUserId());
 
                     System.out.println(jwtToken);
 
