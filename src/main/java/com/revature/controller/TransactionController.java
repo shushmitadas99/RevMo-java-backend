@@ -92,7 +92,7 @@ public class TransactionController implements Controller {
                 HttpSession session = req.getSession();
                 Integer id = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
+                if (id == uId || Objects.equals(role, "2")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
