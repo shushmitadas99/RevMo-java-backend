@@ -110,6 +110,10 @@ public class TransactionService {
         return transactionDao.getAllTransactionsByDescription(description);
     }
 
+    public Long trackAccountIncome(int aId, int month, int year) {
+        return transactionDao.monthlyIncome(aId, month, year);
+    }
+
 
 //    public Transaction sendMoneyRequest(Map<String, String> transaction, int uId) throws SQLException, InvalidParameterException {
 //        Transaction t = validateTransactionParams(transaction);

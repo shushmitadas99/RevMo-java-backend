@@ -2,23 +2,28 @@ package com.revature.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
+import com.revature.model.Account;
 import com.revature.model.Transaction;
-import com.revature.model.User;
+import com.revature.service.AccountService;
 import com.revature.service.TransactionService;
 import com.revature.service.UserService;
 import io.javalin.Javalin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class TransactionController implements Controller {
     private final TransactionService transactionService;
     private UserService userService;
+    private AccountService accountService;
 
     public TransactionController() {
         userService = new UserService();
+        accountService = new AccountService();
         transactionService = new TransactionService();
     }
 
@@ -176,6 +181,32 @@ public class TransactionController implements Controller {
             if (role.equals("2")) {
                 ctx.json(transactionService.getAllTransactionsByDescription(description));
                 ctx.status(200);
+            }
+        });
+
+        app.get("/trx/income-tracking/{aId}/{month}/{year}", ctx -> {
+            try {
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                String emailSignedInUser = (String) session.getAttribute("email");
+                String role = (String) session.getAttribute("userRole");
+                int aId = Integer.parseInt(ctx.pathParam("aId"));
+                int month = Integer.parseInt(ctx.pathParam("month"));
+                int year = Integer.parseInt(ctx.pathParam("year"));
+                List<Account> accounts = accountService.getAccountsByEmail(emailSignedInUser);
+                List<Integer> accountIds = new ArrayList<Integer>();
+                for (Account a : accounts)
+                    accountIds.add(a.getAccountId());
+                if (accountIds.contains(aId) || Objects.equals(role, "2")) {
+                    ctx.json(transactionService.trackAccountIncome(aId, month, year));
+                    ctx.status(201);
+                } else {
+                    ctx.json("Access Denied");
+                    ctx.status(401);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
             }
         });
 
