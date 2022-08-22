@@ -20,28 +20,28 @@ public class UserService {
         this.userDao = new UserDao();
     }
 
-    public static boolean getUserEmailByEmail(String email) {
-        return UserDao.getUserEmailByEmail(email);
+    public boolean getUserEmailByEmail(String email) {
+        return userDao.getUserEmailByEmail(email);
     }
 
-    public static void updatePassword(String password, String token) {
-        UserDao.updatePassword(password, token);
+    public void updatePassword(String password, String token) {
+        userDao.updatePassword(password, token);
     }
 
-    public static User getUserByInputEmail(String inputEmail) {
-        return UserDao.getUserByInputEmail(inputEmail);
+    public User getUserByInputEmail(String inputEmail) {
+        return userDao.getUserByInputEmail(inputEmail);
     }
 
-    public static void sendToken(String token, int userId) {
-        UserDao.sendToken(token, userId);
+    public void sendToken(String token, int userId) {
+        userDao.sendToken(token, userId);
     }
 
-    public static boolean validateToken(String token) {
-        return UserDao.validateToken(token);
+    public boolean validateToken(String token) {
+        return userDao.validateToken(token);
     }
 
-    public static void deleteToken(String token) {
-        UserDao.deleteToken(token);
+    public void deleteToken(String token) {
+        userDao.deleteToken(token);
     }
 
     public User login(String email, String password) throws SQLException, InvalidLoginException {
