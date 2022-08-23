@@ -86,7 +86,10 @@ public class TransactionService {
         return transactionDao.getAllTransactions();
 
     }
+    public List<Transaction> getAllTransactions(int aid) throws SQLException {
+        return transactionDao.getAllTransactions(aid);
 
+    }
     public List<Transaction> getAllTransactionsByRequesterId(String requestId) throws SQLException {
         int request = Integer.parseInt(requestId);
         return transactionDao.getAllTransactionsByRequesterId(request);

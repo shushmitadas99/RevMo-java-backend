@@ -104,7 +104,40 @@ public class TransactionDao {
             return transactionsList;
         }
     }
+    public List<Transaction> getAllTransactions(int aid) throws SQLException {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description " +
+                    "FROM transactions t " +
+                    "JOIN users u ON t.requester_id = u.id " +
+                    "JOIN status_types st ON t.status_id  = st.id " +
+                    "JOIN transaction_descriptions td ON t.desc_id  = td.id " +
+                    "WHERE t.sending_id = ? OR t.receiving_id = ?;");
 
+            ps.setInt(1, aid);
+            ps.setInt(2, aid);
+
+            ResultSet rs = ps.executeQuery();
+            List<Transaction> transactionsList = new ArrayList<>();
+            while (rs.next()) {
+                int transactionId = rs.getInt("id");
+                int requesterId = rs.getInt("requester_id");
+                int sendingId = rs.getInt("sending_id");
+                int receivingId = rs.getInt("receiving_id");
+                Timestamp reqTime = rs.getTimestamp("req_time");
+                Timestamp resTime = rs.getTimestamp("res_time");
+                long amount = rs.getLong("amount");
+                String receivingEmail = rs.getString("receiving_email");
+                String initiatedBy = rs.getString("initiated_by");
+                String typeName = rs.getString("type_name");
+                String description = rs.getString("description");
+                Transaction transaction = new Transaction(transactionId, requesterId,
+                        sendingId, receivingId, reqTime, resTime, receivingEmail,
+                        initiatedBy, typeName, description, amount);
+                transactionsList.add(transaction);
+            }
+            return transactionsList;
+        }
+    }
 
     public List<Transaction> getAllTransactionsByRequesterId(int requestId) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
