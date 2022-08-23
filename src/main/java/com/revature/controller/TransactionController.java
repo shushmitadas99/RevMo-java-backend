@@ -129,6 +129,14 @@ public class TransactionController implements Controller {
                 ctx.status(200);
             }
         });
+        app.get("/trx/account/{aid}", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            int aid = Integer.parseInt(ctx.pathParam("aid"));
+            ctx.json(transactionService.getAllTransactions(aid));
+            ctx.status(200);
+
+        });
 
         app.get("/trx/{requesterId}/requester", ctx -> {
             HttpServletRequest req = ctx.req;
