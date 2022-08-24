@@ -150,6 +150,10 @@ public class UserController implements Controller {
             JSONObject inputEmail = new JSONObject(ctx.body());
             //System.out.println(UserService.getUserEmailByEmail(inputEmail.getString("email")));
             try {
+                if(inputEmail.getString("email").equals("")){
+                    ctx.status(404);
+                    throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
+                }
                 if (UserService.getUserEmailByEmail(inputEmail.getString("email"))) {
 
                     User currUser = new User();
