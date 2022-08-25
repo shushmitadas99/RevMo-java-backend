@@ -90,6 +90,7 @@ public class TransactionController implements Controller {
         });
 
         app.put("/trx-req", ctx -> {
+//            endpoint expects JSON { "statusId": "{2 for approved, 3 for denied}", "transactionId": "{trxId}"}
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
                 int transactionId = tr.getTransactionId();
@@ -174,13 +175,14 @@ public class TransactionController implements Controller {
             }
         });
 
-        app.get("/trx/{status-name}/status-name", ctx -> {
+        app.get("/trx/status/{status-name}/{aId}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             String role = (String) session.getAttribute("userRole");
             String statusName = ctx.pathParam("status-name").toUpperCase();
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
             if (role.equals("2")) {
-                ctx.json(transactionService.getAllTransactionsByStatusName(statusName));
+                ctx.json(transactionService.getAllTransactionsByStatusName(statusName, aId));
                 ctx.status(200);
             }
         });
