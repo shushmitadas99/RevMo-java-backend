@@ -83,7 +83,7 @@ public class UserDao {
         }
     }
 
-    public void sendToken(String token, int userId) {
+    public boolean sendToken(String token, int userId) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("UPDATE users SET tokenvalue= convert_to(?, 'LATIN1') WHERE id=? RETURNING *");
@@ -91,6 +91,7 @@ public class UserDao {
             ps.setString(1, token);
             ps.setInt(2, userId);
             ResultSet rs = ps.executeQuery();
+            return true;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
