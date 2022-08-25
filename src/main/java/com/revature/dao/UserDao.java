@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.revature.model.User;
@@ -14,6 +15,7 @@ import com.revature.utility.ConnectionUtility;
 
 
 import java.sql.*;
+import java.util.List;
 
 public class UserDao {
     public boolean getUserEmailByEmail(String email) {
@@ -208,7 +210,7 @@ public class UserDao {
         return null;
     }
 
-    public String getReceiverEmailByTransactionId(int transactionId) {
+    public List<String> getReceiverEmailByTransactionId(int transactionId) {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT u.email FROM users u " +
                     "JOIN users_with_accounts uwa ON uwa.user_id = u.id " +
@@ -216,13 +218,15 @@ public class UserDao {
                     "WHERE t.id = ?");
             ps.setInt(1, transactionId);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getString("email");
+            List<String> emails = new ArrayList<>();
+            while (rs.next()) {
+                 emails.add(rs.getString("email"));
             }
+            return emails;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
+
     }
 }
 
