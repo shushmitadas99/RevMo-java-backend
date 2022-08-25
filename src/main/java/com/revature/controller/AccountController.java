@@ -10,6 +10,7 @@ import io.javalin.Javalin;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.Objects;
 
 public class AccountController implements Controller{
     private AccountService accountService;
@@ -93,26 +94,23 @@ public class AccountController implements Controller{
            }
         });
 
-        app.get("/accounts", ctx -> {
-            HttpServletRequest req = ctx.req;
-            HttpSession session = req.getSession();
-            String email = (String) session.getAttribute("email");
-            User myUser = userService.getUserByEmail(email);
-
-            if (myUser == null) {
-                ctx.result("You are not logged in!");
-                ctx.status(404);
-            } else {
-                ctx.json(accountService.getAccountsByEmail(email));
-                ctx.status(200);
-            }
-        });
+//        app.get("/{userEmail}/accounts", ctx -> {
+//            String email = ctx.pathParam("userEmail");
+//            User myUser = userService.getUserByEmail(email);
+//
+//            if (Objects.equals(myUser.getUserRole(), "1")) {
+//                ctx.json(accountService.getAccountsByEmail(email));
+//                ctx.status(200);
+//            } else {
+//                ctx.result("You are not logged in!");
+//                ctx.status(404);
+//            }
+//        });
 
         app.get("/accounts/{aId}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             String email = (String) session.getAttribute("email");
-            User myUser = userService.getUserByEmail(email);
             int aId = Integer.parseInt(ctx.pathParam("aId"));
             ctx.json(accountService.getAccountByEmailAndAccountId(email, aId));
             ctx.status(200);

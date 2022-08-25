@@ -69,9 +69,7 @@ public class AccountService {
     }
 
     public Account getAccountByEmailAndAccountId(String email, int id) {
-        Account account = accountDao.getAccountByEmailAndAccountId(email, id);
-
-        return account;
+        return accountDao.getAccountByEmailAndAccountId(email, id);
     }
 
     public String linkUserToAccount(int aId, String email) throws SQLException, InvalidParameterException {

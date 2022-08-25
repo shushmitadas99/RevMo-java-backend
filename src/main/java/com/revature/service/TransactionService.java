@@ -86,7 +86,10 @@ public class TransactionService {
         return transactionDao.getAllTransactions();
 
     }
+    public List<Transaction> getAllTransactions(int aid) throws SQLException {
+        return transactionDao.getAllTransactions(aid);
 
+    }
     public List<Transaction> getAllTransactionsByRequesterId(String requestId) throws SQLException {
         int request = Integer.parseInt(requestId);
         return transactionDao.getAllTransactionsByRequesterId(request);
@@ -108,6 +111,10 @@ public class TransactionService {
 
     public List<Transaction> getAllTransactionsByDescription(String description) throws SQLException {
         return transactionDao.getAllTransactionsByDescription(description);
+    }
+
+    public Long trackAccountIncome(int aId, int month, int year) {
+        return transactionDao.monthlyIncome(aId, month, year);
     }
 
 

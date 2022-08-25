@@ -72,8 +72,6 @@ CREATE TABLE transactions(
 	status_id INT NOT NULL,
 	desc_id INT NOT NULL,
 	receiving_email VARCHAR(30) NOT NULL,
-    CONSTRAINT fk_trx_email
-    	FOREIGN KEY (receiving_email) REFERENCES "users" (email),
 	CONSTRAINT fk_trx_sending_id
   		FOREIGN KEY (sending_id) REFERENCES "accounts" (id),
   	CONSTRAINT fk_trx_receiving_id
