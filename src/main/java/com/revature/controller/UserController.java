@@ -1,30 +1,33 @@
 package com.revature.controller;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.revature.exception.InvalidParameterException;
+
 import com.revature.model.User;
 import com.revature.utility.EmailUtility;
 import io.jsonwebtoken.Jwts;
+
 import java.lang.Exception;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 
-
 import com.revature.exception.InvalidLoginException;
-import com.revature.model.User;
 import com.revature.service.UserService;
 import io.javalin.Javalin;
-import org.eclipse.jetty.security.authentication.AuthorizationService;
 import org.json.JSONObject;
 
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.sql.SQLException;
 
 import com.revature.model.Account;
 import com.revature.service.AccountService;
@@ -77,31 +80,29 @@ public class UserController implements Controller {
         });
 
         app.get("/logged-in-user", ctx -> {
-                    HttpServletRequest req = ctx.req;
+            HttpServletRequest req = ctx.req;
 
-                    HttpSession session = req.getSession();
-                    User myUser = (User) session.getAttribute("logged_in_user");
+            HttpSession session = req.getSession();
+            User myUser = (User) session.getAttribute("logged_in_user");
 
-                    if (myUser == null) {
-                        ctx.result("You are not logged in!");
-                        ctx.status(404);
-                    } else {
+            if (myUser == null) {
+                ctx.result("You are not logged in!");
+                ctx.status(404);
+            } else {
 
-                    }
+            }
 
-                });
+        });
 
-        // returns currently logged in user's info
+        // returns currently logged-in user's info
         app.get("/user", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             String email = (String) session.getAttribute("email");
 
 
-            //TODO undo when can login!
-//            myUser = new User(1, "Bob", "Smith", "jd80@a.ca", "foobar", "666-123-4562", "user");
-
             if (email == null) {
+
 
                 ctx.result("You are not logged in!");
                 ctx.status(404);
@@ -113,6 +114,28 @@ public class UserController implements Controller {
 
                 ctx.json(myUser);
                 ctx.status(200);
+            }
+        });
+
+        app.post("/user", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String email = (String) session.getAttribute("email");
+
+            if (email == null) {
+                ctx.result("You are not logged in!");
+                ctx.status(404);
+            } else {
+                ObjectMapper om = new ObjectMapper();
+                Map<String, String> newInfo = om.readValue(ctx.body(), Map.class);
+                try {
+                    userService.updateInfo(newInfo, (Integer) session.getAttribute("userId"), email);
+                    ctx.status(201);
+                } catch (InvalidParameterException e) {
+                    ctx.json(e.getMessages());
+                    ctx.status(400);
+                }
+
             }
         });
 
@@ -130,13 +153,13 @@ public class UserController implements Controller {
                     ctx.status(404);
                     throw new RuntimeException("Reset Link Expired. Please try again");
                 } else {
-                    boolean validateToken = UserService.validateToken(token); // we need to write a code to verify the token validity
+                    boolean validateToken = userService.validateToken(token); // we need to write a code to verify the token validity
                     if (validateToken) {
                         //get new password from json input
                         JSONObject newPassword = new JSONObject(ctx.body());
                         //Update password in Database and delete token
-                        UserService.updatePassword(newPassword.getString("newpassword"), token);
-                        UserService.deleteToken(token);
+                        userService.updatePassword(newPassword.getString("newpassword"), token);
+                        userService.deleteToken(token);
                         // redirect user to setup a new password page
                     } else {
                         ctx.status(404);
@@ -144,13 +167,13 @@ public class UserController implements Controller {
                         // return user a message with invalid token
                     }
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 ctx.status(404);
                 throw new RuntimeException("Reset Link Expired. Please try again");
             }
         });
 
-        app.post("/forgotpassword", ctx->{
+        app.post("/forgotpassword", ctx -> {
             //String email="";
             //Create JSONObject with inputted json value
             JSONObject inputEmail = new JSONObject(ctx.body());
@@ -163,18 +186,18 @@ public class UserController implements Controller {
                     throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
                 }
                 //Check if email is in the database
-                if (UserService.getUserEmailByEmail(inputEmail.getString("email"))) {
+                if (userService.getUserEmailByEmail(inputEmail.getString("email"))) {
                     //Create new user Object
                     User currUser = new User();
 
                     //return user Object based on email found
-                    currUser = UserService.getUserByInputEmail(inputEmail.getString("email"));
+                    currUser = userService.getUserByInputEmail(inputEmail.getString("email"));
 
                     //Create web Token based on values with expiration
                     String jwtToken = Jwts.builder().claim("last_name", currUser.getLastName()).claim("userId", currUser.getUserId()).claim("email", currUser.getEmail()).setSubject(currUser.getFirstName()).setId(UUID.randomUUID().toString()).setIssuedAt(Date.from(Instant.now())).setExpiration(Date.from(Instant.now().plus(5L, ChronoUnit.MINUTES))).compact();
 
                     //Send Token to Database
-                    UserService.sendToken(jwtToken, currUser.getUserId());
+                    userService.sendToken(jwtToken, currUser.getUserId());
 
                     System.out.println(jwtToken);
 
@@ -183,7 +206,7 @@ public class UserController implements Controller {
                     int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
                     if (status == 202) {
                         System.out.println("Please Check Your Email!");
-                    }else{
+                    } else {
                         ctx.status(404);
                         throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
                     }
@@ -191,11 +214,11 @@ public class UserController implements Controller {
                     ctx.status(404);
                     System.out.println("The email pertaining to the account has been sent an email. Please check email for reset link.");
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 ctx.status(404);
                 throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
             }
-        } );
+        });
 
 
     }

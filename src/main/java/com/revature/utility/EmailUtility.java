@@ -1,5 +1,8 @@
 package com.revature.utility;
 import com.sendgrid.*;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
@@ -19,11 +22,10 @@ public class EmailUtility {
         Dotenv dotenv = Dotenv.load();
         int stats =400;
         Email from = new Email("revmobank@gmail.com");
-        String subject = sub;
         Email to = new Email(email_to);
         Content content = new Content("text/html", email_content);
 
-        Mail mail = new Mail(from, subject, to, content);;
+        Mail mail = new Mail(from, sub, to, content);
         SendGrid sg = new SendGrid(dotenv.get("SENDGRID_API_KEY"));
 
         Request request = new Request();
@@ -37,7 +39,7 @@ public class EmailUtility {
             System.out.println(response.getHeaders());
             stats = response.getStatusCode();
         } catch (IOException ex) {
-            System.out.println("Exception Occured While Sending Email! \n\n" + ex);
+            System.out.println("Exception Occurred While Sending Email! \n\n" + ex);
 //            throw ex;
         }
         return stats;
