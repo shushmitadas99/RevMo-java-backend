@@ -1,114 +1,233 @@
 package com.revature.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revature.model.User;
+import com.revature.exception.InvalidParameterException;
+import com.revature.model.Account;
+import com.revature.model.Transaction;
+import com.revature.service.AccountService;
 import com.revature.service.TransactionService;
+import com.revature.service.UserService;
 import io.javalin.Javalin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class TransactionController implements Controller {
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
+    private UserService userService;
+    private AccountService accountService;
 
     public TransactionController() {
-        this.transactionService = new TransactionService();
+        userService = new UserService();
+        accountService = new AccountService();
+        transactionService = new TransactionService();
     }
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public void mapEndpoints(Javalin app) {
-        app.post("/transaction", ctx -> {
-            HttpServletRequest req = ctx.req;
-
-            HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
-
-            ObjectMapper om = new ObjectMapper();
-            Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
-            //DeviceWarranty newWarranty = ctx.bodyAsClass(DeviceWarranty.class);
-            //newWarranty.setWarrantyRequester(myUser.getUsername());
-//            Transaction addedTransaction = newTransaction;
-//            addedTransaction.setTransactionId();
+        app.post("/trx-send", ctx -> {
             try {
-                ctx.json(transactionService.addTransactionById(newTransaction));
-                ctx.status(201);
-            } catch (InvalidParameterException e) {
-//                ctx.json(e.getMessages());
+                Transaction tr = ctx.bodyAsClass(Transaction.class);
+                int id = tr.getRequesterId();
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                Integer uId = (Integer) session.getAttribute("userId");
+                String role = (String) session.getAttribute("userRole");
+                if (id == uId || Objects.equals(role, "2")) {
+                    ObjectMapper om = new ObjectMapper();
+                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                    try {
+                        ctx.json(transactionService.moveAmountBetweenAccounts(newTransaction));
+                        ctx.status(201);
+                    } catch (InvalidParameterException e) {
+                        ctx.json(e.getMessages());
+                        ctx.status(400);
+                    }
+                } else {
+                    ctx.json("User Not Found");
+                    ctx.status(404);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
                 ctx.status(400);
             }
 
         });
 
-        app.get("/transactions", ctx -> {
-            HttpServletRequest req = ctx.req;
-            HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
-            ctx.json(transactionService.getAllTransactions());
-            ctx.status(200);
+        app.post("/trx-req", ctx -> {
+            try {
+                Transaction tr = ctx.bodyAsClass(Transaction.class);
+                int id = tr.getRequesterId();
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                Integer uId = (Integer) session.getAttribute("userId");
+                String role = (String) session.getAttribute("userRole");
+                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
+                    ObjectMapper om = new ObjectMapper();
+                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                    try {
+                        ctx.json(transactionService.requestAmount(newTransaction));
+                        ctx.status(201);
+                    } catch (InvalidParameterException e) {
+                        ctx.json(e.getMessages());
+                        ctx.status(400);
+                    }
+                } else {
+                    ctx.json("User Not Found");
+                    ctx.status(404);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
+            }
+
         });
 
+        app.put("/trx-req", ctx -> {
+            try {
+                Transaction tr = ctx.bodyAsClass(Transaction.class);
+                int transactionId = tr.getTransactionId();
+                String email = userService.getRequesteeByTransactionId(transactionId);
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                String emailSignedInUser = (String) session.getAttribute("email");
+                String role = (String) session.getAttribute("userRole");
 
-        app.get("/transaction/requesterId", ctx -> {
-            HttpServletRequest req = ctx.req;
-            HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+                if (Objects.equals(email, emailSignedInUser) || Objects.equals(role, "2")) {
+                    ObjectMapper om = new ObjectMapper();
+                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                    try {
+                        ctx.json(transactionService.handleRequestAmount(newTransaction));
+                        ctx.status(201);
+                    } catch (InvalidParameterException e) {
+                        ctx.json(e.getMessages());
+                        ctx.status(400);
+                    }
+                } else {
+                    ctx.json("User Not Found");
+                    ctx.status(404);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
+            }
 
-            ctx.json(transactionService.getAllTransactionsByRequesterId("1"));
-            ctx.status(200);
         });
 
-
-        app.get("/transaction/senderId", ctx -> {
+        app.get("/trx", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
-
-            ctx.json(transactionService.getAllTransactionsbySenderId("1"));
-            ctx.status(200);
+            String role = (String) session.getAttribute("userRole");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactions());
+                ctx.status(200);
+            }
         });
-
-
-        app.get("/transaction/receivingId", ctx -> {
+        app.get("/trx/account/{aid}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
-
-            ctx.json(transactionService.getAllTransactionsByReceivingId("1"));
+            int aid = Integer.parseInt(ctx.pathParam("aid"));
+            ctx.json(transactionService.getAllTransactions(aid));
             ctx.status(200);
+
         });
 
-
-        app.get("/transaction/statusId", ctx -> {
+        app.get("/trx/{requesterId}/requester", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
-
-            ctx.json(transactionService.getAllTransactionsByStatusId("1"));
-            ctx.status(200);
+            String role = (String) session.getAttribute("userRole");
+            String requesterId = ctx.pathParam("requesterId");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsByRequesterId(requesterId));
+                ctx.status(200);
+            }
         });
 
-        app.get("/transaction/descriptionId", ctx -> {
+        app.get("/trx/{senderId}/sender", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
-
-            ctx.json(transactionService.getAllTransactionsByDescriptionId("1"));
-            ctx.status(200);
+            String role = (String) session.getAttribute("userRole");
+            String senderId = ctx.pathParam("senderId");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsBySenderId(senderId));
+                ctx.status(200);
+            }
         });
 
-//        app.get("/Transaction/approved", ctx -> {
-//            HttpServletRequest req = ctx.req;
-//            HttpSession session = req.getSession();
-//            User myUser = (User) session.getAttribute("logged_in_user");
-//
-//            ctx.json(transactionService.getAllTransactionsByApproved("1"));
-//            ctx.status(200);
+        app.get("/trx/{receivingId}/receiver", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String receivingId = ctx.pathParam("receivingId");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsByReceivingId(receivingId));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/trx/{status-name}/status-name", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String statusName = ctx.pathParam("status-name").toUpperCase();
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsByStatusName(statusName));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/trx/{descriptionId}/description", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String description = ctx.pathParam("descriptionId");
+            if (role.equals("2")) {
+                ctx.json(transactionService.getAllTransactionsByDescription(description));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/trx/income-tracking/{aId}/{month}/{year}", ctx -> {
+            try {
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                String emailSignedInUser = (String) session.getAttribute("email");
+                String role = (String) session.getAttribute("userRole");
+                int aId = Integer.parseInt(ctx.pathParam("aId"));
+                int month = Integer.parseInt(ctx.pathParam("month"));
+                int year = Integer.parseInt(ctx.pathParam("year"));
+                List<Account> accounts = accountService.getAccountsByEmail(emailSignedInUser);
+                List<Integer> accountIds = new ArrayList<Integer>();
+                for (Account a : accounts)
+                    accountIds.add(a.getAccountId());
+                if (accountIds.contains(aId) || Objects.equals(role, "2")) {
+                    ctx.json(transactionService.trackAccountIncome(aId, month, year));
+                    ctx.status(201);
+                } else {
+                    ctx.json("Access Denied");
+                    ctx.status(401);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
+            }
+        });
+
+//        app.post("/trx/request", ctx -> {
+//           HttpServletRequest req = ctx.req;
+//           HttpSession session = req.getSession();
+//           Integer uId = (Integer) session.getAttribute("userId");
+//           ObjectMapper om = new ObjectMapper();
+//           Map<String, String> trx = om.readValue(ctx.body(), Map.class);
+//           ctx.json(transactionService.sendMoneyRequest(trx, uId));
+//           ctx.status(200);
 //        });
-
-
     }
 }
 

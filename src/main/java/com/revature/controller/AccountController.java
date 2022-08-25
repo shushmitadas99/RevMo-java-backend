@@ -4,66 +4,125 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.User;
 import com.revature.service.AccountService;
+import com.revature.service.UserService;
 import io.javalin.Javalin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.Objects;
 
 public class AccountController implements Controller{
     private AccountService accountService;
+    private UserService userService;
 
     public AccountController() {
         accountService = new AccountService();
+
     }
     @Override
     public void mapEndpoints(Javalin app) {
         app.post("/accounts", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
+            String email = (String) session.getAttribute("email");
+            User myUser = userService.getUserByEmail(email);
 
-            ObjectMapper om = new ObjectMapper();
-            Map<String, String> newAccount = om.readValue(ctx.body(), Map.class);
-            try {
-                ctx.json(accountService.openAccount(newAccount));
-                ctx.status(201);
-            } catch (InvalidParameterException e) {
-                ctx.json(e.getMessages());
-                ctx.status(400);
+            if (email == null) {
+                ctx.result("You are not logged in!");
+                ctx.status(404);
+            } else if (myUser.getUserRole().equals("2")) {
+                ObjectMapper om = new ObjectMapper();
+                Map<String, String> newAccount = om.readValue(ctx.body(), Map.class);
+                try {
+                    ctx.json(accountService.openAccount(newAccount));
+                    ctx.status(201);
+                } catch (InvalidParameterException e) {
+                    ctx.json(e.getMessages());
+                    ctx.status(400);
+                }
             }
         });
 
-        app.put("/accounts", ctx -> {
+        app.put("/accounts/{aId}/users/{email}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
-            ctx.json(accountService.linkUserToAccount(4, 5));
-            ctx.status(200);
+            String role = (String) session.getAttribute("userRole");
+            if (role.equals("2")) {
+                String email = ctx.pathParam("email");
+                int aId = Integer.parseInt(ctx.pathParam("aId"));
+                try {
+                    ctx.json(accountService.linkUserToAccount(aId, email));
+                    ctx.status(200);
+                } catch (InvalidParameterException e) {
+                    ctx.json(e.getMessages());
+                    ctx.status(400);
+                }
+            }
         });
 
-        app.delete("/accounts", ctx -> {
+        app.delete("/accounts/{aId}/users/{email}", ctx -> {
            HttpServletRequest req = ctx.req;
            HttpSession session = req.getSession();
-           User myUser = (User) session.getAttribute("logged_in_user");
-           ctx.json(accountService.unlinkUserFromAccount(4,5));
-           ctx.status(200);
+           String role = (String) session.getAttribute("userRole");
+           if (role.equals("2")){
+               String email = ctx.pathParam("email");
+               int aId = Integer.parseInt(ctx.pathParam("aId"));
+               try {
+                   ctx.json(accountService.unlinkUserFromAccount(aId, email));
+                   ctx.status(200);
+               } catch (InvalidParameterException e) {
+                   ctx.json(e.getMessages());
+                   ctx.status(400);
+               }
+           }
         });
 
-        app.get("/accounts", ctx -> {
+        app.delete("/accounts/{aId}", ctx -> {
+           HttpServletRequest req = ctx.req;
+           HttpSession session = req.getSession();
+           String role = (String) session.getAttribute("userRole");
+           if (role.equals("2")) {
+               try {
+                   int aId = Integer.parseInt(ctx.pathParam("aId"));
+                   ctx.json(accountService.deleteAccount(aId));
+                   ctx.status(200);
+               } catch (InvalidParameterException e) {
+                   ctx.json(e.getMessages());
+                   ctx.status(400);
+               }
+           }
+        });
+
+//        app.get("/{userEmail}/accounts", ctx -> {
+//            String email = ctx.pathParam("userEmail");
+//            User myUser = userService.getUserByEmail(email);
+//
+//            if (Objects.equals(myUser.getUserRole(), "1")) {
+//                ctx.json(accountService.getAccountsByEmail(email));
+//                ctx.status(200);
+//            } else {
+//                ctx.result("You are not logged in!");
+//                ctx.status(404);
+//            }
+//        });
+
+        app.get("/accounts/{aId}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
-
-            ctx.json(accountService.getAccountsByEmail("jd80@a.ca"));
+            String email = (String) session.getAttribute("email");
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
+            ctx.json(accountService.getAccountByEmailAndAccountId(email, aId));
             ctx.status(200);
         });
 
-        app.get("/account", ctx -> {
+        app.get("/accounts/{aId}/users", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
-            User myUser = (User) session.getAttribute("logged_in_user");
-            ctx.json(accountService.getAccountByEmailAndAccountId("jd80@a.ca", 1));
+            String email = (String) session.getAttribute("email");
+            User myUser = userService.getUserByEmail(email);
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
+            ctx.json(accountService.obtainListOfAccountOwners(aId));
             ctx.status(200);
         });
     }

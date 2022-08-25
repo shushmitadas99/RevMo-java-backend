@@ -5,36 +5,119 @@ import java.util.Objects;
 
 public class Transaction {
 
+    private String initiatedBy;
+    private String receivingEmail;
+    private String typeName;
     private int transactionId;
-    private int requestId;
+    private int requesterId;
     private int sendingId;
     private int receivingId;
     private Timestamp requestTime;
     private Timestamp resolveTime;
-    private boolean approve;
-    private int status_id;
+
+    private int statusId;
     private int descriptionId;
-    private long balance;
+    private long amount;
+
+    private String description;
 
 
     public Transaction(int transactionId, int requesterId, int sendingId, int receivingId,
-                       Timestamp requestTime, Timestamp resolveTime, boolean approve,
-                       int status_id, int descriptionId, long balance) {
+                       Timestamp requestTime, Timestamp resolveTime,
+                       int statusId, int descriptionId, long amount) {
 
         this.transactionId = transactionId;
-        this.requestId = requesterId;
+        this.requesterId = requesterId;
         this.sendingId = sendingId;
         this.receivingId = receivingId;
         this.requestTime = requestTime;
         this.resolveTime = resolveTime;
-        this.approve = approve;
-        this.status_id = status_id;
+        this.statusId = statusId;
         this.descriptionId = descriptionId;
-        this.balance = balance;
+        this.amount = amount;
     }
 
     public Transaction() {
 
+    }
+
+    public Transaction(int transactionId, int requesterId, int sendingId, int receivingId,
+                       Timestamp reqTime, Timestamp resTime,
+                       String receivingEmail, String initiatedBy, String typeName,
+                       String description, long amount) {
+        this.transactionId = transactionId;
+        this.requesterId = requesterId;
+        this.sendingId = sendingId;
+        this.receivingId = receivingId;
+        this.requestTime = reqTime;
+        this.resolveTime = resTime;
+        this.typeName = typeName;
+        this.receivingEmail = receivingEmail;
+        this.initiatedBy = initiatedBy;
+        this.description = description;
+        this.amount = amount;
+    }
+
+    public Transaction(int requesterId, int sendingId, int receivingId, int descriptionId,
+                       String receivingEmail, long amount) {
+
+        this.requesterId = requesterId;
+        this.sendingId = sendingId;
+        this.receivingId = receivingId;
+        this.descriptionId = descriptionId;
+        this.receivingEmail = receivingEmail;
+        this.amount = amount;
+    }
+
+    public Transaction(int transactionId, int requesterId, int sendingId, int receivingId, String receivingEmail,
+                       String initiatedBy, String typeName, String description, int amount) {
+        this.transactionId = transactionId;
+        this.requesterId = requesterId;
+        this.sendingId = sendingId;
+        this.receivingId = receivingId;
+        this.receivingEmail = receivingEmail;
+        this.typeName = typeName;
+        this.initiatedBy = initiatedBy;
+        this.description = description;
+        this.amount = amount;
+    }
+
+    public Transaction(int transactionId, int requesterId, int sendingId, int receivingId, Timestamp reqTime,
+                       String receivingEmail, String initiatedBy, String typeName, String description, long amount) {
+        this.transactionId = transactionId;
+        this.requesterId = requesterId;
+        this.sendingId = sendingId;
+        this.receivingId = receivingId;
+        this.requestTime = reqTime;
+        this.receivingEmail = receivingEmail;
+        this.initiatedBy = initiatedBy;
+        this.typeName = typeName;
+        this.description = description;
+        this.amount = amount;
+    }
+
+    public String getInitiatedBy() {
+        return initiatedBy;
+    }
+
+    public void setInitiatedBy(String initiatedBy) {
+        this.initiatedBy = initiatedBy;
+    }
+
+    public String getReceivingEmail() {
+        return receivingEmail;
+    }
+
+    public void setReceivingEmail(String receivingEmail) {
+        this.receivingEmail = receivingEmail;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     public int getTransactionId() {
@@ -43,6 +126,14 @@ public class Transaction {
 
     public void setTransactionId(int transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public int getRequesterId() {
+        return requesterId;
+    }
+
+    public void setRequesterId(int requesterId) {
+        this.requesterId = requesterId;
     }
 
     public int getSendingId() {
@@ -77,20 +168,12 @@ public class Transaction {
         this.resolveTime = resolveTime;
     }
 
-
-    public int getStatus_id() {return status_id;}
-
-    public void setApproved(int status) {
-        this.status_id = status;
-
+    public int getStatusId() {
+        return statusId;
     }
 
-    public int getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(int requestId) {
-        this.requestId = requestId;
+    public void setStatusId(int statusId) {
+        this.statusId = statusId;
     }
 
     public int getDescriptionId() {
@@ -101,36 +184,49 @@ public class Transaction {
         this.descriptionId = descriptionId;
     }
 
+    public long getAmount() {
+        return amount;
+    }
 
-    public void setBalance(long balance){this.balance = balance;}
+    public void setAmount(long amount) {
+        this.amount = amount;
+    }
 
-    public long getBalance(){return balance;}
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Transaction)) return false;
         Transaction that = (Transaction) o;
-        return transactionId == that.transactionId && sendingId == that.sendingId && receivingId == that.receivingId && status_id == that.status_id && descriptionId == that.descriptionId && balance == that.balance && Objects.equals(requestTime, that.requestTime) && Objects.equals(resolveTime, that.resolveTime);
+        return getTransactionId() == that.getTransactionId() && getRequesterId() == that.getRequesterId() && getSendingId() == that.getSendingId() && getReceivingId() == that.getReceivingId() && getStatusId() == that.getStatusId() && getDescriptionId() == that.getDescriptionId() && getAmount() == that.getAmount() && getReceivingEmail().equals(that.getReceivingEmail()) && Objects.equals(getTypeName(), that.getTypeName()) && Objects.equals(getResolveTime(), that.getResolveTime()) && Objects.equals(getDescription(), that.getDescription());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transactionId, sendingId, receivingId, requestTime, resolveTime, status_id, descriptionId, balance);
+        return Objects.hash(getInitiatedBy(), getReceivingEmail(), getTypeName(), getTransactionId(), getRequesterId(), getSendingId(), getReceivingId(), getRequestTime(), getResolveTime(), getStatusId(), getDescriptionId(), getAmount(), getDescription());
     }
 
     @Override
     public String toString() {
         return "Transaction{" +
-                "transactionId=" + transactionId +
+                "initiatedBy='" + initiatedBy + '\'' +
+                ", receivingEmail='" + receivingEmail + '\'' +
+                ", typeName='" + typeName + '\'' +
+                ", transactionId=" + transactionId +
+                ", requesterId=" + requesterId +
                 ", sendingId=" + sendingId +
                 ", receivingId=" + receivingId +
                 ", requestTime=" + requestTime +
                 ", resolveTime=" + resolveTime +
-                ", approved=" + status_id +
-                ", descriptionId=" + descriptionId +
-                ", transaction amount=" + balance +
+                ", amount=" + amount +
+                ", description='" + description + '\'' +
                 '}';
     }
 }
