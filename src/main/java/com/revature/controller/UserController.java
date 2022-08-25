@@ -146,24 +146,26 @@ public class UserController implements Controller {
 
                 DecodedJWT jwt = JWT.decode(token);
                 if (jwt.getExpiresAt().before(new Date())) {
+                    ctx.result("Reset Link Expired. Please try again");
                     ctx.status(404);
-                    throw new RuntimeException("Reset Link Expired. Please try again");
                 } else {
                     boolean validateToken = userService.validateToken(token); // we need to write a code to verify the token validity
                     if (validateToken) {
                         JSONObject newPassword = new JSONObject(ctx.body());
                         userService.updatePassword(newPassword.getString("newpassword"), token);
                         userService.deleteToken(token);
+                        ctx.result("Reset Password has been successful. Please login with your new password!");
+                        ctx.status(200);
                         // redirect user to setup a new password page
                     } else {
+                        ctx.result("OOPS something went wrong. Reset Link Expired");
                         ctx.status(404);
-                        throw new RuntimeException("OOPS something went wrong. Reset Link Expired");
                         // return user a message with invalid token
                     }
                 }
             } catch (Exception e) {
+                ctx.result("Reset Link Expired. Please try again");
                 ctx.status(404);
-                throw new RuntimeException("Reset Link Expired. Please try again");
             }
         });
 
@@ -174,8 +176,8 @@ public class UserController implements Controller {
             //System.out.println(UserService.getUserEmailByEmail(inputEmail.getString("email")));
             try {
                 if(inputEmail.getString("email").equals("")){
+                    ctx.result("The email pertaining to the account has been sent an email. Please check email for reset link.");
                     ctx.status(404);
-                    throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
                 }
                 if (userService.getUserEmailByEmail(inputEmail.getString("email"))) {
 
@@ -191,18 +193,18 @@ public class UserController implements Controller {
                     String addressUrl = "http://localhost:8080/resetpassword?token=" + jwtToken;
                     int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
                     if (status == 202) {
-                        System.out.println("Please Check Your Email!");
+                        ctx.result("The email pertaining to the account has been sent an email. Please check email for reset link.");
                     } else {
+                        ctx.result("The email pertaining to the account has been sent an email. Please check email for reset link.");
                         ctx.status(404);
-                        throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
                     }
                 } else {
+                    ctx.result("The email pertaining to the account has been sent an email. Please check email for reset link.");
                     ctx.status(404);
-                    System.out.println("The email pertaining to the account has been sent an email. Please check email for reset link.");
                 }
             } catch (Exception e) {
+                ctx.result("The email pertaining to the account has been sent an email. Please check email for reset link.");
                 ctx.status(404);
-                throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
             }
         });
 
