@@ -179,7 +179,7 @@ public class UserController implements Controller {
                     System.out.println(jwtToken);
 
                     //Create URL and send email with reset URL
-                    String addressUrl =  "http://localhost:8080/resetpassword?token="+jwtToken;
+                    String addressUrl =  "http://localhost:5051/resetpassword?token="+jwtToken;
                     int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
                     if (status == 202) {
                         System.out.println("Please Check Your Email!");
