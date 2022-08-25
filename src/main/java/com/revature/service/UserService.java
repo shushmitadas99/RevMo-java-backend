@@ -55,7 +55,9 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) {
-        return userDao.getUserByEmail(email);
+        User nUser = userDao.getUserByEmail(email);
+        System.out.println(nUser);
+        return nUser;
     }
 
     public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
