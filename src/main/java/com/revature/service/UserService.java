@@ -6,6 +6,7 @@ import com.revature.model.User;
 import com.revature.exception.InvalidLoginException;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -84,7 +85,7 @@ public class UserService {
         return userDao.getRequesteeEmailByTransactionId(transactionId);
     }
 
-    public String getReceiverByTransactionId(int transactionId) {
+    public List<String> getReceiverByTransactionId(int transactionId) {
         return userDao.getReceiverEmailByTransactionId(transactionId);
     }
 }
