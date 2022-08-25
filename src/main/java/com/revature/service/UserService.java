@@ -83,5 +83,9 @@ public class UserService {
     public String getRequesteeByTransactionId(int transactionId) {
         return userDao.getRequesteeEmailByTransactionId(transactionId);
     }
+
+    public String getReceiverByTransactionId(int transactionId) {
+        return userDao.getReceiverEmailByTransactionId(transactionId);
+    }
 }
 
