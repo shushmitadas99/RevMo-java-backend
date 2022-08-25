@@ -118,17 +118,23 @@ public class UserController implements Controller {
 
         app.put("/resetpassword", ctx -> {
 
+            //Try and Catch for error
             try {
+                //retrieve token from inputted parameter
                 String token = ctx.req.getParameter("token");
 
+                //Decode token to check expiration
                 DecodedJWT jwt = JWT.decode(token);
+                //If valid token not expired validate if correct
                 if (jwt.getExpiresAt().before(new Date())) {
                     ctx.status(404);
                     throw new RuntimeException("Reset Link Expired. Please try again");
                 } else {
                     boolean validateToken = UserService.validateToken(token); // we need to write a code to verify the token validity
                     if (validateToken) {
+                        //get new password from json input
                         JSONObject newPassword = new JSONObject(ctx.body());
+                        //Update password in Database and delete token
                         UserService.updatePassword(newPassword.getString("newpassword"), token);
                         UserService.deleteToken(token);
                         // redirect user to setup a new password page
@@ -146,23 +152,34 @@ public class UserController implements Controller {
 
         app.post("/forgotpassword", ctx->{
             //String email="";
-
+            //Create JSONObject with inputted json value
             JSONObject inputEmail = new JSONObject(ctx.body());
             //System.out.println(UserService.getUserEmailByEmail(inputEmail.getString("email")));
+            //Try and Catch for errors
             try {
+                //Check if email input is blank
+                if(inputEmail.getString("email").equals("")){
+                    ctx.status(404);
+                    throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
+                }
+                //Check if email is in the database
                 if (UserService.getUserEmailByEmail(inputEmail.getString("email"))) {
-
+                    //Create new user Object
                     User currUser = new User();
 
+                    //return user Object based on email found
                     currUser = UserService.getUserByInputEmail(inputEmail.getString("email"));
 
+                    //Create web Token based on values with expiration
                     String jwtToken = Jwts.builder().claim("last_name", currUser.getLastName()).claim("userId", currUser.getUserId()).claim("email", currUser.getEmail()).setSubject(currUser.getFirstName()).setId(UUID.randomUUID().toString()).setIssuedAt(Date.from(Instant.now())).setExpiration(Date.from(Instant.now().plus(5L, ChronoUnit.MINUTES))).compact();
 
+                    //Send Token to Database
                     UserService.sendToken(jwtToken, currUser.getUserId());
 
                     System.out.println(jwtToken);
 
-                    String addressUrl =  "http://localhost:8080/resetpassword?token="+jwtToken;
+                    //Create URL and send email with reset URL
+                    String addressUrl =  "http://localhost:5051/resetpassword?token="+jwtToken;
                     int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
                     if (status == 202) {
                         System.out.println("Please Check Your Email!");
