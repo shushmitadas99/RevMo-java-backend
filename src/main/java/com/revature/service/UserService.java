@@ -54,6 +54,7 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) {
+        System.out.println(email);
         return userDao.getUserByEmail(email);
     }
 

@@ -50,6 +50,7 @@ public class AccountController implements Controller{
             String role = (String) session.getAttribute("userRole");
             if (role.equals("2")) {
                 String email = ctx.pathParam("email");
+                System.out.println(email);
                 int aId = Integer.parseInt(ctx.pathParam("aId"));
                 try {
                     ctx.json(accountService.linkUserToAccount(aId, email));
