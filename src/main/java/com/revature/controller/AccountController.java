@@ -2,6 +2,7 @@ package com.revature.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
+import com.revature.model.Account;
 import com.revature.model.User;
 import com.revature.service.AccountService;
 import com.revature.service.UserService;
@@ -9,6 +10,7 @@ import io.javalin.Javalin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -22,10 +24,11 @@ public class AccountController implements Controller{
     }
     @Override
     public void mapEndpoints(Javalin app) {
-        app.post("/accounts", ctx -> {
+        app.post("/accounts/{email}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             String email = (String) session.getAttribute("email");
+//            String email = ctx.pathParam("email");
             User myUser = userService.getUserByEmail(email);
 
             if (email == null) {
@@ -94,18 +97,19 @@ public class AccountController implements Controller{
            }
         });
 
-//        app.get("/{userEmail}/accounts", ctx -> {
-//            String email = ctx.pathParam("userEmail");
-//            User myUser = userService.getUserByEmail(email);
-//
-//            if (Objects.equals(myUser.getUserRole(), "1")) {
-//                ctx.json(accountService.getAccountsByEmail(email));
-//                ctx.status(200);
+        app.get("/{email}/accounts", ctx -> {
+            String email = ctx.pathParam("email");
+            System.out.println(email);
+            List<Account> myUser = accountService.getAccountsByEmail(email);
+            System.out.println(myUser);
+////            if (Objects.equals(myUser.getUserRole(), "1")) {
+                ctx.json(accountService.getAccountsByEmail(email));
+                ctx.status(200);
 //            } else {
 //                ctx.result("You are not logged in!");
 //                ctx.status(404);
 //            }
-//        });
+        });
 
         app.get("/accounts/{aId}", ctx -> {
             HttpServletRequest req = ctx.req;
