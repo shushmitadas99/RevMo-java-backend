@@ -148,7 +148,7 @@ public class UserDao {
 
             ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
                 return new User(rs.getInt("id"), rs.getString("first_name"),
                         rs.getString("last_name"), rs.getString("email"),
                         rs.getString("pass"), rs.getString("phone"),
