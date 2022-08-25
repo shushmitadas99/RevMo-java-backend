@@ -207,6 +207,23 @@ public class UserDao {
         }
         return null;
     }
+
+    public String getReceiverEmailByTransactionId(int transactionId) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT u.email FROM users u " +
+                    "JOIN users_with_accounts uwa ON uwa.user_id = u.id " +
+                    "JOIN transactions t ON uwa.account_id = t.receiving_id " +
+                    "WHERE t.id = ?");
+            ps.setInt(1, transactionId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
 }
 
 
