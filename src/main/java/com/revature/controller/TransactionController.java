@@ -159,6 +159,7 @@ public class TransactionController implements Controller {
                 ctx.status(200);
             }
         });
+        
 
         app.get("/trx/{receivingId}/receiver", ctx -> {
             HttpServletRequest req = ctx.req;
@@ -166,8 +167,8 @@ public class TransactionController implements Controller {
             String emailSignedInUser = (String) session.getAttribute("email");
             String role = (String) session.getAttribute("userRole");
             String receivingId = ctx.pathParam("receivingId");
-            String email = userService.getReceiverByTransactionId(Integer.parseInt(receivingId));
-            if (Objects.equals(email, emailSignedInUser)|| role.equals("2")) {
+            List<String> emails = userService.getReceiverByTransactionId(Integer.parseInt(receivingId));
+            if (emails.contains(emailSignedInUser)|| role.equals("2")) {
                 ctx.json(transactionService.getAllTransactionsByReceivingId(receivingId));
                 ctx.status(200);
             }

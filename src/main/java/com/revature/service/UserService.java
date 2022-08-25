@@ -10,9 +10,13 @@ import io.jsonwebtoken.Jwts;
 import org.json.JSONObject;
 
 import java.sql.SQLException;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+
+import java.util.List;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -62,7 +66,9 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) {
-        return userDao.getUserByEmail(email);
+        User nUser = userDao.getUserByEmail(email);
+        System.out.println(nUser);
+        return nUser;
     }
 
     public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
@@ -92,7 +98,7 @@ public class UserService {
         return userDao.getRequesteeEmailByTransactionId(transactionId);
     }
 
-    public String getReceiverByTransactionId(int transactionId) {
+    public List<String> getReceiverByTransactionId(int transactionId) {
         return userDao.getReceiverEmailByTransactionId(transactionId);
     }
 
