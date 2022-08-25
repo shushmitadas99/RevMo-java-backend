@@ -6,6 +6,7 @@ import com.revature.model.User;
 import com.revature.exception.InvalidLoginException;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -54,8 +55,9 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) {
-        System.out.println(email);
+
         return userDao.getUserByEmail(email);
+
     }
 
     public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
@@ -83,6 +85,10 @@ public class UserService {
 
     public String getRequesteeByTransactionId(int transactionId) {
         return userDao.getRequesteeEmailByTransactionId(transactionId);
+    }
+
+    public List<String> getReceiverByTransactionId(int transactionId) {
+        return userDao.getReceiverEmailByTransactionId(transactionId);
     }
 }
 

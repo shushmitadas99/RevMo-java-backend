@@ -68,7 +68,7 @@ public class TransactionController implements Controller {
                 HttpSession session = req.getSession();
                 Integer uId = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
+                if (id == uId || Objects.equals(role, "2")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
@@ -159,13 +159,16 @@ public class TransactionController implements Controller {
                 ctx.status(200);
             }
         });
+        
 
         app.get("/trx/{receivingId}/receiver", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
+            String emailSignedInUser = (String) session.getAttribute("email");
             String role = (String) session.getAttribute("userRole");
             String receivingId = ctx.pathParam("receivingId");
-            if (role.equals("2")) {
+            List<String> emails = userService.getReceiverByTransactionId(Integer.parseInt(receivingId));
+            if (emails.contains(emailSignedInUser)|| role.equals("2")) {
                 ctx.json(transactionService.getAllTransactionsByReceivingId(receivingId));
                 ctx.status(200);
             }
@@ -229,6 +232,7 @@ public class TransactionController implements Controller {
 //           ctx.status(200);
 //        });
     }
+
 }
 
 
