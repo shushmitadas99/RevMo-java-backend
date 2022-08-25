@@ -97,14 +97,16 @@ public class AccountController implements Controller{
            }
         });
 
-        app.get("/{email}/accounts", ctx -> {
-            String email = ctx.pathParam("email");
-            System.out.println(email);
-            List<Account> myUser = accountService.getAccountsByEmail(email);
-            System.out.println(myUser);
-////            if (Objects.equals(myUser.getUserRole(), "1")) {
-                ctx.json(accountService.getAccountsByEmail(email));
-                ctx.status(200);
+
+        app.get("/{userEmail}/accounts", ctx -> {
+            String email = ctx.pathParam("userEmail");
+            ctx.json(accountService.getAccountsByEmail(email));
+            ctx.status(200);
+            //User myUser = userService.getUserByEmail(email);
+
+//            if (Objects.equals(myUser.getUserRole(), "1")) {
+//                ctx.json(accountService.getAccountsByEmail(email));
+//                ctx.status(200);
 //            } else {
 //                ctx.result("You are not logged in!");
 //                ctx.status(404);
@@ -130,6 +132,7 @@ public class AccountController implements Controller{
             ctx.status(200);
         });
     }
+
 
 
 }
