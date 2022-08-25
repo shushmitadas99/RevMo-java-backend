@@ -16,6 +16,7 @@ public class AccountService {
 
     public AccountService() {
         this.accountDao = new AccountDao();
+        this.userService = new UserService();
 
 
     }
@@ -73,9 +74,11 @@ public class AccountService {
     }
 
     public String linkUserToAccount(int aId, String email) throws SQLException, InvalidParameterException {
+        System.out.println(email);
         InvalidParameterException exceptions = new InvalidParameterException();
         List<String> owners = accountDao.obtainListOfAccountOwners(aId);
         User myUser = userService.getUserByEmail(email);
+        System.out.println(myUser);
         if (userService.getUserByEmail(email) == null) {
             exceptions.addMessage("User not found");
         } else {

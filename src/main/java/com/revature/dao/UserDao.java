@@ -144,6 +144,7 @@ public class UserDao {
     }
 
     public User getUserByEmail(String email) {
+        System.out.println(email);
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement pstmt = con.prepareStatement("SELECT * FROM users WHERE email=?");
 
