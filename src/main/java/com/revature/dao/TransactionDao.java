@@ -11,11 +11,12 @@ public class TransactionDao {
     public String moveAmountBetweenAccounts(Transaction transaction) {
         try (Connection con = ConnectionUtility.createConnection()) {
             con.setAutoCommit(false);
+            System.out.println(transaction);
 
             try (
                     PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
                             "sending_id,receiving_id, req_time, res_time, status_id, amount, desc_id, receiving_email) " +
-                            "VALUES(?, ?, ?, Now(), Now(),2, ?, ?,?)");
+                            "VALUES(?, ?, ?, Now(), Now(), 2, ?, ?, ?)");
                     PreparedStatement ps1 = con.prepareStatement("UPDATE accounts SET balance = balance - ? " +
                             "WHERE id = ? ");
                     PreparedStatement ps2 = con.prepareStatement("UPDATE accounts SET balance = balance + ? " +
@@ -58,13 +59,12 @@ public class TransactionDao {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
                     "sending_id,receiving_id, req_time, status_id, amount, desc_id, receiving_email) " +
-                    "VALUES(?, ?, ?, Now(),1, ?, ?,?) RETURNING *");
+                    "VALUES(?, ?, ?, Now(),1, ?, 4,?) RETURNING *");
 //            Create insert statement
             ps.setInt(1, transaction.getRequesterId());
             ps.setInt(2, transaction.getSendingId());
             ps.setInt(3, transaction.getReceivingId());
             ps.setLong(4, transaction.getAmount());
-            ps.setInt(5, transaction.getDescriptionId());
             ps.setString(6, transaction.getReceivingEmail());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return "Transaction Successful";

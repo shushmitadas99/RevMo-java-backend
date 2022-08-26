@@ -19,6 +19,7 @@ public class TransactionService {
     private AccountDao accountDao;
     private AccountService accountService;
     private UserService userService;
+
     public TransactionService() {
         this.accountDao = new AccountDao();
         this.transactionDao = new TransactionDao();

@@ -93,6 +93,11 @@ public class TransactionController implements Controller {
 
         });
 
+        // expects such JSON in body {
+        //    "requesterId": "2",
+        //    "amount": "500",
+        //    "receivingEmail": "jd80@a.ca"
+        //}
         app.post("/trx-req", ctx -> {
             System.out.println("Hello There");
             try {
@@ -128,6 +133,10 @@ public class TransactionController implements Controller {
 
         });
 
+        // expects such JSON in body {
+        //    "statusId": "2",
+        //    "transactionId: "6"
+        //}
         app.put("/trx-req", ctx -> {
 //            endpoint expects JSON { "statusId": "{2 for approved, 3 for denied}", "transactionId": "{trxId}"}
             try {
