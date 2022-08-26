@@ -523,6 +523,34 @@ public class TransactionDao {
         }
         return "Transaction Successful";
     }
+
+    public int getCurrentMonth() {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT EXTRACT(MONTH FROM Now()) cur_month");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("cur_month");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    public int getCurrentYear() {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT EXTRACT(YEAR FROM Now()) as cur_year");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("cur_year");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+
 }
 
 

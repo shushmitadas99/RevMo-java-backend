@@ -247,6 +247,7 @@ public class TransactionController implements Controller {
                 int aId = Integer.parseInt(ctx.pathParam("aId"));
                 int month = Integer.parseInt(ctx.pathParam("month"));
                 int year = Integer.parseInt(ctx.pathParam("year"));
+
                 List<Account> accounts = accountService.getAccountsByEmail(emailSignedInUser);
                 List<Integer> accountIds = new ArrayList<Integer>();
                 for (Account a : accounts)
