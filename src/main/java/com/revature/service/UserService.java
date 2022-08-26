@@ -65,6 +65,7 @@ public class UserService {
         return user;
     }
 
+
     public User getUserByEmail(String email) {
 
 
@@ -74,19 +75,24 @@ public class UserService {
 
     public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
         InvalidParameterException exceptions = new InvalidParameterException();
-        String newEmail = newInfo.get("email");
+
+        String newFirstName = newInfo.get("firstName");
+        String newLastName = newInfo.get("lastName");
+
         String newPhone = newInfo.get("phone");
         User oldUser = userDao.getUserByEmail(oldEmail);
         if (userId != oldUser.getUserId()) {
             exceptions.addMessage("User Id does not match our records.");
             throw exceptions;
         }
-        if (!Objects.equals(newEmail, oldUser.getEmail()) && userDao.getUserByEmail(newEmail) != null) {
-            exceptions.addMessage("Email already in system");
-            throw exceptions;
+
+
+        if (!Objects.equals(newFirstName, oldUser.getFirstName())) {
+            userDao.updateFirstName(userId, newFirstName);
         }
-        if (!Objects.equals(newEmail, oldUser.getEmail())) {
-            userDao.updateEmail(userId, newEmail);
+        if (!Objects.equals(newLastName, oldUser.getLastName())) {
+            userDao.updateLastName(userId, newLastName);
+
         }
         if (!Objects.equals(newPhone, oldUser.getPhoneNumber())) {
             userDao.updatephone(userId, newPhone);
@@ -134,5 +140,6 @@ public class UserService {
             throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
         }
     }
+
 }
 
