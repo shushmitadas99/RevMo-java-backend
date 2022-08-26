@@ -193,7 +193,7 @@ public class TransactionController implements Controller {
             }
         });
 
-        app.get("/trx/income-tracking/{aId}/{month}/{year}", ctx -> {
+        app.get("/trx/income-by-account/{aId}/{month}/{year}", ctx -> {
             try {
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
@@ -219,6 +219,32 @@ public class TransactionController implements Controller {
             }
         });
 
+
+        app.get("/trx/income-by-user/{uId}/{month}/{year}", ctx -> {
+            try {
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                String emailSignedInUser = (String) session.getAttribute("email");
+                String role = (String) session.getAttribute("userRole");
+                int aId = Integer.parseInt(ctx.pathParam("aId"));
+                int month = Integer.parseInt(ctx.pathParam("month"));
+                int year = Integer.parseInt(ctx.pathParam("year"));
+                List<Account> accounts = accountService.getAccountsByEmail(emailSignedInUser);
+                List<Integer> accountIds = new ArrayList<Integer>();
+                for (Account a : accounts)
+                    accountIds.add(a.getAccountId());
+                if (accountIds.contains(aId) || Objects.equals(role, "2")) {
+                    ctx.json(transactionService.trackAccountIncome(aId, month, year));
+                    ctx.status(201);
+                } else {
+                    ctx.json("Access Denied");
+                    ctx.status(401);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
+            }
+        });
 //        app.post("/trx/request", ctx -> {
 //           HttpServletRequest req = ctx.req;
 //           HttpSession session = req.getSession();
