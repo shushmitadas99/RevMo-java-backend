@@ -235,15 +235,16 @@ public class TransactionDao {
         }
     }
 
-    public List<Transaction> getAllTransactionsByStatusName(String statusName) throws SQLException {
+    public List<Transaction> getAllTransactionsByStatusName(String statusName, int aId) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description" +
                     " FROM transactions t" +
                     " JOIN users u ON t.requester_id = u.id" +
                     " JOIN status_types st ON t.status_id  = st.id" +
                     " JOIN transaction_descriptions td ON t.desc_id  = td.id" +
-                    " WHERE st.type_name  = ?");
+                    " WHERE st.type_name  = ? AND t.sending_id = ? ");
             ps.setString(1, statusName);
+            ps.setInt(2, aId);
             ResultSet rs = ps.executeQuery();
             List<Transaction> transactionsList = new ArrayList<>();
             while (rs.next()) {
