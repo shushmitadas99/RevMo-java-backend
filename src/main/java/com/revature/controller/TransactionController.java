@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Account;
 import com.revature.model.Transaction;
+import com.revature.model.User;
 import com.revature.service.AccountService;
 import com.revature.service.TransactionService;
 import com.revature.service.UserService;
@@ -31,6 +32,31 @@ public class TransactionController implements Controller {
     @Override
     @SuppressWarnings("unchecked")
     public void mapEndpoints(Javalin app) {
+        app.post("trx/accounts", ctx -> {
+//            try{
+                    HttpServletRequest req = ctx.req;
+                    HttpSession session = req.getSession();
+                    String role = (String) session.getAttribute("userRole");
+                    String email = (String) session.getAttribute("email");
+                    User myUser = userService.getUserByEmail(email);
+                    System.out.println(myUser);
+
+                    int userId = myUser.getUserId();
+                    if (Objects.equals(role, "2")) {
+                        ObjectMapper om = new ObjectMapper();
+                        Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                        System.out.println(newTransaction);
+                        ctx.json(transactionService.transferBetweenAccounts(newTransaction, userId));
+                        ctx.status(201);
+                    }
+//            }
+//            catch (InvalidParameterException e) {
+//                        ctx.json(e.getMessages());
+//                        ctx.status(400);
+//                    }
+                }
+        );
+
         app.post("/trx-send", ctx -> {
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
@@ -160,7 +186,7 @@ public class TransactionController implements Controller {
                 ctx.status(200);
             }
         });
-        
+
 
         app.get("/trx/{receivingId}/receiver", ctx -> {
             HttpServletRequest req = ctx.req;
@@ -169,20 +195,34 @@ public class TransactionController implements Controller {
             String role = (String) session.getAttribute("userRole");
             String receivingId = ctx.pathParam("receivingId");
             List<String> emails = userService.getReceiverByTransactionId(Integer.parseInt(receivingId));
-            if (emails.contains(emailSignedInUser)|| role.equals("2")) {
+            if (emails.contains(emailSignedInUser) || role.equals("2")) {
                 ctx.json(transactionService.getAllTransactionsByReceivingId(receivingId));
                 ctx.status(200);
             }
         });
 
-        app.get("/trx/status/{status-name}/{aId}", ctx -> {
+        app.get("/trx/status/outgoing/{status-name}/{aId}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             String role = (String) session.getAttribute("userRole");
+            String emailSignedInUser = (String) session.getAttribute("email");
             String statusName = ctx.pathParam("status-name").toUpperCase();
             int aId = Integer.parseInt(ctx.pathParam("aId"));
-            if (role.equals("2")) {
-                ctx.json(transactionService.getAllTransactionsByStatusName(statusName, aId));
+            if (role.equals("2") || accountService.isOwnerOfAccount(userService.getUserByEmail(emailSignedInUser).getUserId(), aId)) {
+                ctx.json(transactionService.getAllOutgoingTransactionsByStatusName(statusName, aId));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/trx/status/incoming/{status-name}/{aId}", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String emailSignedInUser = (String) session.getAttribute("email");
+            String statusName = ctx.pathParam("status-name").toUpperCase();
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
+            if (role.equals("2") || accountService.isOwnerOfAccount(userService.getUserByEmail(emailSignedInUser).getUserId(), aId)) {
+                ctx.json(transactionService.getAllIncomingTransactionsByStatusName(statusName, aId));
                 ctx.status(200);
             }
         });
@@ -198,7 +238,7 @@ public class TransactionController implements Controller {
             }
         });
 
-        app.get("/trx/income-tracking/{aId}/{month}/{year}", ctx -> {
+        app.get("/trx/income-by-account/{aId}/{month}/{year}", ctx -> {
             try {
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
@@ -207,13 +247,17 @@ public class TransactionController implements Controller {
                 int aId = Integer.parseInt(ctx.pathParam("aId"));
                 int month = Integer.parseInt(ctx.pathParam("month"));
                 int year = Integer.parseInt(ctx.pathParam("year"));
+                if (month == 0 && year == 0) {
+                    month = transactionService.getCurrentMonth();
+                    year = transactionService.getCurrentYear();
+                }
                 List<Account> accounts = accountService.getAccountsByEmail(emailSignedInUser);
                 List<Integer> accountIds = new ArrayList<Integer>();
                 for (Account a : accounts)
                     accountIds.add(a.getAccountId());
                 if (accountIds.contains(aId) || Objects.equals(role, "2")) {
                     ctx.json(transactionService.trackAccountIncome(aId, month, year));
-                    ctx.status(201);
+                    ctx.status(200);
                 } else {
                     ctx.json("Access Denied");
                     ctx.status(401);
@@ -224,6 +268,52 @@ public class TransactionController implements Controller {
             }
         });
 
+
+        app.get("/trx/income-by-user/{uId}/{month}/{year}", ctx -> {
+            try {
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                String emailSignedInUser = (String) session.getAttribute("email");
+                String role = (String) session.getAttribute("userRole");
+                int uId = Integer.parseInt(ctx.pathParam("uId"));
+                int month = Integer.parseInt(ctx.pathParam("month"));
+                int year = Integer.parseInt(ctx.pathParam("year"));
+                if (month == 0 && year == 0) {
+                    month = transactionService.getCurrentMonth();
+                    year = transactionService.getCurrentYear();
+                }
+                if (uId == userService.getUserByEmail(emailSignedInUser).getUserId() || Objects.equals(role, "2")) {
+                    ctx.json(transactionService.trackUserIncome(uId, month, year));
+                    ctx.status(200);
+                } else {
+                    ctx.json("Access Denied");
+                    ctx.status(401);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
+            }
+        });
+
+        app.get("/trx/income-by-user/{uId}", ctx -> {
+            try {
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                String emailSignedInUser = (String) session.getAttribute("email");
+                String role = (String) session.getAttribute("userRole");
+                int uId = Integer.parseInt(ctx.pathParam("uId"));
+                if (uId == userService.getUserByEmail(emailSignedInUser).getUserId() || Objects.equals(role, "2")) {
+                    ctx.json(transactionService.trackAllTimeUserIncome(uId));
+                    ctx.status(200);
+                } else {
+                    ctx.json("Access Denied");
+                    ctx.status(401);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
+            }
+        });
 //        app.post("/trx/request", ctx -> {
 //           HttpServletRequest req = ctx.req;
 //           HttpSession session = req.getSession();
