@@ -105,8 +105,8 @@ public class TransactionService {
         return transactionDao.getAllTransactionsByRecievingId(receiveId);
     }
 
-    public List<Transaction> getAllTransactionsByStatusName(String statusName) throws SQLException {
-        return transactionDao.getAllTransactionsByStatusName(statusName);
+    public List<Transaction> getAllTransactionsByStatusName(String statusName, int aId) throws SQLException {
+        return transactionDao.getAllTransactionsByStatusName(statusName, aId);
     }
 
     public List<Transaction> getAllTransactionsByDescription(String description) throws SQLException {

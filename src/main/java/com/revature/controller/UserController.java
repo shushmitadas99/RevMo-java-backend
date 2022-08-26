@@ -176,12 +176,10 @@ public class UserController implements Controller {
         app.post("/forgotpassword", ctx -> {
             //String email="";
             //Create JSONObject with inputted json value
-            JSONObject inputEmail = new JSONObject(ctx.body());
-            //System.out.println(UserService.getUserEmailByEmail(inputEmail.getString("email")));
-            //Try and Catch for errors
             try {
-                //Check if email input is blank
-                if(inputEmail.getString("email").equals("")){
+                JSONObject inputEmail = new JSONObject(ctx.body());
+                if (inputEmail.getString("email").equals("")) {
+                    ctx.result("Please enter the email!");
                     ctx.status(404);
                     throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
                 }
@@ -210,13 +208,18 @@ public class UserController implements Controller {
                         ctx.status(404);
                         throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
                     }
+
                 } else {
-                    ctx.status(404);
-                    System.out.println("The email pertaining to the account has been sent an email. Please check email for reset link.");
+                    boolean status = userService.forgetPassword(inputEmail);
+                    if ( status ){
+                        ctx.status(202);
+                    } else {
+                        ctx.status(403);
+                    }
                 }
-            } catch (Exception e) {
-                ctx.status(404);
-                throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
+            }catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
             }
         });
 
