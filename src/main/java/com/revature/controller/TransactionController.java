@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Account;
 import com.revature.model.Transaction;
+import com.revature.model.User;
 import com.revature.service.AccountService;
 import com.revature.service.TransactionService;
 import com.revature.service.UserService;
@@ -31,6 +32,31 @@ public class TransactionController implements Controller {
     @Override
     @SuppressWarnings("unchecked")
     public void mapEndpoints(Javalin app) {
+        app.post("trx/accounts", ctx ->{
+//            try{
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                String role = (String) session.getAttribute("userRole");
+                String email = (String) session.getAttribute("email");
+                User myUser = userService.getUserByEmail(email);
+                    System.out.println(myUser);
+
+                int userId = myUser.getUserId();
+                if (Objects.equals(role, "2")) {
+                    ObjectMapper om = new ObjectMapper();
+                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                    System.out.println(newTransaction);
+                    ctx.json(transactionService.transferBetweenAccounts(newTransaction, userId));
+                    ctx.status(201);
+                    }
+//            }
+//            catch (InvalidParameterException e) {
+//                        ctx.json(e.getMessages());
+//                        ctx.status(400);
+//                    }
+                }
+        );
+
         app.post("/trx-send", ctx -> {
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);

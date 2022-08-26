@@ -181,6 +181,34 @@ public class UserController implements Controller {
                 if (inputEmail.getString("email").equals("")) {
                     ctx.result("Please enter the email!");
                     ctx.status(404);
+                    throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
+                }
+                //Check if email is in the database
+                if (userService.getUserEmailByEmail(inputEmail.getString("email"))) {
+                    //Create new user Object
+                    User currUser = new User();
+
+                    //return user Object based on email found
+                    currUser = userService.getUserByInputEmail(inputEmail.getString("email"));
+
+                    //Create web Token based on values with expiration
+                    String jwtToken = Jwts.builder().claim("last_name", currUser.getLastName()).claim("userId", currUser.getUserId()).claim("email", currUser.getEmail()).setSubject(currUser.getFirstName()).setId(UUID.randomUUID().toString()).setIssuedAt(Date.from(Instant.now())).setExpiration(Date.from(Instant.now().plus(5L, ChronoUnit.MINUTES))).compact();
+
+                    //Send Token to Database
+                    userService.sendToken(jwtToken, currUser.getUserId());
+
+//                    System.out.println(jwtToken);
+
+                    //Create URL and send email with reset URL
+                    String addressUrl =  "http://localhost:5051/resetpassword?token="+jwtToken;
+                    int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
+                    if (status == 202) {
+                        System.out.println("Please Check Your Email!");
+                    } else {
+                        ctx.status(404);
+                        throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
+                    }
+
                 } else {
                     boolean status = userService.forgetPassword(inputEmail);
                     if ( status ){
