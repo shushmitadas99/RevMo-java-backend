@@ -117,6 +117,24 @@ public class TransactionService {
         return transactionDao.monthlyIncome(aId, month, year);
     }
 
+    public Object transferBetweenAccounts(Map<String, String> newTransaction, int requesterId) {
+        Transaction transaction = new Transaction();
+        transaction.setRequesterId(requesterId);
+        int sendingId = Integer.parseInt(newTransaction.get("sendingId"));
+        int receivingId = Integer.parseInt(newTransaction.get("receivingId"));
+        int amount = Integer.parseInt(newTransaction.get("amount"));
+        System.out.println(amount);
+        String email = (newTransaction.get("email"));
+        transaction.setSendingId(sendingId);
+        transaction.setReceivingId(receivingId);
+        transaction.setAmount(amount);
+        transaction.setReceivingEmail(email);
+
+        String pass = transactionDao.transferBetweenAccounts(transaction);
+
+        return pass;
+    }
+
 
 //    public Transaction sendMoneyRequest(Map<String, String> transaction, int uId) throws SQLException, InvalidParameterException {
 //        Transaction t = validateTransactionParams(transaction);
