@@ -60,54 +60,67 @@ public class TransactionController implements Controller {
         app.post("/trx-send", ctx -> {
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
-                int id = tr.getRequesterId();
+//                int id = tr.getRequesterId();
+//                System.out.println(id);
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
+                String email = (String) session.getAttribute("email");
                 Integer uId = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || Objects.equals(role, "2")) {
-                    ObjectMapper om = new ObjectMapper();
-                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
-                    try {
-                        ctx.json(transactionService.moveAmountBetweenAccounts(newTransaction));
-                        ctx.status(201);
-                    } catch (InvalidParameterException e) {
-                        ctx.json(e.getMessages());
-                        ctx.status(400);
-                    }
-                } else {
-                    ctx.json("User Not Found");
-                    ctx.status(404);
-                }
+                ObjectMapper om = new ObjectMapper();
+                Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                ctx.json(transactionService.moveAmountBetweenAccounts(newTransaction, uId, email));
+//                if (id == uId || Objects.equals(role, "2")) {
+//                    ObjectMapper om = new ObjectMapper();
+//                    System.out.println(id);
+//                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+//                    try {
+//                        ctx.json(transactionService.moveAmountBetweenAccounts(newTransaction, uId));
+//                        ctx.status(201);
+//                    } catch (InvalidParameterException e) {
+//                        ctx.json(e.getMessages());
+//                        ctx.status(400);
+//                    }
+//                } else {
+//                    ctx.json("User Not Found");
+//                    ctx.status(404);
+//                }
             } catch (Exception e) {
                 ctx.json(e.getMessage());
+                System.out.println(e.getMessage());
                 ctx.status(400);
             }
 
         });
 
         app.post("/trx-req", ctx -> {
+            System.out.println("Hello There");
             try {
-                Transaction tr = ctx.bodyAsClass(Transaction.class);
-                int id = tr.getRequesterId();
+//                Transaction tr = ctx.bodyAsClass(Transaction.class);
+//                int id = tr.getRequesterId();
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
+                String email = (String) session.getAttribute("email");
                 Integer uId = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || Objects.equals(role, "2")) {
-                    ObjectMapper om = new ObjectMapper();
-                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
-                    try {
-                        ctx.json(transactionService.requestAmount(newTransaction));
-                        ctx.status(201);
-                    } catch (InvalidParameterException e) {
-                        ctx.json(e.getMessages());
-                        ctx.status(400);
-                    }
-                } else {
-                    ctx.json("User Not Found");
-                    ctx.status(404);
-                }
+                ObjectMapper om = new ObjectMapper();
+                Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                System.out.println("General Kenobi");
+                ctx.json(transactionService.requestAmount(newTransaction, uId, email));
+//                if (id == uId || Objects.equals(role, "2")) {
+//                    ObjectMapper om = new ObjectMapper();
+//                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+//                    try {
+//                        ctx.json(transactionService.requestAmount(newTransaction));
+//                        ctx.status(201);
+//                    } catch (InvalidParameterException e) {
+//                        ctx.json(e.getMessages());
+//                        ctx.status(400);
+//                    }
+//                } else {
+//                    ctx.json("User Not Found");
+//                    ctx.status(404);
+//                }
             } catch (Exception e) {
                 ctx.json(e.getMessage());
                 ctx.status(400);
