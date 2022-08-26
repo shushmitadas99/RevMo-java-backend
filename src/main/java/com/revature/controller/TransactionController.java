@@ -68,7 +68,7 @@ public class TransactionController implements Controller {
                 HttpSession session = req.getSession();
                 Integer uId = (Integer) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
-                if (id == uId || Objects.equals(role, "EMPLOYEE")) {
+                if (id == uId || Objects.equals(role, "2")) {
                     ObjectMapper om = new ObjectMapper();
                     Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                     try {
@@ -90,6 +90,7 @@ public class TransactionController implements Controller {
         });
 
         app.put("/trx-req", ctx -> {
+//            endpoint expects JSON { "statusId": "{2 for approved, 3 for denied}", "transactionId": "{trxId}"}
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
                 int transactionId = tr.getTransactionId();
@@ -159,25 +160,29 @@ public class TransactionController implements Controller {
                 ctx.status(200);
             }
         });
+        
 
         app.get("/trx/{receivingId}/receiver", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
+            String emailSignedInUser = (String) session.getAttribute("email");
             String role = (String) session.getAttribute("userRole");
             String receivingId = ctx.pathParam("receivingId");
-            if (role.equals("2")) {
+            List<String> emails = userService.getReceiverByTransactionId(Integer.parseInt(receivingId));
+            if (emails.contains(emailSignedInUser)|| role.equals("2")) {
                 ctx.json(transactionService.getAllTransactionsByReceivingId(receivingId));
                 ctx.status(200);
             }
         });
 
-        app.get("/trx/{status-name}/status-name", ctx -> {
+        app.get("/trx/status/{status-name}/{aId}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             String role = (String) session.getAttribute("userRole");
             String statusName = ctx.pathParam("status-name").toUpperCase();
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
             if (role.equals("2")) {
-                ctx.json(transactionService.getAllTransactionsByStatusName(statusName));
+                ctx.json(transactionService.getAllTransactionsByStatusName(statusName, aId));
                 ctx.status(200);
             }
         });
@@ -229,6 +234,7 @@ public class TransactionController implements Controller {
 //           ctx.status(200);
 //        });
     }
+
 }
 
 
