@@ -21,7 +21,7 @@ public class UserDao {
     public boolean getUserEmailByEmail(String email) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
-            PreparedStatement ps = con.prepareStatement("SELECT * from revmo.users WHERE email=?");
+            PreparedStatement ps = con.prepareStatement("SELECT * from users WHERE email=?");
 
             ps.setString(1, email);
 
@@ -36,7 +36,7 @@ public class UserDao {
     public void updatePassword(String password, String token) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
-            PreparedStatement ps = con.prepareStatement("UPDATE revmo.users SET pass = convert_to(?, 'LATIN1') WHERE tokenvalue=convert_to(?, 'LATIN1') RETURNING *");
+            PreparedStatement ps = con.prepareStatement("UPDATE users SET pass = convert_to(?, 'LATIN1') WHERE tokenvalue=convert_to(?, 'LATIN1') RETURNING *");
 
             ps.setString(1, password);
             ps.setString(2, token);
@@ -60,7 +60,7 @@ public class UserDao {
 
         try (Connection con = ConnectionUtility.createConnection()) {
 
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM revmo.users WHERE email = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE email = ?");
 
             ps.setString(1, inputEmail);
 
@@ -88,7 +88,7 @@ public class UserDao {
     public boolean sendToken(String token, int userId) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
-            PreparedStatement ps = con.prepareStatement("UPDATE revmo.users SET tokenvalue= convert_to(?, 'LATIN1') WHERE id=? RETURNING *");
+            PreparedStatement ps = con.prepareStatement("UPDATE users SET tokenvalue= convert_to(?, 'LATIN1') WHERE id=? RETURNING *");
 
             ps.setString(1, token);
             ps.setInt(2, userId);
@@ -102,7 +102,7 @@ public class UserDao {
     public boolean validateToken(String token) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM revmo.users WHERE tokenvalue=convert_to(?, 'LATIN1')");
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE tokenvalue=convert_to(?, 'LATIN1')");
             ps.setString(1, token);
 
             ResultSet rs = ps.executeQuery();
@@ -115,7 +115,7 @@ public class UserDao {
     public void deleteToken(String token) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
-            PreparedStatement ps = con.prepareStatement("UPDATE revmo.users SET tokenvalue = null WHERE tokenvalue = convert_to(?, 'LATIN1')  RETURNING *");
+            PreparedStatement ps = con.prepareStatement("UPDATE users SET tokenvalue = null WHERE tokenvalue = convert_to(?, 'LATIN1')  RETURNING *");
             ps.setString(1, token);
             ResultSet rs = ps.executeQuery();
         } catch (SQLException e) {
@@ -125,7 +125,7 @@ public class UserDao {
 
     public User getUserByEmailAndPassword(String email, String password) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement pstmt = con.prepareStatement("SELECT * FROM revmo.users WHERE email=? AND pass=convert_to(?, 'LATIN1')");
+            PreparedStatement pstmt = con.prepareStatement("SELECT * FROM users WHERE email=? AND pass=convert_to(?, 'LATIN1')");
 
             pstmt.setString(1, email);
             pstmt.setString(2, password);
@@ -146,7 +146,7 @@ public class UserDao {
     public User getUserByEmail(String email) {
         System.out.println(email);
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement pstmt = con.prepareStatement("SELECT * FROM revmo.users WHERE email=?");
+            PreparedStatement pstmt = con.prepareStatement("SELECT * FROM users WHERE email=?");
 
             pstmt.setString(1, email);
 
@@ -169,7 +169,7 @@ public class UserDao {
 
     public String updateEmail(int userId, String email) {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement pstmt = con.prepareStatement("UPDATE revmo.users SET email=? WHERE id=? RETURNING *");
+            PreparedStatement pstmt = con.prepareStatement("UPDATE users SET email=? WHERE id=? RETURNING *");
             pstmt.setString(1, email);
             pstmt.setInt(2, userId);
             ResultSet rs = pstmt.executeQuery();
@@ -183,7 +183,7 @@ public class UserDao {
 
     public String updatephone(int userId, String phoneNumber) {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement pstmt = con.prepareStatement("UPDATE revmo.users SET phone=? WHERE id=? RETURNING *");
+            PreparedStatement pstmt = con.prepareStatement("UPDATE users SET phone=? WHERE id=? RETURNING *");
             pstmt.setString(1, phoneNumber);
             pstmt.setInt(2, userId);
             ResultSet rs = pstmt.executeQuery();
@@ -197,7 +197,7 @@ public class UserDao {
 
     public String getRequesteeEmailByTransactionId(int transactionId) {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT u.email FROM revmo.users u " +
+            PreparedStatement ps = con.prepareStatement("SELECT u.email FROM users u " +
                     "JOIN users_with_accounts uwa ON uwa.user_id = u.id " +
                     "JOIN transactions t ON uwa.account_id = t.sending_id " +
                     "WHERE t.id = ?");
@@ -214,7 +214,7 @@ public class UserDao {
 
     public List<String> getReceiverEmailByTransactionId(int transactionId) {
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT u.email FROM revmo.users u " +
+            PreparedStatement ps = con.prepareStatement("SELECT u.email FROM users u " +
                     "JOIN users_with_accounts uwa ON uwa.user_id = u.id " +
                     "JOIN transactions t ON uwa.account_id = t.receiving_id " +
                     "WHERE t.id = ?");
@@ -222,7 +222,7 @@ public class UserDao {
             ResultSet rs = ps.executeQuery();
             List<String> emails = new ArrayList<>();
             while (rs.next()) {
-                 emails.add(rs.getString("email"));
+                emails.add(rs.getString("email"));
             }
             return emails;
         } catch (SQLException e) {
