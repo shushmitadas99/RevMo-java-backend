@@ -39,7 +39,7 @@ public class TransactionDao {
                 ps2.executeUpdate();
                 con.commit();
             } catch (SQLException e) {
-                System.out.println(e);
+//                System.out.println(e);
                 try {
                     // Roll back transaction
                     con.rollback();
@@ -399,7 +399,7 @@ public class TransactionDao {
                 ps2.executeUpdate();
                 con.commit();
             } catch (SQLException e) {
-                System.out.println(e);
+//                System.out.println(e);
                 try {
                     // Roll back transaction
                     con.rollback();

@@ -199,7 +199,7 @@ public class UserController implements Controller {
                     //Send Token to Database
                     userService.sendToken(jwtToken, currUser.getUserId());
 
-                    System.out.println(jwtToken);
+//                    System.out.println(jwtToken);
 
                     //Create URL and send email with reset URL
                     String addressUrl =  "http://localhost:5051/resetpassword?token="+jwtToken;
