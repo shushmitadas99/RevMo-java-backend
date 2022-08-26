@@ -120,7 +120,15 @@ public class TransactionService {
     }
 
     public Long trackAccountIncome(int aId, int month, int year) {
-        return transactionDao.monthlyIncome(aId, month, year);
+        return transactionDao.monthlyAccountIncome(aId, month, year);
+    }
+
+    public Long trackUserIncome(int uId, int month, int year) {
+        return transactionDao.monthlyUserIncome(uId, month, year);
+    }
+
+    public Long trackAllTimeUserIncome(int uId) {
+        return transactionDao.allTimeUserIncome(uId);
     }
 
     public Object transferBetweenAccounts(Map<String, String> newTransaction, int requesterId) {
@@ -141,6 +149,13 @@ public class TransactionService {
         return pass;
     }
 
+    public int getCurrentMonth() {
+        return transactionDao.getCurrentMonth();
+    }
+
+    public int getCurrentYear() {
+        return transactionDao.getCurrentYear();
+    }
 
 //    public Transaction sendMoneyRequest(Map<String, String> transaction, int uId) throws SQLException, InvalidParameterException {
 //        Transaction t = validateTransactionParams(transaction);
