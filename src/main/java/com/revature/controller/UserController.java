@@ -184,7 +184,7 @@ public class UserController implements Controller {
                 } else {
                     boolean status = userService.forgetPassword(inputEmail);
                     if ( status ){
-                        ctx.status(201);
+                        ctx.status(202);
                     } else {
                         ctx.status(403);
                     }
