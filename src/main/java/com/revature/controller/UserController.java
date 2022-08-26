@@ -141,68 +141,59 @@ public class UserController implements Controller {
 
         app.put("/resetpassword", ctx -> {
 
+            //Try and Catch for error
             try {
+                //retrieve token from inputted parameter
                 String token = ctx.req.getParameter("token");
 
+                //Decode token to check expiration
                 DecodedJWT jwt = JWT.decode(token);
+                //If valid token not expired validate if correct
                 if (jwt.getExpiresAt().before(new Date())) {
+                    ctx.result("Reset Link Expired. Please try again");
                     ctx.status(404);
-                    throw new RuntimeException("Reset Link Expired. Please try again");
                 } else {
                     boolean validateToken = userService.validateToken(token); // we need to write a code to verify the token validity
                     if (validateToken) {
+                        //get new password from json input
                         JSONObject newPassword = new JSONObject(ctx.body());
+                        //Update password in Database and delete token
                         userService.updatePassword(newPassword.getString("newpassword"), token);
                         userService.deleteToken(token);
+                        ctx.result("Reset Password has been successful. Please login with your new password!");
+                        ctx.status(200);
                         // redirect user to setup a new password page
                     } else {
+                        ctx.result("OOPS something went wrong. Reset Link Expired");
                         ctx.status(404);
-                        throw new RuntimeException("OOPS something went wrong. Reset Link Expired");
                         // return user a message with invalid token
                     }
                 }
             } catch (Exception e) {
+                ctx.result("Reset Link Expired. Please try again");
                 ctx.status(404);
-                throw new RuntimeException("Reset Link Expired. Please try again");
             }
         });
 
         app.post("/forgotpassword", ctx -> {
             //String email="";
-
-            JSONObject inputEmail = new JSONObject(ctx.body());
-            //System.out.println(UserService.getUserEmailByEmail(inputEmail.getString("email")));
+            //Create JSONObject with inputted json value
             try {
-                if(inputEmail.getString("email").equals("")){
+                JSONObject inputEmail = new JSONObject(ctx.body());
+                if (inputEmail.getString("email").equals("")) {
+                    ctx.result("Please enter the email!");
                     ctx.status(404);
-                    throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
-                }
-                if (userService.getUserEmailByEmail(inputEmail.getString("email"))) {
-
-
-                    User currUser = userService.getUserByInputEmail(inputEmail.getString("email"));
-
-                    String jwtToken = Jwts.builder().claim("last_name", currUser.getLastName()).claim("userId", currUser.getUserId()).claim("email", currUser.getEmail()).setSubject(currUser.getFirstName()).setId(UUID.randomUUID().toString()).setIssuedAt(Date.from(Instant.now())).setExpiration(Date.from(Instant.now().plus(5L, ChronoUnit.MINUTES))).compact();
-
-                    userService.sendToken(jwtToken, currUser.getUserId());
-
-                    System.out.println(jwtToken);
-
-                    String addressUrl = "http://localhost:8080/resetpassword?token=" + jwtToken;
-                    int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
-                    if (status == 202) {
-                        System.out.println("Please Check Your Email!");
-                    } else {
-                        ctx.status(404);
-                        throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
-                    }
                 } else {
-                    ctx.status(404);
-                    System.out.println("The email pertaining to the account has been sent an email. Please check email for reset link.");
+                    boolean status = userService.forgetPassword(inputEmail);
+                    if ( status ){
+                        ctx.status(201);
+                    } else {
+                        ctx.status(403);
+                    }
                 }
-            } catch (Exception e) {
-                ctx.status(404);
-                throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
+            }catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
             }
         });
 

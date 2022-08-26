@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.revature.model.User;
@@ -14,6 +15,7 @@ import com.revature.utility.ConnectionUtility;
 
 
 import java.sql.*;
+import java.util.List;
 
 public class UserDao {
     public boolean getUserEmailByEmail(String email) {
@@ -83,7 +85,7 @@ public class UserDao {
         }
     }
 
-    public void sendToken(String token, int userId) {
+    public boolean sendToken(String token, int userId) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
             PreparedStatement ps = con.prepareStatement("UPDATE users SET tokenvalue= convert_to(?, 'LATIN1') WHERE id=? RETURNING *");
@@ -91,6 +93,7 @@ public class UserDao {
             ps.setString(1, token);
             ps.setInt(2, userId);
             ResultSet rs = ps.executeQuery();
+            return true;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -141,6 +144,7 @@ public class UserDao {
     }
 
     public User getUserByEmail(String email) {
+        System.out.println(email);
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement pstmt = con.prepareStatement("SELECT * FROM users WHERE email=?");
 
@@ -148,7 +152,7 @@ public class UserDao {
 
             ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
                 return new User(rs.getInt("id"), rs.getString("first_name"),
                         rs.getString("last_name"), rs.getString("email"),
                         rs.getString("pass"), rs.getString("phone"),
@@ -206,6 +210,25 @@ public class UserDao {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    public List<String> getReceiverEmailByTransactionId(int transactionId) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT u.email FROM users u " +
+                    "JOIN users_with_accounts uwa ON uwa.user_id = u.id " +
+                    "JOIN transactions t ON uwa.account_id = t.receiving_id " +
+                    "WHERE t.id = ?");
+            ps.setInt(1, transactionId);
+            ResultSet rs = ps.executeQuery();
+            List<String> emails = new ArrayList<>();
+            while (rs.next()) {
+                 emails.add(rs.getString("email"));
+            }
+            return emails;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
 
