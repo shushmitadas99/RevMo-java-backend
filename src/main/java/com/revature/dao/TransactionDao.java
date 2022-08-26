@@ -11,11 +11,12 @@ public class TransactionDao {
     public String moveAmountBetweenAccounts(Transaction transaction) {
         try (Connection con = ConnectionUtility.createConnection()) {
             con.setAutoCommit(false);
+            System.out.println(transaction);
 
             try (
                     PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
                             "sending_id,receiving_id, req_time, res_time, status_id, amount, desc_id, receiving_email) " +
-                            "VALUES(?, ?, ?, Now(), Now(),2, ?, ?,?)");
+                            "VALUES(?, ?, ?, Now(), Now(), 2, ?, ?, ?)");
                     PreparedStatement ps1 = con.prepareStatement("UPDATE accounts SET balance = balance - ? " +
                             "WHERE id = ? ");
                     PreparedStatement ps2 = con.prepareStatement("UPDATE accounts SET balance = balance + ? " +
