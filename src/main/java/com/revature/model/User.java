@@ -83,9 +83,9 @@ public class User {
         this.accounts = accounts;
     }
 
-//    public void addAccount(Account account) {
-//        accounts.add(account);
-//    }
+    public void addAccount(Account account) {
+        accounts.add(account);
+    }
 
 
     public User() {
@@ -95,7 +95,7 @@ public class User {
         this.password = "";
         this.phoneNumber = "";
         this.userRole = "";
-  //      this.accounts = new ArrayList<>();
+        this.accounts = new ArrayList<>();
 
     }
 
@@ -107,7 +107,7 @@ public class User {
         this.password = pass;
         this.phoneNumber = phone;
         this.userRole = userRole;
-       // this.accounts = new ArrayList<>();
+        this.accounts = new ArrayList<>();
 
     }
 
@@ -121,11 +121,8 @@ public class User {
 
     @Override
     public int hashCode() {
+        return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole, accounts);
 
-//        return Objects.hash(userId, firstName, lastName, email, pass, phone, userRole);
-
-        //return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole, accounts);
-        return Objects.hash(userId, firstName, lastName, email, password, phoneNumber, userRole);
 
     }
 
@@ -139,10 +136,9 @@ public class User {
                 ", pass='" + password + '\'' +
                 ", phone='" + phoneNumber + '\'' +
                 ", userRole='" + userRole + '\'' +
-              //  ", accounts=" + accounts +
+                ", accounts=" + accounts +
                 '}';
     }
-    
 
 
 }

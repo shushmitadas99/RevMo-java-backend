@@ -1,0 +1,100 @@
+package com.revature.utility;
+
+import com.revature.exception.InvalidParameterException;
+import com.revature.model.Account;
+import com.revature.model.Transaction;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+public class Helpers {
+
+    public static Boolean validateAccount(Account acc) throws InvalidParameterException {
+
+        return true;
+    }
+
+    public static Boolean validateEmail(String email) throws InvalidParameterException {
+        InvalidParameterException exceptions = new InvalidParameterException();
+        if (email == null || email.isEmpty()) {
+            exceptions.addMessage("Value for receivingEmail must exist.");
+            throw exceptions;
+        }
+        String regex = "^(.+)@(.+)$";
+        Pattern pattern = Pattern.compile(regex);
+        if (!pattern.matcher(email).matches()) {
+            exceptions.addMessage("Value for receivingEmail does not match <username>@<domain> pattern");
+            throw exceptions;
+        }
+        return true;
+    }
+
+    public static int validatePositiveInt(String s, String val) throws InvalidParameterException {
+        InvalidParameterException exceptions = new InvalidParameterException();
+        int n = 0;
+        try {
+            n = Integer.parseInt(s);
+            if (n < 1) {
+                exceptions.addMessage(val + " must be a non-zero positive number.");
+            }
+        } catch (NumberFormatException e) {
+            exceptions.addMessage(val + " <" + s + "> is an invalid value. Numeric value is expected.");
+        }
+        if (exceptions.containsMessage()) {
+            throw exceptions;
+        }
+        return n;
+    }
+
+    public static Long validatePositiveLong(String s, String val) throws InvalidParameterException {
+        InvalidParameterException exceptions = new InvalidParameterException();
+        long n = 0L;
+        try {
+            n = Long.parseLong(s);
+            if (n < 1) {
+                exceptions.addMessage(val + " must be a non-zero positive number.");
+            }
+        } catch (NumberFormatException e) {
+            exceptions.addMessage(val + " <" + s + "> is an invalid value. Numeric value is expected.");
+        }
+        if (exceptions.containsMessage()) {
+            throw exceptions;
+        }
+        return n;
+    }
+
+
+    public static Transaction validateTransactionParams(Map<String, String> trx) throws InvalidParameterException {
+
+        Transaction t = new Transaction();
+        String inidiatedBy = trx.get("initiatedBy");
+        if (inidiatedBy != null) t.setInitiatedBy(inidiatedBy);
+        String requesterId = trx.get("requesterId");
+        if (requesterId != null) t.setRequesterId(validatePositiveInt(requesterId, "User ID"));
+        System.out.println(requesterId);
+        String transactionId = trx.get("transactionId");
+        if (transactionId != null) t.setTransactionId(validatePositiveInt(transactionId, "Transaction ID"));
+        String sendingId = trx.get("sendingId");
+        if (sendingId != null) t.setSendingId(validatePositiveInt(sendingId, "Sending Account ID"));
+        System.out.println(sendingId);
+        String receivingId = trx.get("receivingId");
+        if (receivingId != null) t.setReceivingId(validatePositiveInt(receivingId, "Receiving Account ID"));
+        System.out.println(receivingId);
+        String statusId = trx.get("statusId");
+        if (statusId != null) t.setStatusId(validatePositiveInt(statusId, "Transaction Status ID"));
+        String descriptionId = trx.get("descriptionId");
+        if (descriptionId != null) t.setDescriptionId(validatePositiveInt(descriptionId, "Transaction Description ID"));
+        System.out.println(descriptionId);
+        String amount = trx.get("amount");
+        if (amount != null) t.setAmount(validatePositiveLong(amount, "Transaction amount"));
+        System.out.println(amount);
+        if (trx.get("receivingEmail") != null)
+            if (validateEmail(trx.get("receivingEmail"))) t.setReceivingEmail(trx.get("receivingEmail"));
+        System.out.println(t);
+        return t;
+
+    }
+
+
+}

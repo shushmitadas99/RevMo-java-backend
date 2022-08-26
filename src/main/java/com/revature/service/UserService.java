@@ -1,17 +1,59 @@
 package com.revature.service;
 
 import com.revature.dao.UserDao;
-import com.revature.exceptions.InvalidLoginException;
+import com.revature.exception.InvalidParameterException;
 import com.revature.model.User;
+import com.revature.exception.InvalidLoginException;
+import com.revature.utility.EmailUtility;
+import io.github.cdimascio.dotenv.Dotenv;
+import io.jsonwebtoken.Jwts;
+import org.json.JSONObject;
 
 import java.sql.SQLException;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+
+import java.util.List;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class UserService {
     private UserDao userDao;
 
-    public UserService() {
+    public UserService(UserDao mockedObject) {
+        userDao = mockedObject;
+    }
 
-        userDao = new UserDao();
+    public UserService() {
+        this.userDao = new UserDao();
+    }
+
+    public boolean getUserEmailByEmail(String email) {
+        return userDao.getUserEmailByEmail(email);
+    }
+
+    public void updatePassword(String password, String token) {
+        userDao.updatePassword(password, token);
+    }
+
+    public User getUserByInputEmail(String inputEmail) {
+        return userDao.getUserByInputEmail(inputEmail);
+    }
+
+    public boolean sendToken(String token, int userId) {
+        return userDao.sendToken(token, userId);
+    }
+
+    public boolean validateToken(String token) {
+        return userDao.validateToken(token);
+    }
+
+    public void deleteToken(String token) {
+        userDao.deleteToken(token);
     }
 
     public User login(String email, String password) throws SQLException, InvalidLoginException {
@@ -22,8 +64,7 @@ public class UserService {
         }
         return user;
     }
-<<<<<<< Updated upstream
-=======
+
 
     public User getUserByEmail(String email) {
 
@@ -34,8 +75,10 @@ public class UserService {
 
     public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
         InvalidParameterException exceptions = new InvalidParameterException();
+
         String newFirstName = newInfo.get("firstName");
         String newLastName = newInfo.get("lastName");
+
         String newPhone = newInfo.get("phone");
         User oldUser = userDao.getUserByEmail(oldEmail);
         if (userId != oldUser.getUserId()) {
@@ -43,11 +86,13 @@ public class UserService {
             throw exceptions;
         }
 
+
         if (!Objects.equals(newFirstName, oldUser.getFirstName())) {
             userDao.updateFirstName(userId, newFirstName);
         }
         if (!Objects.equals(newLastName, oldUser.getLastName())) {
             userDao.updateLastName(userId, newLastName);
+
         }
         if (!Objects.equals(newPhone, oldUser.getPhoneNumber())) {
             userDao.updatephone(userId, newPhone);
@@ -95,6 +140,6 @@ public class UserService {
             throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
         }
     }
->>>>>>> Stashed changes
+
 }
 
