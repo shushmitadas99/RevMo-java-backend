@@ -32,22 +32,22 @@ public class TransactionController implements Controller {
     @Override
     @SuppressWarnings("unchecked")
     public void mapEndpoints(Javalin app) {
-        app.post("trx/accounts", ctx ->{
+        app.post("trx/accounts", ctx -> {
 //            try{
-                HttpServletRequest req = ctx.req;
-                HttpSession session = req.getSession();
-                String role = (String) session.getAttribute("userRole");
-                String email = (String) session.getAttribute("email");
-                User myUser = userService.getUserByEmail(email);
+                    HttpServletRequest req = ctx.req;
+                    HttpSession session = req.getSession();
+                    String role = (String) session.getAttribute("userRole");
+                    String email = (String) session.getAttribute("email");
+                    User myUser = userService.getUserByEmail(email);
                     System.out.println(myUser);
 
-                int userId = myUser.getUserId();
-                if (Objects.equals(role, "2")) {
-                    ObjectMapper om = new ObjectMapper();
-                    Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
-                    System.out.println(newTransaction);
-                    ctx.json(transactionService.transferBetweenAccounts(newTransaction, userId));
-                    ctx.status(201);
+                    int userId = myUser.getUserId();
+                    if (Objects.equals(role, "2")) {
+                        ObjectMapper om = new ObjectMapper();
+                        Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
+                        System.out.println(newTransaction);
+                        ctx.json(transactionService.transferBetweenAccounts(newTransaction, userId));
+                        ctx.status(201);
                     }
 //            }
 //            catch (InvalidParameterException e) {
@@ -186,7 +186,7 @@ public class TransactionController implements Controller {
                 ctx.status(200);
             }
         });
-        
+
 
         app.get("/trx/{receivingId}/receiver", ctx -> {
             HttpServletRequest req = ctx.req;
@@ -195,20 +195,34 @@ public class TransactionController implements Controller {
             String role = (String) session.getAttribute("userRole");
             String receivingId = ctx.pathParam("receivingId");
             List<String> emails = userService.getReceiverByTransactionId(Integer.parseInt(receivingId));
-            if (emails.contains(emailSignedInUser)|| role.equals("2")) {
+            if (emails.contains(emailSignedInUser) || role.equals("2")) {
                 ctx.json(transactionService.getAllTransactionsByReceivingId(receivingId));
                 ctx.status(200);
             }
         });
 
-        app.get("/trx/status/{status-name}/{aId}", ctx -> {
+        app.get("/trx/status/outgoing/{status-name}/{aId}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
             String role = (String) session.getAttribute("userRole");
+            String emailSignedInUser = (String) session.getAttribute("email");
             String statusName = ctx.pathParam("status-name").toUpperCase();
             int aId = Integer.parseInt(ctx.pathParam("aId"));
-            if (role.equals("2")) {
-                ctx.json(transactionService.getAllTransactionsByStatusName(statusName, aId));
+            if (role.equals("2") || accountService.isOwnerOfAccount(userService.getUserByEmail(emailSignedInUser).getUserId(), aId)) {
+                ctx.json(transactionService.getAllOutgoingTransactionsByStatusName(statusName, aId));
+                ctx.status(200);
+            }
+        });
+
+        app.get("/trx/status/incoming/{status-name}/{aId}", ctx -> {
+            HttpServletRequest req = ctx.req;
+            HttpSession session = req.getSession();
+            String role = (String) session.getAttribute("userRole");
+            String emailSignedInUser = (String) session.getAttribute("email");
+            String statusName = ctx.pathParam("status-name").toUpperCase();
+            int aId = Integer.parseInt(ctx.pathParam("aId"));
+            if (role.equals("2") || accountService.isOwnerOfAccount(userService.getUserByEmail(emailSignedInUser).getUserId(), aId)) {
+                ctx.json(transactionService.getAllIncomingTransactionsByStatusName(statusName, aId));
                 ctx.status(200);
             }
         });

@@ -44,8 +44,6 @@ public class AccountService {
         String balance = "0";
 
 
-
-
         if (exceptions.containsMessage()) {
             throw exceptions;
         }
@@ -120,5 +118,8 @@ public class AccountService {
         return accountDao.obtainListOfAccountOwners(aId);
     }
 
+    public Boolean isOwnerOfAccount(int uId, int aId) {
+        return accountDao.isOwnerOfAccount(uId, aId);
+    }
 }
 
