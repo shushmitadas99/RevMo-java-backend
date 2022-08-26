@@ -101,7 +101,9 @@ public class AccountController implements Controller{
 
 
         app.get("/{userEmail}/accounts", ctx -> {
+
             String email = ctx.pathParam("userEmail");
+
             ctx.json(accountService.getAccountsByEmail(email));
             ctx.status(200);
             //User myUser = userService.getUserByEmail(email);

@@ -32,6 +32,7 @@ public class AccountDao {
     }
 
     public List<Account> getAccountsByEmail(String email) throws SQLException {
+
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT act.type_name, a.type_id, a.balance as " +
                     "amount_in_dollars, a.id as acc_id, uwa.user_id " +
