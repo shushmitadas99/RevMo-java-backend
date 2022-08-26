@@ -150,8 +150,8 @@ public class UserController implements Controller {
                 DecodedJWT jwt = JWT.decode(token);
                 //If valid token not expired validate if correct
                 if (jwt.getExpiresAt().before(new Date())) {
+                    ctx.result("Reset Link Expired. Please try again");
                     ctx.status(404);
-                    throw new RuntimeException("Reset Link Expired. Please try again");
                 } else {
                     boolean validateToken = userService.validateToken(token); // we need to write a code to verify the token validity
                     if (validateToken) {
@@ -160,16 +160,18 @@ public class UserController implements Controller {
                         //Update password in Database and delete token
                         userService.updatePassword(newPassword.getString("newpassword"), token);
                         userService.deleteToken(token);
+                        ctx.result("Reset Password has been successful. Please login with your new password!");
+                        ctx.status(200);
                         // redirect user to setup a new password page
                     } else {
+                        ctx.result("OOPS something went wrong. Reset Link Expired");
                         ctx.status(404);
-                        throw new RuntimeException("OOPS something went wrong. Reset Link Expired");
                         // return user a message with invalid token
                     }
                 }
             } catch (Exception e) {
+                ctx.result("Reset Link Expired. Please try again");
                 ctx.status(404);
-                throw new RuntimeException("Reset Link Expired. Please try again");
             }
         });
 
