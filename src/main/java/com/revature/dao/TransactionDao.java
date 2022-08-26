@@ -39,7 +39,7 @@ public class TransactionDao {
                 ps2.executeUpdate();
                 con.commit();
             } catch (SQLException e) {
-                System.out.println(e);
+//                System.out.println(e);
                 try {
                     // Roll back transaction
                     con.rollback();
@@ -235,15 +235,16 @@ public class TransactionDao {
         }
     }
 
-    public List<Transaction> getAllTransactionsByStatusName(String statusName) throws SQLException {
+    public List<Transaction> getAllTransactionsByStatusName(String statusName, int aId) throws SQLException {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT t.id, t.requester_id, t.sending_id, t.receiving_id, t.req_time, t.res_time, t.amount, t.receiving_email,  concat_ws(' ', u.first_name,u.last_name) as initiated_by, st.type_name, td.description" +
                     " FROM transactions t" +
                     " JOIN users u ON t.requester_id = u.id" +
                     " JOIN status_types st ON t.status_id  = st.id" +
                     " JOIN transaction_descriptions td ON t.desc_id  = td.id" +
-                    " WHERE st.type_name  = ?");
+                    " WHERE st.type_name  = ? AND t.sending_id = ? ");
             ps.setString(1, statusName);
+            ps.setInt(2, aId);
             ResultSet rs = ps.executeQuery();
             List<Transaction> transactionsList = new ArrayList<>();
             while (rs.next()) {
@@ -399,13 +400,13 @@ public class TransactionDao {
                 ps2.executeUpdate();
                 con.commit();
             } catch (SQLException e) {
-                System.out.println(e);
+//                System.out.println(e);
                 try {
                     // Roll back transaction
                     con.rollback();
                     return "Transaction is being rolled back.";
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+//                    ex.printStackTrace();
                 }
             }
         } catch (SQLException e) {
@@ -442,7 +443,53 @@ public class TransactionDao {
         return -1L;
 
     }
-}
+
+    public String transferBetweenAccounts(Transaction transaction) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            con.setAutoCommit(false);
+
+            try (
+                    PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
+                            "sending_id,receiving_id, req_time, res_time, status_id, amount, desc_id, receiving_email) " +
+                            "VALUES(?, ?, ?, Now(), Now(),1, ?, 1, ?)");
+                    PreparedStatement ps1 = con.prepareStatement("UPDATE accounts SET balance = balance - ? " +
+                            "WHERE id = ? ");
+                    PreparedStatement ps2 = con.prepareStatement("UPDATE accounts SET balance = balance + ? " +
+                            "WHERE id = ? ");
+            ) {
+                // Create insert statement
+                ps.setInt(1, transaction.getRequesterId());
+                ps.setInt(2, transaction.getSendingId());
+                ps.setInt(3, transaction.getReceivingId());
+                ps.setLong(4, transaction.getAmount());
+                ps.setString(5, transaction.getReceivingEmail());
+                ps.executeUpdate();
+                //change balance for account moving amount out of
+                ps1.setLong(1, transaction.getAmount());
+                ps1.setInt(2, transaction.getSendingId());
+                ps1.executeUpdate();
+                // change balance for account receiving amount
+                ps2.setLong(1, transaction.getAmount());
+                ps2.setInt(2, transaction.getReceivingId());
+                ps2.executeUpdate();
+                con.commit();
+            } catch (SQLException e) {
+                System.out.println(e);
+                try {
+                    // Roll back transaction
+                    con.rollback();
+                    return "Transaction is being rolled back.";
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return "Transaction Successful";
+    }
+    }
+
 
 
 // (update(approve/deny) give resolve time, descriptionId, change amount in accounts

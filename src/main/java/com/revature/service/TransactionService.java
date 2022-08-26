@@ -105,8 +105,8 @@ public class TransactionService {
         return transactionDao.getAllTransactionsByRecievingId(receiveId);
     }
 
-    public List<Transaction> getAllTransactionsByStatusName(String statusName) throws SQLException {
-        return transactionDao.getAllTransactionsByStatusName(statusName);
+    public List<Transaction> getAllTransactionsByStatusName(String statusName, int aId) throws SQLException {
+        return transactionDao.getAllTransactionsByStatusName(statusName, aId);
     }
 
     public List<Transaction> getAllTransactionsByDescription(String description) throws SQLException {
@@ -115,6 +115,24 @@ public class TransactionService {
 
     public Long trackAccountIncome(int aId, int month, int year) {
         return transactionDao.monthlyIncome(aId, month, year);
+    }
+
+    public Object transferBetweenAccounts(Map<String, String> newTransaction, int requesterId) {
+        Transaction transaction = new Transaction();
+        transaction.setRequesterId(requesterId);
+        int sendingId = Integer.parseInt(newTransaction.get("sendingId"));
+        int receivingId = Integer.parseInt(newTransaction.get("receivingId"));
+        int amount = Integer.parseInt(newTransaction.get("amount"));
+        System.out.println(amount);
+        String email = (newTransaction.get("email"));
+        transaction.setSendingId(sendingId);
+        transaction.setReceivingId(receivingId);
+        transaction.setAmount(amount);
+        transaction.setReceivingEmail(email);
+
+        String pass = transactionDao.transferBetweenAccounts(transaction);
+
+        return pass;
     }
 
 

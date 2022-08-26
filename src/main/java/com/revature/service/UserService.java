@@ -4,10 +4,22 @@ import com.revature.dao.UserDao;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.User;
 import com.revature.exception.InvalidLoginException;
+import com.revature.utility.EmailUtility;
+import io.github.cdimascio.dotenv.Dotenv;
+import io.jsonwebtoken.Jwts;
+import org.json.JSONObject;
 
 import java.sql.SQLException;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+
+import java.util.List;
+
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class UserService {
     private UserDao userDao;
@@ -32,8 +44,8 @@ public class UserService {
         return userDao.getUserByInputEmail(inputEmail);
     }
 
-    public void sendToken(String token, int userId) {
-        userDao.sendToken(token, userId);
+    public boolean sendToken(String token, int userId) {
+        return userDao.sendToken(token, userId);
     }
 
     public boolean validateToken(String token) {
@@ -54,7 +66,10 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) {
+
+
         return userDao.getUserByEmail(email);
+
     }
 
     public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
@@ -82,6 +97,42 @@ public class UserService {
 
     public String getRequesteeByTransactionId(int transactionId) {
         return userDao.getRequesteeEmailByTransactionId(transactionId);
+    }
+
+    public List<String> getReceiverByTransactionId(int transactionId) {
+        return userDao.getReceiverEmailByTransactionId(transactionId);
+    }
+
+    public boolean forgetPassword(JSONObject inputEmail) {
+        try {
+
+            //Check if email is in the database
+            if (userDao.getUserEmailByEmail(inputEmail.getString("email"))) {
+
+                //return user Object based on email found
+                User currUser = userDao.getUserByInputEmail(inputEmail.getString("email"));
+
+                //Create web Token based on values with expiration
+                String jwtToken = Jwts.builder().claim("last_name", currUser.getLastName()).claim("userId", currUser.getUserId()).claim("email", currUser.getEmail()).setSubject(currUser.getFirstName()).setId(UUID.randomUUID().toString()).setIssuedAt(Date.from(Instant.now())).setExpiration(Date.from(Instant.now().plus(5L, ChronoUnit.MINUTES))).compact();
+
+                //Send Token to Database
+                userDao.sendToken(jwtToken, currUser.getUserId());
+                Dotenv dotenv = Dotenv.load();
+                //Create URL and send email with reset URL
+                String frontendUrl = dotenv.get("FRONTEND_HOST");
+                String addressUrl =  frontendUrl +"/resetpassword?token="+jwtToken;
+                int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
+                if (status == 202) {
+                    return true;
+                } else {
+                    throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
+                }
+            } else {
+                throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
+        }
     }
 }
 

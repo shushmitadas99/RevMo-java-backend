@@ -16,6 +16,7 @@ public class AccountService {
 
     public AccountService() {
         this.accountDao = new AccountDao();
+        this.userService = new UserService();
 
 
     }
@@ -40,27 +41,15 @@ public class AccountService {
         } else {
             account.setTypeId(Integer.parseInt(typeId));
         }
-        String balance = newAccount.get("balance");
+        String balance = "0";
 
-        if (balance == null) {
-            exceptions.addMessage("Account balance must not be null");
-        } else {
-            try {
-                long accountBalance = Long.parseLong(balance);
-                if (accountBalance < 0) {
-                    exceptions.addMessage("Account balance must be positive.");
-                }
-                account.setBalance(accountBalance);
-            } catch (NumberFormatException e) {
-                exceptions.addMessage("Account balance " + balance + " is invalid. Please enter a valid numeric amount");
-            }
 
-        }
+
 
         if (exceptions.containsMessage()) {
             throw exceptions;
         }
-        System.out.println(account);
+//        System.out.println(account);
         return accountDao.openAccount(account);
     }
 
@@ -73,9 +62,11 @@ public class AccountService {
     }
 
     public String linkUserToAccount(int aId, String email) throws SQLException, InvalidParameterException {
+        System.out.println(email);
         InvalidParameterException exceptions = new InvalidParameterException();
         List<String> owners = accountDao.obtainListOfAccountOwners(aId);
         User myUser = userService.getUserByEmail(email);
+        System.out.println(myUser);
         if (userService.getUserByEmail(email) == null) {
             exceptions.addMessage("User not found");
         } else {
