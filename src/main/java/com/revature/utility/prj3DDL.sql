@@ -113,7 +113,7 @@ INSERT INTO users_with_accounts (account_id, user_id) VALUES
 	(13,3),(14,3),(15,3), (16,3),(17,3),(18,3),
 	(19,4), (20,4),(21,5), (22,5);
 
-INSERT INTO transaction_descriptions (description) VALUES ('Salary'), ('Payment'),('Refund'),('Loan'),('Reimbursement');
+INSERT INTO transaction_descriptions (description) VALUES ('Income'),('Transfer'),('Send'),('Request');
 
 INSERT INTO status_types (type_name) VALUES ('PENDING'), ('APPROVED'), ('DECLINED');
 
