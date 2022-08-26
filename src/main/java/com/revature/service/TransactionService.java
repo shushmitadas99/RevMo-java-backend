@@ -86,10 +86,12 @@ public class TransactionService {
         return transactionDao.getAllTransactions();
 
     }
+
     public List<Transaction> getAllTransactions(int aid) throws SQLException {
         return transactionDao.getAllTransactions(aid);
 
     }
+
     public List<Transaction> getAllTransactionsByRequesterId(String requestId) throws SQLException {
         int request = Integer.parseInt(requestId);
         return transactionDao.getAllTransactionsByRequesterId(request);
@@ -105,8 +107,12 @@ public class TransactionService {
         return transactionDao.getAllTransactionsByRecievingId(receiveId);
     }
 
-    public List<Transaction> getAllTransactionsByStatusName(String statusName, int aId) throws SQLException {
-        return transactionDao.getAllTransactionsByStatusName(statusName, aId);
+    public List<Transaction> getAllOutgoingTransactionsByStatusName(String statusName, int aId) throws SQLException {
+        return transactionDao.getAllOutgoingTransactionsByStatusName(statusName, aId);
+    }
+
+    public List<Transaction> getAllIncomingTransactionsByStatusName(String statusName, int aId) throws SQLException {
+        return transactionDao.getAllIncomingTransactionsByStatusName(statusName, aId);
     }
 
     public List<Transaction> getAllTransactionsByDescription(String description) throws SQLException {
