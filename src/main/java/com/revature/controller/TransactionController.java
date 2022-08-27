@@ -47,7 +47,10 @@ public class TransactionController implements Controller {
                     ctx.json(transactionService.transferBetweenAccounts(newTransaction, userId));
                     ctx.status(201);
                 }
-
+            } catch (InvalidParameterException e) {
+                ctx.json(e.getMessages());
+                System.out.println(e.getMessages());
+                ctx.status(400);
             } catch (Exception e) {
                 ctx.json(e.getMessage());
                 System.out.println(e.getMessage());
