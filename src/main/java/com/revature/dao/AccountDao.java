@@ -193,7 +193,7 @@ public class AccountDao {
         try (Connection con = ConnectionUtility.createConnection();) {
             PreparedStatement ps = con.prepareStatement("SELECT (\n" +
                     "\t\tSELECT balance FROM accounts a WHERE a.id = ?\n" +
-                    "\t\t) > ? as can_withdraw");
+                    "\t\t) >= ? as can_withdraw");
             ps.setInt(1, aId);
             ps.setLong(2, amount);
             ResultSet rs = ps.executeQuery();
@@ -253,7 +253,7 @@ public class AccountDao {
             PreparedStatement ps = con.prepareStatement("SELECT balance FROM accounts WHERE id = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()) {
+            if (rs.next()) {
                 return rs.getInt("balance");
             }
         } catch (SQLException e) {
