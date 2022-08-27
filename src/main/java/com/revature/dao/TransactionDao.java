@@ -463,7 +463,13 @@ public class TransactionDao {
             PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS monthly_income, " +
                     "DATE_TRUNC('month', t.res_time) as mon, DATE_TRUNC('year', t.res_time) as yyyy\n " +
                     "\tFROM transactions t \n " +
-                    "\tWHERE t.receiving_id = ? AND DATE_TRUNC('month', t.res_time) = ?::TIMESTAMP AND DATE_TRUNC('year', t.res_time) = ?::TIMESTAMP\n " +
+                    "\tWHERE t.receiving_id = ? AND DATE_TRUNC('month', t.res_time) = ?::TIMESTAMP AND " +
+                    "DATE_TRUNC('year', t.res_time) = ?::TIMESTAMP\n AND t.status_id = 2 AND " +
+                    "t.sending_id NOT IN( " +
+                    "\t\tSELECT uwa .account_id\n " +
+                    "\t\t\tFROM users_with_accounts uwa\n " +
+                    "\t\t\tWHERE uwa.user_id = 2 " +
+                    " ) " +
                     "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
             ps.setInt(1, aId);
             ps.setString(2, timestampMonth);
