@@ -42,13 +42,13 @@ public class TransactionController implements Controller {
                     System.out.println(myUser);
 
                     int userId = myUser.getUserId();
-                    if (Objects.equals(role, "2")) {
+//                    if (Objects.equals(role, "2")) {
                         ObjectMapper om = new ObjectMapper();
                         Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                         System.out.println(newTransaction);
                         ctx.json(transactionService.transferBetweenAccounts(newTransaction, userId));
                         ctx.status(201);
-                    }
+//                    }
 //            }
 //            catch (InvalidParameterException e) {
 //                        ctx.json(e.getMessages());
