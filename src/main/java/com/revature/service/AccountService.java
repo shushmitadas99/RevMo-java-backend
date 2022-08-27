@@ -41,27 +41,13 @@ public class AccountService {
         } else {
             account.setTypeId(Integer.parseInt(typeId));
         }
-        String balance = newAccount.get("balance");
+        String balance = "0";
 
-        if (balance == null) {
-            exceptions.addMessage("Account balance must not be null");
-        } else {
-            try {
-                long accountBalance = Long.parseLong(balance);
-                if (accountBalance < 0) {
-                    exceptions.addMessage("Account balance must be positive.");
-                }
-                account.setBalance(accountBalance);
-            } catch (NumberFormatException e) {
-                exceptions.addMessage("Account balance " + balance + " is invalid. Please enter a valid numeric amount");
-            }
-
-        }
 
         if (exceptions.containsMessage()) {
             throw exceptions;
         }
-        System.out.println(account);
+//        System.out.println(account);
         return accountDao.openAccount(account);
     }
 
@@ -132,5 +118,8 @@ public class AccountService {
         return accountDao.obtainListOfAccountOwners(aId);
     }
 
+    public Boolean isOwnerOfAccount(int uId, int aId) {
+        return accountDao.isOwnerOfAccount(uId, aId);
+    }
 }
 
