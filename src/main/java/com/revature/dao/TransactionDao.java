@@ -568,6 +568,7 @@ public class TransactionDao {
                     "FROM users_with_accounts uwa " +
                     "WHERE uwa.user_id = ? " +
                     ") AND DATE_TRUNC('month', t.res_time) = ?::TIMESTAMP AND DATE_TRUNC('year', t.res_time) = ?::TIMESTAMP\n " +
+                    "AND t.status_id = 2" +
                     "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
             ps.setInt(1, uId);
             ps.setString(2, timestampMonth);
@@ -594,7 +595,7 @@ public class TransactionDao {
                     "SELECT uwa .account_id " +
                     "FROM users_with_accounts uwa " +
                     "WHERE uwa.user_id = ? " +
-                    ")" +
+                    ") AND t.status_id = 2" +
                     "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
             ps.setInt(1, uId);
             ResultSet rs = ps.executeQuery();
