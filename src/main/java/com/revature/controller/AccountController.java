@@ -1,16 +1,12 @@
 package com.revature.controller;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.exception.InvalidParameterException;
-import com.revature.model.Account;
 import com.revature.model.User;
 import com.revature.service.AccountService;
 import com.revature.service.UserService;
 import io.javalin.Javalin;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -46,7 +42,6 @@ public class AccountController implements Controller{
             }
         });
 //               link users to accounts
-
         app.put("/accounts/{aId}/users/{email}", ctx -> {
             HttpServletRequest req = ctx.req;
             HttpSession session = req.getSession();
@@ -154,7 +149,4 @@ public class AccountController implements Controller{
             }
         });
     }
-
-
-
 }
