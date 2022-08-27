@@ -97,7 +97,6 @@ public class TransactionService {
         return transactionDao.storeRequest(t);
     }
 
-
     public Object handleRequestAmount(Map<String, String> tr) throws InvalidParameterException {
         // this map contains t.id, t.requester_id, t.status_id
         Transaction t = validateTransactionParams(tr);
@@ -180,7 +179,6 @@ public class TransactionService {
 
         return pass;
     }
-
     public int getCurrentMonth() {
         return transactionDao.getCurrentMonth();
     }
