@@ -485,6 +485,30 @@ public class TransactionDao {
 
     }
 
+    public Long allTimeAccountIncome(int uId, int aId) {
+
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS allTime_income, " +
+                    "\tFROM transactions t \n " +
+                    "\tWHERE t.receiving_id = ?  AND t.status_id = 2 AND " +
+                    "t.sending_id NOT IN( " +
+                    "\t\tSELECT uwa .account_id\n " +
+                    "\t\t\tFROM users_with_accounts uwa\n " +
+                    "\t\t\tWHERE uwa.user_id = ? " +
+                    " ) ");
+            ps.setInt(1, aId);
+            ps.setInt(2, uId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getLong("allTime_income");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return -1L;
+
+    }
+
     public String transferBetweenAccounts(Transaction transaction) {
         try (Connection con = ConnectionUtility.createConnection()) {
             con.setAutoCommit(false);
@@ -596,20 +620,23 @@ public class TransactionDao {
     public Long allTimeUserIncome(int uId) {
 
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS monthly_income, " +
-                    "DATE_TRUNC('month', t.res_time) as mon, DATE_TRUNC('year', t.res_time) as yyyy\n " +
+            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS all_accounts_all_time, " +
                     "\tFROM transactions t \n " +
                     "\tWHERE t.receiving_id IN" +
                     "(" +
                     "SELECT uwa .account_id " +
                     "FROM users_with_accounts uwa " +
                     "WHERE uwa.user_id = ? " +
-                    ") AND t.status_id = 2" +
-                    "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
+                    ") AND t.status_id = 2 AND " +
+                    "t.sending_id NOT IN(\n " +
+                    "\tSELECT uwa .account_id\n " +
+                    "\tFROM users_with_accounts uwa\n " +
+                    "\tWHERE uwa.user_id = ?)");
             ps.setInt(1, uId);
+            ps.setInt(2, uId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getLong("monthly_income");
+                return rs.getLong("all_accounts_all_time");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
