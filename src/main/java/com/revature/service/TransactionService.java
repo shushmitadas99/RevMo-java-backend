@@ -53,6 +53,7 @@ public class TransactionService {
 
         return pass;
     }
+
     public String sendMoney(Map<String, String> addedTransaction, int uId, String sendingEmail) throws InvalidParameterException, SQLException {
         String email = addedTransaction.get("receivingEmail");
         InvalidParameterException exception = new InvalidParameterException();
@@ -71,7 +72,7 @@ public class TransactionService {
         trx.put("sendingId", sendingId);
         trx.put("receivingId", String.valueOf(primaryAccount.getAccountId()));
         trx.put("amount", amount);
-        if (Integer.parseInt(amount) > accountDao.getBalanceofAccountById(Integer.parseInt(sendingId))){
+        if (Integer.parseInt(amount) > accountDao.getBalanceofAccountById(Integer.parseInt(sendingId))) {
             exception.addMessage("Not Enough Money");
             throw exception;
         }
@@ -173,6 +174,9 @@ public class TransactionService {
         return transactionDao.allTimeUserIncome(uId);
     }
 
+    public Long trackAllTimeAccountIncome(int uId, int aId) {
+        return transactionDao.allTimeAccountIncome(uId, aId);
+    }
 
     public int getCurrentMonth() {
         return transactionDao.getCurrentMonth();

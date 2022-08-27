@@ -43,7 +43,7 @@ public class TransactionController implements Controller {
                 Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                 int userId = myUser.getUserId();
                 boolean owner = accountService.isOwnerOfAccount(userId, Integer.parseInt(newTransaction.get("sendingId")));
-                if (Objects.equals(role, "2")|| owner) {
+                if (Objects.equals(role, "2") || owner) {
                     ctx.json(transactionService.transferBetweenAccounts(newTransaction, userId));
                     ctx.status(201);
                 }
@@ -67,7 +67,7 @@ public class TransactionController implements Controller {
                 ObjectMapper om = new ObjectMapper();
                 Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                 boolean owner = accountService.isOwnerOfAccount(uId, Integer.parseInt(newTransaction.get("sendingId")));
-                if(owner) {
+                if (owner) {
                     ctx.json(transactionService.sendMoney(newTransaction, uId, email));
                     ctx.status(200);
                 }
@@ -91,7 +91,7 @@ public class TransactionController implements Controller {
                 ObjectMapper om = new ObjectMapper();
                 Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                 boolean owner = accountService.isOwnerOfAccount(uId, Integer.parseInt(newTransaction.get("receivingId")));
-                if(owner) {
+                if (owner) {
                     ctx.json(ctx.json(transactionService.requestAmount(newTransaction, uId, email)));
                     ctx.status(200);
                 }
@@ -257,6 +257,32 @@ public class TransactionController implements Controller {
             }
         });
 
+
+        app.get("/trx/income-by-account/{aId}/", ctx -> {
+            try {
+                HttpServletRequest req = ctx.req;
+                HttpSession session = req.getSession();
+                String emailSignedInUser = (String) session.getAttribute("email");
+                String role = (String) session.getAttribute("userRole");
+                int aId = Integer.parseInt(ctx.pathParam("aId"));
+                int uId = 0;
+                boolean owns = false;
+                if (!Objects.equals(role, "2")) {
+                    uId = userService.getUserByEmail(emailSignedInUser).getUserId();
+                    owns = accountService.isOwnerOfAccount(uId, aId);
+                }
+                if (Objects.equals(role, "2") || owns) {
+                    ctx.json(transactionService.trackAllTimeAccountIncome(uId, aId));
+                    ctx.status(200);
+                } else {
+                    ctx.json("Access Denied");
+                    ctx.status(401);
+                }
+            } catch (Exception e) {
+                ctx.json(e.getMessage());
+                ctx.status(400);
+            }
+        });
 
         app.get("/trx/income-by-user/{uId}/{month}/{year}", ctx -> {
             try {
