@@ -233,7 +233,8 @@ public class AccountDao {
         }
         return 0;
     }
-    public boolean getAccountById(int id){
+
+    public boolean getAccountById(int id) {
         try (Connection con = ConnectionUtility.createConnection();) {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
             ps.setInt(1, id);
@@ -245,5 +246,19 @@ public class AccountDao {
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    public int getBalanceofAccountById(int id) {
+        try (Connection con = ConnectionUtility.createConnection();) {
+            PreparedStatement ps = con.prepareStatement("SELECT balance FROM accounts WHERE id = ?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                return rs.getInt("balance");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
     }
 }

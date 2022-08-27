@@ -36,11 +36,32 @@ public class TransactionService {
         this.accountDao = mockedObject2;
     }
 
+    public Object transferBetweenAccounts(Map<String, String> newTransaction, int requesterId) {
+        Transaction transaction = new Transaction();
+        transaction.setRequesterId(requesterId);
+        int sendingId = Integer.parseInt(newTransaction.get("sendingId"));
+        int receivingId = Integer.parseInt(newTransaction.get("receivingId"));
+        int amount = Integer.parseInt(newTransaction.get("amount"));
+        System.out.println(amount);
+        String email = (newTransaction.get("email"));
+        transaction.setSendingId(sendingId);
+        transaction.setReceivingId(receivingId);
+        transaction.setAmount(amount);
+        transaction.setReceivingEmail(email);
 
-    public String moveAmountBetweenAccounts(Map<String, String> addedTransaction, int uId, String sendingEmail) throws InvalidParameterException, SQLException {
+        String pass = transactionDao.transferBetweenAccounts(transaction);
+
+        return pass;
+    }
+    public String sendMoney(Map<String, String> addedTransaction, int uId, String sendingEmail) throws InvalidParameterException, SQLException {
         String email = addedTransaction.get("receivingEmail");
+        InvalidParameterException exception = new InvalidParameterException();
+        if (!userService.getUserEmailByEmail(email)) {
+            exception.addMessage("Email does not exist");
+            throw exception;
+        }
         List<Account> myAccounts = accountService.getAccountsByEmail(email);
-        Account primaryAccount = myAccounts.get(1);
+        Account primaryAccount = myAccounts.get(0);
         String sendingId = addedTransaction.get("sendingId");
         String amount = addedTransaction.get("amount");
         System.out.println(primaryAccount.getAccountId());
@@ -50,30 +71,26 @@ public class TransactionService {
         trx.put("sendingId", sendingId);
         trx.put("receivingId", String.valueOf(primaryAccount.getAccountId()));
         trx.put("amount", amount);
+        if (Integer.parseInt(amount) > accountDao.getBalanceofAccountById(Integer.parseInt(sendingId))){
+            exception.addMessage("Not Enough Money");
+            throw exception;
+        }
         trx.put("descriptionId", "3");
         trx.put("receivingEmail", email);
         Transaction t = validateTransactionParams(trx);
-        System.out.println(t);
-        //InvalidParameterException exceptions = new InvalidParameterException();
-//        if ((t.getSendingId() > 0 && t.getReceivingId() > 0) && (!accountDao.isOwnerOfAccount(t.getRequesterId(), t.getSendingId()) ||
-//                !accountDao.isOwnerOfAccount(t.getRequesterId(), t.getReceivingId()))) {
-//            exceptions.addMessage("User does not have access to both accounts.");
-//            throw exceptions;
-//        }
-//        if (t.getSendingId() == 0) t.setSendingId(accountDao.getPrimaryAccountById(t.getRequesterId()));
-//        if (t.getReceivingId() == 0) t.setReceivingId(accountDao.getPrimaryAccountByEmail(t.getReceivingEmail()));
-//        //check if sendingId account balance is >= t.amount and :) receivingId.balance < (MAX(Long) - amount -1) -- Jeff Bezos case
-//        if (!accountDao.canWithdraw(t.getSendingId(), t.getAmount())) {
-//            exceptions.addMessage("User's balance is lower than the amount to be transferred.");
-//            throw exceptions;
-//        }
+
         return transactionDao.moveAmountBetweenAccounts(t);
     }
 
     public String requestAmount(Map<String, String> addedTransaction, int uId, String receivingEmail) throws InvalidParameterException, SQLException {
         String email = addedTransaction.get("receivingEmail");
+        InvalidParameterException exception = new InvalidParameterException();
+        if (!userService.getUserEmailByEmail(email)) {
+            exception.addMessage("Email does not exist");
+            throw exception;
+        }
         List<Account> myAccounts = accountService.getAccountsByEmail(email);
-        Account primaryAccount = myAccounts.get(1);
+        Account primaryAccount = myAccounts.get(0);
         String receivingId = addedTransaction.get("receivingId");
         String amount = addedTransaction.get("amount");
         System.out.println(primaryAccount.getAccountId());
@@ -87,12 +104,6 @@ public class TransactionService {
         trx.put("receivingEmail", email);
         System.out.println(trx);
         Transaction t = validateTransactionParams(trx);
-        System.out.println(t);
-
-//        if (!accountDao.canWithdraw(t.getSendingId(), t.getAmount())) {
-//            exceptions.addMessage("User's balance for the sending account is lower than the amount to be transferred.");
-//            throw exceptions;
-//        }
 
         return transactionDao.storeRequest(t);
     }
@@ -162,23 +173,7 @@ public class TransactionService {
         return transactionDao.allTimeUserIncome(uId);
     }
 
-    public Object transferBetweenAccounts(Map<String, String> newTransaction, int requesterId) {
-        Transaction transaction = new Transaction();
-        transaction.setRequesterId(requesterId);
-        int sendingId = Integer.parseInt(newTransaction.get("sendingId"));
-        int receivingId = Integer.parseInt(newTransaction.get("receivingId"));
-        int amount = Integer.parseInt(newTransaction.get("amount"));
-        System.out.println(amount);
-        String email = (newTransaction.get("email"));
-        transaction.setSendingId(sendingId);
-        transaction.setReceivingId(receivingId);
-        transaction.setAmount(amount);
-        transaction.setReceivingEmail(email);
 
-        String pass = transactionDao.transferBetweenAccounts(transaction);
-
-        return pass;
-    }
     public int getCurrentMonth() {
         return transactionDao.getCurrentMonth();
     }
@@ -187,21 +182,4 @@ public class TransactionService {
         return transactionDao.getCurrentYear();
     }
 
-//    public Transaction sendMoneyRequest(Map<String, String> transaction, int uId) throws SQLException, InvalidParameterException {
-//        Transaction t = validateTransactionParams(transaction);
-//        t.setRequesterId(uId);
-////        InvalidParameterException exceptions = new InvalidParameterException();
-//        //check if both sendingId and receivingId belong to user requesterId
-////        System.out.println(accountDao.isOwnerOfAccount(t.getRequesterId(),t.getSendingId()));
-//        //check if sendingId account balance is >= t.amount and :) receivingId.balance < (MAX(Long) - amount -1) -- Jeff Bezos case
-////        if(!accountDao.canWithdraw(t.getSendingId(), t.getAmount()))
-////            System.out.println("general kenobi");
-////            exceptions.addMessage("User's balance for the sending account is lower than the amount to be transferred.");
-//        //check if statusId = 2 not required user owns both accounts
-////        System.out.println(accountDao.canWithdraw(t.getSendingId(), t.getAmount()));
-////        if(exceptions.containsMessage())
-////            throw exceptions;
-//        System.out.println(t);
-//        return transactionDao.sendMoneyRequest(validateTransactionParams(transaction));
-//    }
 }
