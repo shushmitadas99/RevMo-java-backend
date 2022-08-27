@@ -233,4 +233,17 @@ public class AccountDao {
         }
         return 0;
     }
+    public boolean getAccountById(int id){
+        try (Connection con = ConnectionUtility.createConnection();) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
 }
