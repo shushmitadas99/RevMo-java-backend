@@ -126,7 +126,7 @@ public class UserService {
                 Dotenv dotenv = Dotenv.load();
                 //Create URL and send email with reset URL
                 String frontendUrl = dotenv.get("FRONTEND_HOST");
-                String addressUrl =  frontendUrl +"/resetpassword?token="+jwtToken;
+                String addressUrl = frontendUrl + "/resetpassword?token=" + jwtToken;
                 int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
                 if (status == 202) {
                     return true;
@@ -139,6 +139,10 @@ public class UserService {
         } catch (Exception e) {
             throw new RuntimeException("The email pertaining to the account has been sent an email. Please check email for reset link.");
         }
+    }
+
+    public User getUserByUserId(int uId) {
+        return userDao.getUserByUserId(uId);
     }
 
 }

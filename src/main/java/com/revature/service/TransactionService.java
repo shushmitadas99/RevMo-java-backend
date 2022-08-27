@@ -40,10 +40,10 @@ public class TransactionService {
         this.accountDao = mockedObject2;
     }
 
-    public Object transferBetweenAccounts(Map<String, String> newTransaction, int requesterId) throws InvalidParameterException {
+    public Object transferBetweenAccounts(Map<String, String> newTransaction, int uId) throws InvalidParameterException {
         Transaction transaction = new Transaction();
         InvalidParameterException exceptions = new InvalidParameterException();
-        transaction.setRequesterId(requesterId);
+        int requesterId = Integer.parseInt(newTransaction.get("requesterId"));
         int sendingId = Integer.parseInt(newTransaction.get("sendingId"));
         int receivingId = Integer.parseInt(newTransaction.get("receivingId"));
         BigDecimal amt = BigDecimal.valueOf(Double.parseDouble(newTransaction.get("amount"))).movePointRight(2).divideToIntegralValue(BigDecimal.valueOf(1));
@@ -53,14 +53,20 @@ public class TransactionService {
         transaction.setReceivingId(receivingId);
         transaction.setAmount(amount);
         transaction.setReceivingEmail(email);
-        if (!accountDao.isOwnerOfAccount(requesterId, transaction.getSendingId())) {
-            exceptions.addMessage("User " + requesterId + " does not own account " + transaction.getSendingId() + ".");
+        transaction.setRequesterId(requesterId);
+        if (transaction.getReceivingId() == transaction.getSendingId()) {
+            exceptions.addMessage("Sending an amount to the same account you are sending from is not allowed.");
+            throw exceptions;
+        }
+
+        if (!accountDao.isOwnerOfAccount(uId, transaction.getSendingId())) {
+            exceptions.addMessage("User " + uId + " does not own account " + transaction.getSendingId() + ".");
             throw exceptions;
         }
 
         if (accountDao.canWithdraw(transaction.getSendingId(), transaction.getAmount()))
             return transactionDao.transferBetweenAccounts(transaction);
-        exceptions.addMessage("" + userService.getUserByEmail(email).getFirstName() + ", you do not have $" + transaction.getAmount() / 100.00 + " in account " + transaction.getSendingId() + ".");
+        exceptions.addMessage("" + userService.getUserByUserId(requesterId).getFirstName() + ", you do not have $" + transaction.getAmount() / 100.00 + " in account " + transaction.getSendingId() + ".");
         throw exceptions;
     }
 

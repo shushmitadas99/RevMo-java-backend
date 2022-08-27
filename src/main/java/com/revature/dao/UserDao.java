@@ -208,6 +208,7 @@ public class UserDao {
             throw new RuntimeException(e);
         }
     }
+
     public String updateLastName(int userId, String lastName) {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement pstmt = con.prepareStatement("UPDATE users SET last_name=? WHERE id=? RETURNING *");
@@ -256,6 +257,27 @@ public class UserDao {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public User getUserByUserId(int uId) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement pstmt = con.prepareStatement("SELECT * FROM users WHERE id=?");
+
+            pstmt.setInt(1, uId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new User(rs.getInt("id"), rs.getString("first_name"),
+                        rs.getString("last_name"), rs.getString("email"),
+                        rs.getString("pass"), rs.getString("phone"),
+                        rs.getString("role_id"));
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
