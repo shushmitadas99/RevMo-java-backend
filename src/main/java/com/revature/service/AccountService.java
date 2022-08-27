@@ -41,8 +41,8 @@ public class AccountService {
         } else {
             account.setTypeId(Integer.parseInt(typeId));
         }
-        String balance = "0";
-
+        int balance = 0;
+        account.setBalance(balance);
 
         if (exceptions.containsMessage()) {
             throw exceptions;
