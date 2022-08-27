@@ -488,7 +488,7 @@ public class TransactionDao {
     public Long allTimeAccountIncome(int uId, int aId) {
 
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS allTime_income, " +
+            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS allTime_income " +
                     "\tFROM transactions t \n " +
                     "\tWHERE t.receiving_id = ?  AND t.status_id = 2 AND " +
                     "t.sending_id NOT IN( " +
@@ -620,7 +620,7 @@ public class TransactionDao {
     public Long allTimeUserIncome(int uId) {
 
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS all_accounts_all_time, " +
+            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS all_accounts_all_time " +
                     "\tFROM transactions t \n " +
                     "\tWHERE t.receiving_id IN" +
                     "(" +
@@ -639,6 +639,7 @@ public class TransactionDao {
                 return rs.getLong("all_accounts_all_time");
             }
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
         return -1L;
