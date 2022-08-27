@@ -56,7 +56,7 @@ public class TransactionController implements Controller {
 
         });
 
-        app.post("/trx-send", ctx -> {
+        app.post("/trx", ctx -> {
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
                 HttpServletRequest req = ctx.req;
@@ -68,18 +68,18 @@ public class TransactionController implements Controller {
                 Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
                 boolean owner = accountService.isOwnerOfAccount(uId, Integer.parseInt(newTransaction.get("sendingId")));
                 if(owner) {
-                    ctx.json(transactionService.moveAmountBetweenAccounts(newTransaction, uId, email));
+                    ctx.json(transactionService.sendMoney(newTransaction, uId, email));
                     ctx.status(200);
                 }
             } catch (Exception e) {
-                ctx.json(e.getMessage());
-                System.out.println(e.getMessage());
+//                ctx.json(e.getMessage());
+//                System.out.println(e.getMessage());
                 ctx.status(400);
             }
         });
 
 
-        app.post("/trx-req", ctx -> {
+        app.post("/trx/req", ctx -> {
 
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
@@ -104,7 +104,7 @@ public class TransactionController implements Controller {
         });
 
 
-        app.put("/trx-req", ctx -> {
+        app.put("/trx/req", ctx -> {
 //            endpoint expects JSON { "statusId": "{2 for approved, 3 for denied}", "transactionId": "{trxId}"}
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);

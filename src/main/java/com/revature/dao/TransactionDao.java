@@ -65,7 +65,7 @@ public class TransactionDao {
             ps.setInt(2, transaction.getSendingId());
             ps.setInt(3, transaction.getReceivingId());
             ps.setLong(4, transaction.getAmount());
-            ps.setString(6, transaction.getReceivingEmail());
+            ps.setString(5, transaction.getReceivingEmail());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return "Transaction Successful";
         } catch (SQLException e) {
