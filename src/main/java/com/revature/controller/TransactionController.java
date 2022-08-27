@@ -34,6 +34,8 @@ public class TransactionController implements Controller {
     public void mapEndpoints(Javalin app) {
         app.post("trx/accounts", ctx -> {
             try {
+                Transaction tr = ctx.bodyAsClass(Transaction.class);
+                int uId = tr.getRequesterId();
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
                 String role = (String) session.getAttribute("userRole");
@@ -44,7 +46,7 @@ public class TransactionController implements Controller {
                 int userId = myUser.getUserId();
                 boolean owner = accountService.isOwnerOfAccount(userId, Integer.parseInt(newTransaction.get("sendingId")));
                 if (Objects.equals(role, "2") || owner) {
-                    ctx.json(transactionService.transferBetweenAccounts(newTransaction, userId));
+                    ctx.json(transactionService.transferBetweenAccounts(newTransaction, uId));
                     ctx.status(201);
                 }
             } catch (InvalidParameterException e) {
