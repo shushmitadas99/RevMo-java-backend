@@ -450,7 +450,7 @@ public class TransactionDao {
         return "Transaction Successfully Approved and Executed";
     }
 
-    public Long monthlyAccountIncome(int aId, int month, int year) {
+    public Long monthlyAccountIncome(int uId, int aId, int month, int year) {
         String mon = "";
         if (month < 10) {
             mon = "0" + month;
@@ -468,12 +468,13 @@ public class TransactionDao {
                     "t.sending_id NOT IN( " +
                     "\t\tSELECT uwa .account_id\n " +
                     "\t\t\tFROM users_with_accounts uwa\n " +
-                    "\t\t\tWHERE uwa.user_id = 2 " +
+                    "\t\t\tWHERE uwa.user_id = ? " +
                     " ) " +
                     "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
             ps.setInt(1, aId);
             ps.setString(2, timestampMonth);
             ps.setString(3, timestampYear);
+            ps.setInt(4, uId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getLong("monthly_income");
@@ -481,7 +482,7 @@ public class TransactionDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return -1L;
+        return 0L;
 
     }
 
@@ -505,7 +506,7 @@ public class TransactionDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return -1L;
+        return 0L;
 
     }
 
@@ -601,11 +602,12 @@ public class TransactionDao {
                     "AND t.status_id = 2 AND t.sending_id NOT IN(\n " +
                     "\t\tSELECT uwa .account_id\n " +
                     "\t\t\tFROM users_with_accounts uwa\n " +
-                    "\t\t\tWHERE uwa.user_id = 2) " +
+                    "\t\t\tWHERE uwa.user_id = ?) " +
                     "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
             ps.setInt(1, uId);
             ps.setString(2, timestampMonth);
             ps.setString(3, timestampYear);
+            ps.setInt(4, uId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getLong("monthly_income");
@@ -613,7 +615,7 @@ public class TransactionDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return -1L;
+        return 0L;
 
     }
 
@@ -642,7 +644,7 @@ public class TransactionDao {
             System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
-        return -1L;
+        return 0L;
 
     }
 
