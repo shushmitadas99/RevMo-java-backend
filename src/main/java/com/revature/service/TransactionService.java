@@ -5,6 +5,7 @@ import com.revature.dao.TransactionDao;
 import com.revature.exception.InvalidParameterException;
 import com.revature.model.Account;
 import com.revature.model.Transaction;
+import com.revature.model.User;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -19,7 +20,7 @@ import static com.revature.utility.Helpers.validateTransactionParams;
 
 public class TransactionService {
     private static DecimalFormat df = new DecimalFormat("0.00");
-    private final TransactionDao transactionDao;
+    private TransactionDao transactionDao;
     private AccountDao accountDao;
     private AccountService accountService;
     private UserService userService;
@@ -40,34 +41,49 @@ public class TransactionService {
         this.accountDao = mockedObject2;
     }
 
+    public TransactionService(TransactionDao mockedObject, AccountDao mockedObject2, UserService mockedObject3) {
+        this.transactionDao = mockedObject;
+        this.accountDao = mockedObject2;
+        this.userService = mockedObject3;
+    }
+
     public Object transferBetweenAccounts(Map<String, String> newTransaction, int uId) throws InvalidParameterException {
-        Transaction transaction = new Transaction();
+//        Transaction transaction = new Transaction();
         InvalidParameterException exceptions = new InvalidParameterException();
-        int requesterId = Integer.parseInt(newTransaction.get("requesterId"));
-        int sendingId = Integer.parseInt(newTransaction.get("sendingId"));
-        int receivingId = Integer.parseInt(newTransaction.get("receivingId"));
-        BigDecimal amt = BigDecimal.valueOf(Double.parseDouble(newTransaction.get("amount"))).movePointRight(2).divideToIntegralValue(BigDecimal.valueOf(1));
-        long amount = (long) (int) (Float.parseFloat(amt.toString()) * 10) / 10;
-        String email = newTransaction.get("receivingEmail");
-        transaction.setSendingId(sendingId);
-        transaction.setReceivingId(receivingId);
-        transaction.setAmount(amount);
-        transaction.setReceivingEmail(email);
-        transaction.setRequesterId(requesterId);
-        if (transaction.getReceivingId() == transaction.getSendingId()) {
+        Transaction t = validateTransactionParams(newTransaction);
+//        Map<String, String> trx = new HashMap<>();
+//        trx.put("requesterId", newTransaction.get("requesterId"));
+//        trx.put("sendingId", newTransaction.get("sendingId"));
+//        trx.put("receivingId", newTransaction.get("receivingId"));
+//        trx.put("amount", newTransaction.get("amount"));
+
+//        int requesterId = Integer.parseInt(newTransaction.get("requesterId"));
+//        int sendingId = Integer.parseInt(newTransaction.get("sendingId"));
+//        int receivingId = Integer.parseInt(newTransaction.get("receivingId"));
+//        BigDecimal amt = BigDecimal.valueOf(Double.parseDouble(newTransaction.get("amount"))).movePointRight(2).divideToIntegralValue(BigDecimal.valueOf(1));
+//        long amount = (long) (int) (Float.parseFloat(amt.toString()) * 10) / 10;
+//        String email = newTransaction.get("receivingEmail");
+//        transaction.setSendingId(sendingId);
+//        transaction.setReceivingId(receivingId);
+//        transaction.setAmount(amount);
+//        transaction.setReceivingEmail(email);
+//        transaction.setRequesterId(requesterId);
+        if (t.getReceivingId() == t.getSendingId()) {
             exceptions.addMessage("Sending an amount to the same account you are sending from is not allowed.");
             throw exceptions;
         }
 
-        if (!accountDao.isOwnerOfAccount(uId, transaction.getSendingId())) {
-            exceptions.addMessage("User " + uId + " does not own account " + transaction.getSendingId() + ".");
+        if (!accountDao.isOwnerOfAccount(uId, t.getSendingId())) {
+            exceptions.addMessage("User " + uId + " does not own account " + t.getSendingId() + ".");
             throw exceptions;
         }
 
-        if (accountDao.getBalanceofAccountById(transaction.getSendingId()) >= transaction.getAmount())
-            return transactionDao.transferBetweenAccounts(transaction);
-        exceptions.addMessage("" + userService.getUserByUserId(requesterId).getFirstName() + ", you do not have $" + transaction.getAmount() / 100.00 + " in account " + transaction.getSendingId() + ".");
-        throw exceptions;
+        if (!(accountDao.getBalanceofAccountById(t.getSendingId()) >= t.getAmount())) {
+            exceptions.addMessage("" + userService.getUserByUserId(t.getRequesterId()).getFirstName() + ", you do not have $" + t.getAmount() / 100.00 + " in account " + t.getSendingId() + ".");
+            throw exceptions;
+        }
+       
+        return transactionDao.transferBetweenAccounts(t);
     }
 
     public String sendMoney(Map<String, String> addedTransaction, int uId, String sendingEmail) throws InvalidParameterException, SQLException {

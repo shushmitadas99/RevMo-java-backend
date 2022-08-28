@@ -16,7 +16,7 @@ public class TransactionDao {
             try (
                     PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
                             "sending_id,receiving_id, req_time, res_time, status_id, amount, desc_id, receiving_email) " +
-                            "VALUES(?, ?, ?, Now(), Now(), 2, ?, ?, ?)");
+                            "VALUES(?, ?, ?, Now(), Now(), 2, ?, 2, ?)");
                     PreparedStatement ps1 = con.prepareStatement("UPDATE accounts SET balance = balance - ? " +
                             "WHERE id = ? ");
                     PreparedStatement ps2 = con.prepareStatement("UPDATE accounts SET balance = balance + ? " +
@@ -539,6 +539,7 @@ public class TransactionDao {
                 ps2.setInt(2, transaction.getReceivingId());
                 ps2.executeUpdate();
                 con.commit();
+
             } catch (SQLException e) {
                 System.out.println(e);
                 try {
