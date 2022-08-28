@@ -64,7 +64,7 @@ public class TransactionService {
             throw exceptions;
         }
 
-        if (accountDao.canWithdraw(transaction.getSendingId(), transaction.getAmount()))
+        if (accountDao.getBalanceofAccountById(transaction.getSendingId()) >= transaction.getAmount())
             return transactionDao.transferBetweenAccounts(transaction);
         exceptions.addMessage("" + userService.getUserByUserId(requesterId).getFirstName() + ", you do not have $" + transaction.getAmount() / 100.00 + " in account " + transaction.getSendingId() + ".");
         throw exceptions;
@@ -72,10 +72,10 @@ public class TransactionService {
 
     public String sendMoney(Map<String, String> addedTransaction, int uId, String sendingEmail) throws InvalidParameterException, SQLException {
         String email = addedTransaction.get("receivingEmail");
-        InvalidParameterException exception = new InvalidParameterException();
+        InvalidParameterException exceptions = new InvalidParameterException();
         if (!userService.getUserEmailByEmail(email)) {
-            exception.addMessage("Email does not exist");
-            throw exception;
+            exceptions.addMessage("Email does not exist");
+            throw exceptions;
         }
         List<Account> myAccounts = accountService.getAccountsByEmail(email);
         Account primaryAccount = myAccounts.get(0);
@@ -88,14 +88,13 @@ public class TransactionService {
         trx.put("sendingId", sendingId);
         trx.put("receivingId", String.valueOf(primaryAccount.getAccountId()));
         trx.put("amount", amount);
-        if (Integer.parseInt(amount) > accountDao.getBalanceofAccountById(Integer.parseInt(sendingId))) {
-            exception.addMessage("Not Enough Money");
-            throw exception;
-        }
         trx.put("descriptionId", "3");
         trx.put("receivingEmail", email);
         Transaction t = validateTransactionParams(trx);
-
+        if (accountDao.getBalanceofAccountById(t.getReceivingId()) < t.getAmount()) {
+            exceptions.addMessage("Not enough funds!");
+            throw exceptions;
+        }
         return transactionDao.moveAmountBetweenAccounts(t);
     }
 
@@ -110,7 +109,6 @@ public class TransactionService {
         Account primaryAccount = myAccounts.get(0);
         String receivingId = addedTransaction.get("receivingId");
         String amount = addedTransaction.get("amount");
-        System.out.println(primaryAccount.getAccountId());
         Map<String, String> trx = new HashMap<>();
         trx.put("initiatedBy", receivingEmail);
         trx.put("requesterId", String.valueOf(uId));
@@ -121,24 +119,25 @@ public class TransactionService {
         trx.put("receivingEmail", email);
         System.out.println(trx);
         Transaction t = validateTransactionParams(trx);
-
         return transactionDao.storeRequest(t);
     }
 
     public Object handleRequestAmount(Map<String, String> tr) throws InvalidParameterException {
         // this map contains t.id, t.requester_id, t.status_id
+        System.out.println(tr);
         Transaction t = validateTransactionParams(tr);
         InvalidParameterException exceptions = new InvalidParameterException();
-        //check if statusId = 2 not required user owns both accounts
+        System.out.println(t);
         if (t.getStatusId() == 1) {
             exceptions.addMessage("To handle the request the status must change from <Pending> to <Approved> or <Denied>");
             throw exceptions;
         }
         if (t.getStatusId() == 3) {
             return transactionDao.completeRequestDenied(t);
-        } else {
-            return transactionDao.completeRequestApproved(t);
         }
+
+        return transactionDao.completeRequestApproved(t);
+
     }
 
     public List<Transaction> getAllTransactions() throws SQLException {

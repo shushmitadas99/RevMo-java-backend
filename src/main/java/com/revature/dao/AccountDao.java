@@ -189,22 +189,6 @@ public class AccountDao {
         return false;
     }
 
-    public Boolean canWithdraw(int aId, long amount) {
-        try (Connection con = ConnectionUtility.createConnection();) {
-            PreparedStatement ps = con.prepareStatement("SELECT (\n" +
-                    "\t\tSELECT balance FROM accounts a WHERE a.id = ?\n" +
-                    "\t\t) >= ? as can_withdraw");
-            ps.setInt(1, aId);
-            ps.setLong(2, amount);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getBoolean("can_withdraw");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return false;
-    }
 
     public int getPrimaryAccountById(int uId) {
         try (Connection con = ConnectionUtility.createConnection();) {

@@ -59,7 +59,6 @@ public class TransactionController implements Controller {
 
         app.post("/trx", ctx -> {
             try {
-                Transaction tr = ctx.bodyAsClass(Transaction.class);
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
                 Integer uId = (Integer) session.getAttribute("userId");
@@ -72,9 +71,13 @@ public class TransactionController implements Controller {
                     ctx.json(transactionService.sendMoney(newTransaction, uId, email));
                     ctx.status(200);
                 }
+            } catch (InvalidParameterException e) {
+                ctx.json(e.getMessages());
+                System.out.println(e.getMessages());
+                ctx.status(400);
             } catch (Exception e) {
-//                ctx.json(e.getMessage());
-//                System.out.println(e.getMessage());
+                ctx.json(e.getMessage());
+                System.out.println(e.getMessage());
                 ctx.status(400);
             }
         });
@@ -83,7 +86,6 @@ public class TransactionController implements Controller {
         app.post("/trx/req", ctx -> {
 
             try {
-                Transaction tr = ctx.bodyAsClass(Transaction.class);
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
                 Integer uId = (Integer) session.getAttribute("userId");
@@ -109,6 +111,7 @@ public class TransactionController implements Controller {
 //            endpoint expects JSON { "statusId": "{2 for approved, 3 for denied}", "transactionId": "{trxId}"}
             try {
                 Transaction tr = ctx.bodyAsClass(Transaction.class);
+                System.out.println(tr);
                 int transactionId = tr.getTransactionId();
                 String email = userService.getRequesteeByTransactionId(transactionId);
                 HttpServletRequest req = ctx.req;
