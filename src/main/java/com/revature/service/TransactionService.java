@@ -48,7 +48,7 @@ public class TransactionService {
         int receivingId = Integer.parseInt(newTransaction.get("receivingId"));
         BigDecimal amt = BigDecimal.valueOf(Double.parseDouble(newTransaction.get("amount"))).movePointRight(2).divideToIntegralValue(BigDecimal.valueOf(1));
         long amount = (long) (int) (Float.parseFloat(amt.toString()) * 10) / 10;
-        String email = (newTransaction.get("email"));
+        String email = newTransaction.get("receivingEmail");
         transaction.setSendingId(sendingId);
         transaction.setReceivingId(receivingId);
         transaction.setAmount(amount);
@@ -178,8 +178,8 @@ public class TransactionService {
         return transactionDao.getAllTransactionsByDescription(description);
     }
 
-    public Long trackAccountIncome(int aId, int month, int year) {
-        return transactionDao.monthlyAccountIncome(aId, month, year);
+    public Long trackAccountIncome(int uId, int aId, int month, int year) {
+        return transactionDao.monthlyAccountIncome(uId, aId, month, year);
     }
 
     public Long trackUserIncome(int uId, int month, int year) {

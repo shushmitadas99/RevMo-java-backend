@@ -34,17 +34,13 @@ public class TransactionController implements Controller {
     public void mapEndpoints(Javalin app) {
         app.post("trx/accounts", ctx -> {
             try {
-                Transaction tr = ctx.bodyAsClass(Transaction.class);
-                int uId = tr.getRequesterId();
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
                 String role = (String) session.getAttribute("userRole");
-                String email = (String) session.getAttribute("email");
-                User myUser = userService.getUserByEmail(email);
+                int uId = (int) session.getAttribute("userId");
                 ObjectMapper om = new ObjectMapper();
                 Map<String, String> newTransaction = om.readValue(ctx.body(), Map.class);
-                int userId = myUser.getUserId();
-                boolean owner = accountService.isOwnerOfAccount(userId, Integer.parseInt(newTransaction.get("sendingId")));
+                boolean owner = accountService.isOwnerOfAccount(uId, Integer.parseInt(newTransaction.get("sendingId")));
                 if (Objects.equals(role, "2") || owner) {
                     ctx.json(transactionService.transferBetweenAccounts(newTransaction, uId));
                     ctx.status(201);
@@ -237,6 +233,7 @@ public class TransactionController implements Controller {
                 HttpServletRequest req = ctx.req;
                 HttpSession session = req.getSession();
                 String emailSignedInUser = (String) session.getAttribute("email");
+                int uId = (int) session.getAttribute("userId");
                 String role = (String) session.getAttribute("userRole");
                 int aId = Integer.parseInt(ctx.pathParam("aId"));
                 int month = Integer.parseInt(ctx.pathParam("month"));
@@ -250,7 +247,7 @@ public class TransactionController implements Controller {
                 for (Account a : accounts)
                     accountIds.add(a.getAccountId());
                 if (accountIds.contains(aId) || Objects.equals(role, "2")) {
-                    ctx.json(transactionService.trackAccountIncome(aId, month, year));
+                    ctx.json(transactionService.trackAccountIncome(uId, aId, month, year));
                     ctx.status(200);
                 } else {
                     ctx.json("Access Denied");
