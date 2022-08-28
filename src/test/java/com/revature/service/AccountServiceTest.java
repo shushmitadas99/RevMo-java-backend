@@ -43,7 +43,7 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void testGetAccountsByEmailPositive() throws SQLException {
+    public void testGetAccountsByEmailPositive() throws SQLException, InvalidParameterException {
         // Arrange
         AccountDao mockedObject = mock(AccountDao.class);
         String email = "jd80@a.ca";
@@ -65,7 +65,7 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void testGetAccountsByEmailandAccountId() throws SQLException {
+    public void testGetAccountsByEmailAndAccountId() throws SQLException, InvalidParameterException {
         // Arrange
         AccountDao mockedObject = mock(AccountDao.class);
         String email = "jd80@a.ca";

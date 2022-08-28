@@ -11,11 +11,12 @@ public class TransactionDao {
     public String moveAmountBetweenAccounts(Transaction transaction) {
         try (Connection con = ConnectionUtility.createConnection()) {
             con.setAutoCommit(false);
+            System.out.println(transaction);
 
             try (
                     PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
                             "sending_id,receiving_id, req_time, res_time, status_id, amount, desc_id, receiving_email) " +
-                            "VALUES(?, ?, ?, Now(), Now(),2, ?, ?,?)");
+                            "VALUES(?, ?, ?, Now(), Now(), 2, ?, 2, ?)");
                     PreparedStatement ps1 = con.prepareStatement("UPDATE accounts SET balance = balance - ? " +
                             "WHERE id = ? ");
                     PreparedStatement ps2 = con.prepareStatement("UPDATE accounts SET balance = balance + ? " +
@@ -58,14 +59,13 @@ public class TransactionDao {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
                     "sending_id,receiving_id, req_time, status_id, amount, desc_id, receiving_email) " +
-                    "VALUES(?, ?, ?, Now(),1, ?, ?,?) RETURNING *");
+                    "VALUES(?, ?, ?, Now(),1, ?, 4,?) RETURNING *");
 //            Create insert statement
             ps.setInt(1, transaction.getRequesterId());
             ps.setInt(2, transaction.getSendingId());
             ps.setInt(3, transaction.getReceivingId());
             ps.setLong(4, transaction.getAmount());
-            ps.setInt(5, transaction.getDescriptionId());
-            ps.setString(6, transaction.getReceivingEmail());
+            ps.setString(5, transaction.getReceivingEmail());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return "Transaction Successful";
         } catch (SQLException e) {
@@ -450,7 +450,7 @@ public class TransactionDao {
         return "Transaction Successfully Approved and Executed";
     }
 
-    public Long monthlyAccountIncome(int aId, int month, int year) {
+    public Long monthlyAccountIncome(int uId, int aId, int month, int year) {
         String mon = "";
         if (month < 10) {
             mon = "0" + month;
@@ -463,11 +463,18 @@ public class TransactionDao {
             PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS monthly_income, " +
                     "DATE_TRUNC('month', t.res_time) as mon, DATE_TRUNC('year', t.res_time) as yyyy\n " +
                     "\tFROM transactions t \n " +
-                    "\tWHERE t.receiving_id = ? AND DATE_TRUNC('month', t.res_time) = ?::TIMESTAMP AND DATE_TRUNC('year', t.res_time) = ?::TIMESTAMP\n " +
+                    "\tWHERE t.receiving_id = ? AND DATE_TRUNC('month', t.res_time) = ?::TIMESTAMP AND " +
+                    "DATE_TRUNC('year', t.res_time) = ?::TIMESTAMP\n AND t.status_id = 2 AND " +
+                    "t.sending_id NOT IN( " +
+                    "\t\tSELECT uwa .account_id\n " +
+                    "\t\t\tFROM users_with_accounts uwa\n " +
+                    "\t\t\tWHERE uwa.user_id = ? " +
+                    " ) " +
                     "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
             ps.setInt(1, aId);
             ps.setString(2, timestampMonth);
             ps.setString(3, timestampYear);
+            ps.setInt(4, uId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getLong("monthly_income");
@@ -475,7 +482,31 @@ public class TransactionDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return -1L;
+        return 0L;
+
+    }
+
+    public Long allTimeAccountIncome(int uId, int aId) {
+
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS allTime_income " +
+                    "\tFROM transactions t \n " +
+                    "\tWHERE t.receiving_id = ?  AND t.status_id = 2 AND " +
+                    "t.sending_id NOT IN( " +
+                    "\t\tSELECT uwa .account_id\n " +
+                    "\t\t\tFROM users_with_accounts uwa\n " +
+                    "\t\t\tWHERE uwa.user_id = ? " +
+                    " ) ");
+            ps.setInt(1, aId);
+            ps.setInt(2, uId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getLong("allTime_income");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return 0L;
 
     }
 
@@ -486,7 +517,7 @@ public class TransactionDao {
             try (
                     PreparedStatement ps = con.prepareStatement("INSERT INTO transactions (requester_id, " +
                             "sending_id,receiving_id, req_time, res_time, status_id, amount, desc_id, receiving_email) " +
-                            "VALUES(?, ?, ?, Now(), Now(),1, ?, 1, ?)");
+                            "VALUES(?, ?, ?, Now(), Now(),2, ?, 2, ?)");
                     PreparedStatement ps1 = con.prepareStatement("UPDATE accounts SET balance = balance - ? " +
                             "WHERE id = ? ");
                     PreparedStatement ps2 = con.prepareStatement("UPDATE accounts SET balance = balance + ? " +
@@ -508,6 +539,7 @@ public class TransactionDao {
                 ps2.setInt(2, transaction.getReceivingId());
                 ps2.executeUpdate();
                 con.commit();
+
             } catch (SQLException e) {
                 System.out.println(e);
                 try {
@@ -568,10 +600,15 @@ public class TransactionDao {
                     "FROM users_with_accounts uwa " +
                     "WHERE uwa.user_id = ? " +
                     ") AND DATE_TRUNC('month', t.res_time) = ?::TIMESTAMP AND DATE_TRUNC('year', t.res_time) = ?::TIMESTAMP\n " +
+                    "AND t.status_id = 2 AND t.sending_id NOT IN(\n " +
+                    "\t\tSELECT uwa .account_id\n " +
+                    "\t\t\tFROM users_with_accounts uwa\n " +
+                    "\t\t\tWHERE uwa.user_id = ?) " +
                     "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
             ps.setInt(1, uId);
             ps.setString(2, timestampMonth);
             ps.setString(3, timestampYear);
+            ps.setInt(4, uId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getLong("monthly_income");
@@ -579,32 +616,36 @@ public class TransactionDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return -1L;
+        return 0L;
 
     }
 
     public Long allTimeUserIncome(int uId) {
 
         try (Connection con = ConnectionUtility.createConnection()) {
-            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS monthly_income, " +
-                    "DATE_TRUNC('month', t.res_time) as mon, DATE_TRUNC('year', t.res_time) as yyyy\n " +
+            PreparedStatement ps = con.prepareStatement("SELECT  SUM(t.amount) AS all_accounts_all_time " +
                     "\tFROM transactions t \n " +
                     "\tWHERE t.receiving_id IN" +
                     "(" +
                     "SELECT uwa .account_id " +
                     "FROM users_with_accounts uwa " +
                     "WHERE uwa.user_id = ? " +
-                    ")" +
-                    "\tGROUP BY DATE_TRUNC('month', t.res_time), DATE_TRUNC('year', t.res_time)");
+                    ") AND t.status_id = 2 AND " +
+                    "t.sending_id NOT IN(\n " +
+                    "\tSELECT uwa .account_id\n " +
+                    "\tFROM users_with_accounts uwa\n " +
+                    "\tWHERE uwa.user_id = ?)");
             ps.setInt(1, uId);
+            ps.setInt(2, uId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getLong("monthly_income");
+                return rs.getLong("all_accounts_all_time");
             }
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
-        return -1L;
+        return 0L;
 
     }
 

@@ -143,8 +143,8 @@ public class UserDao {
         }
     }
 
+
     public User getUserByEmail(String email) {
-        System.out.println(email);
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement pstmt = con.prepareStatement("SELECT * FROM users WHERE email=?");
 
@@ -195,6 +195,34 @@ public class UserDao {
         }
     }
 
+    public String updateFirstName(int userId, String firstName) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement pstmt = con.prepareStatement("UPDATE users SET first_name=? WHERE id=? RETURNING *");
+            pstmt.setString(1, firstName);
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            return "First name updated. Congrats!";
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String updateLastName(int userId, String lastName) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement pstmt = con.prepareStatement("UPDATE users SET last_name=? WHERE id=? RETURNING *");
+            pstmt.setString(1, lastName);
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            return "Last name updated. Congrats?";
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getRequesteeEmailByTransactionId(int transactionId) {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("SELECT u.email FROM users u " +
@@ -230,6 +258,28 @@ public class UserDao {
         }
 
     }
+
+    public User getUserByUserId(int uId) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement pstmt = con.prepareStatement("SELECT * FROM users WHERE id=?");
+
+            pstmt.setInt(1, uId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new User(rs.getInt("id"), rs.getString("first_name"),
+                        rs.getString("last_name"), rs.getString("email"),
+                        rs.getString("pass"), rs.getString("phone"),
+                        rs.getString("role_id"));
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 
 
