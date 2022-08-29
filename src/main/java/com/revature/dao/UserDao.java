@@ -1,20 +1,15 @@
 package com.revature.dao;
 
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import com.revature.model.User;
 import com.revature.utility.ConnectionUtility;
 
 
-import java.sql.*;
 import java.util.List;
 
 public class UserDao {
@@ -28,6 +23,21 @@ public class UserDao {
             ResultSet rs = ps.executeQuery();
 
             return rs.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void addUser(String firstName, String lastname, String email, String password, String phoneNumber, String role_id) {
+        try (Connection con = ConnectionUtility.createConnection()) {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO users VALUES first_name = ?, last_name = ?, email = ? pass = ?, phone = ?, role_id = ?");
+
+            ps.setString(1, firstName);
+            ps.setString(2, lastname);
+            ps.setString(3, email);
+            ps.setString(4, password);
+            ps.setString(5, phoneNumber);
+            ps.setString(6, role_id);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
