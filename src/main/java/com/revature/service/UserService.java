@@ -24,6 +24,11 @@ import java.util.UUID;
 public class UserService {
     private UserDao userDao;
 
+    public void addUser(UserDao userDao, String firstName, String lastName, String email, String password, String phoneNumber) {
+        this.userDao = userDao;
+    }
+
+
     public UserService(UserDao mockedObject) {
         userDao = mockedObject;
     }
@@ -72,6 +77,7 @@ public class UserService {
         return userDao.getUserByEmail(email);
 
     }
+
 
     public void updateInfo(Map<String, String> newInfo, int userId, String oldEmail) throws InvalidParameterException {
         InvalidParameterException exceptions = new InvalidParameterException();

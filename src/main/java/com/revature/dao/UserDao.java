@@ -27,7 +27,7 @@ public class UserDao {
             throw new RuntimeException(e);
         }
     }
-    public void addUser(String firstName, String lastname, String email, String password, String phoneNumber, String role_id) {
+    public void addUser(String firstName, String lastname, String email, String password, String phoneNumber, Integer role_id) {
         try (Connection con = ConnectionUtility.createConnection()) {
             PreparedStatement ps = con.prepareStatement("INSERT INTO users VALUES first_name = ?, last_name = ?, email = ? pass = ?, phone = ?, role_id = ?");
 
@@ -36,7 +36,7 @@ public class UserDao {
             ps.setString(3, email);
             ps.setString(4, password);
             ps.setString(5, phoneNumber);
-            ps.setString(6, role_id);
+            ps.setInt(6, role_id);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
