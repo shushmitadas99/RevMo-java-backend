@@ -14,6 +14,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.SQLException;
 
 import java.time.Instant;
@@ -150,11 +153,29 @@ public class UserService {
                 //Send Token to Database
                 userDao.sendToken(jwtToken, currUser.getUserId());
                 Dotenv dotenv = Dotenv.load();
+
+                //--------------------------------Implemented Password Email template---------------------------------
+                StringBuilder contentBuilder = new StringBuilder();
+                try {
+                    BufferedReader in = new BufferedReader(new FileReader("src/main/java/com/revature/utility/reset-password-email-template.html"));
+                    String str;
+                    while ((str = in.readLine()) != null) {
+                        contentBuilder.append(str);
+                    }
+                    in.close();
+                } catch (IOException e) {
+                }
+                String content = contentBuilder.toString();
+                System.out.println(content);
+                //----------------------------------------------------------------------------------------------------
+
                 //Create URL and send email with reset URL
                 String frontendUrl = dotenv.get("FRONTEND_HOST");
                 String addressUrl =  frontendUrl +"/uservalues?token="+jwtToken;
+                String dynamicContent = content.replace("http://addURL", addressUrl);  //addressURL inserted in the reset button link as it replaces the dummy link "http://addressURL"
+                System.out.println(dynamicContent);
 
-                int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", addressUrl);
+                int status = EmailUtility.email(inputEmail.getString("email"), "Reset your RevMo password", dynamicContent);
                 if (status == 202) {
                     return true;
                 } else {
@@ -186,16 +207,14 @@ public class UserService {
                 throw new RuntimeException("Reset Link Expired. Please try again");
             } else {
 
-
                 //Check if token is valid
                 boolean tokenStatus = userDao.getTokenStatus(token);
-
                 if (tokenStatus) {
                     if (java.awt.Desktop.isDesktopSupported()) {
                         java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
 
                         if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                            java.net.URI uri = new java.net.URI("http://localhost:5051/resetpassword.html");
+                            java.net.URI uri = new java.net.URI("http://localhost:5501/resetpassword.html");
                             desktop.browse(uri);
                         }
 

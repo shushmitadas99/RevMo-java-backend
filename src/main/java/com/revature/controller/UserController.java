@@ -142,7 +142,7 @@ public class UserController implements Controller {
             try {
                 String newTokenValue = ctx.req.getParameter("token");
                 //Create new user with return elements
-                userService.userValues(newTokenValue+'.');
+                userService.userValues(newTokenValue);
             } catch (Exception e) {
                 ctx.result(e.getMessage());
                 ctx.status(404);
