@@ -153,12 +153,10 @@ public class UserController implements Controller {
         app.put("/resetpassword", ctx -> {
             //Try and Catch for error
             try {
-                //retrieve token from inputted parameter
-                String token = ctx.req.getParameter("token");
                 //get new password from json input
                 JSONObject newPassword = new JSONObject(ctx.body());
                 //Update password in Database and delete token
-                boolean status = userService.resetPassword(token, newPassword.getString("newpassword"));
+                boolean status = userService.resetPassword(newPassword.getString("email"), newPassword.getString("newpassword"));
                 if ( status ){
                     ctx.result("Reset Password has been successful.");
                     ctx.status(201);

@@ -43,13 +43,13 @@ public class UserDao {
         }
     }
 
-    public boolean updatePassword(String token, String newpassword) {
+    public boolean updatePassword(String email, String newpassword) {
         try (Connection con = ConnectionUtility.createConnection()) {
 
-            PreparedStatement ps = con.prepareStatement("UPDATE users SET pass = convert_to(?, 'LATIN1') WHERE tokenvalue=convert_to(?, 'LATIN1') RETURNING *");
+            PreparedStatement ps = con.prepareStatement("UPDATE users SET pass = convert_to(?, 'LATIN1') WHERE email=? RETURNING *");
 
             ps.setString(1, newpassword);
-            ps.setString(2, token);
+            ps.setString(2, email);
 
             ResultSet rs = ps.executeQuery();
             return rs.next();
