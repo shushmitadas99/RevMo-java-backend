@@ -112,7 +112,8 @@ public class TransactionDao {
                     "JOIN users u ON t.requester_id = u.id " +
                     "JOIN status_types st ON t.status_id  = st.id " +
                     "JOIN transaction_descriptions td ON t.desc_id  = td.id " +
-                    "WHERE t.sending_id = ? OR t.receiving_id = ?;");
+                    "WHERE t.sending_id = ? OR t.receiving_id = ?" +
+                    "ORDER BY res_time DESC");
 
             ps.setInt(1, aid);
             ps.setInt(2, aid);
