@@ -106,7 +106,7 @@ public class TransactionService {
         trx.put("descriptionId", "3");
         trx.put("receivingEmail", email);
         Transaction t = validateTransactionParams(trx);
-        if (accountDao.getBalanceofAccountById(t.getReceivingId()) < t.getAmount()) {
+        if (accountDao.getBalanceofAccountById(t.getSendingId()) < t.getAmount()) {
             exceptions.addMessage("Not enough funds!");
             throw exceptions;
         }
