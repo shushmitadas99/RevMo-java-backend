@@ -66,6 +66,9 @@ public class UserController implements Controller {
             }
 
         });
+        app.post("/registration", ctx -> {
+
+        });
 
         app.post("/logout", ctx -> {
 //            System.out.println("logout");
