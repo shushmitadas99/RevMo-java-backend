@@ -66,6 +66,9 @@ public class UserController implements Controller {
             }
 
         });
+        app.post("/registration", ctx -> {
+
+        });
 
         app.post("/logout", ctx -> {
 //            System.out.println("logout");
@@ -142,7 +145,7 @@ public class UserController implements Controller {
             try {
                 String newTokenValue = ctx.req.getParameter("token");
                 //Create new user with return elements
-                userService.userValues(newTokenValue+'.');
+                userService.userValues(newTokenValue);
             } catch (Exception e) {
                 ctx.result(e.getMessage());
                 ctx.status(404);
